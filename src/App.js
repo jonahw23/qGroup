@@ -1,16 +1,17 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import ListBox from './Listbox'
 
 const user = {
   name: 'Tom Cook',
   email: 'tom@example.com',
   imageUrl:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png',
+    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
 }
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
+  { name: 'Classes', href: '#', current: false },
   { name: 'Projects', href: '#', current: false },
   { name: 'Calendar', href: '#', current: false },
   { name: 'Reports', href: '#', current: false },
@@ -37,7 +38,7 @@ export default function Example() {
         ```
       */}
       <div className="min-h-full">
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-neutral-400">
           {({ open }) => (
             <>
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -51,6 +52,11 @@ export default function Example() {
                       />
                     </div>
                     <div className="hidden md:block">
+                      <div className="ml-10 flex items-baseline space-x-4 space-y-0">
+                        {new ListBox()}
+                      </div>
+                    </div>
+                    <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item) => (
                           <a
@@ -58,8 +64,8 @@ export default function Example() {
                             href={item.href}
                             className={classNames(
                               item.current
-                                ? 'bg-gray-900 text-white'
-                                : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                ? 'bg-gray-800 text-white'
+                                : 'text-gray-800 hover:bg-gray-700 hover:text-white',
                               'px-3 py-2 rounded-md text-sm font-medium'
                             )}
                             aria-current={item.current ? 'page' : undefined}
@@ -131,7 +137,6 @@ export default function Example() {
                   </div>
                 </div>
               </div>
-
               <Disclosure.Panel className="md:hidden">
                 <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
                   {navigation.map((item) => (
