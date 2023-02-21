@@ -10,11 +10,11 @@ const user = {
     'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
 }
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Classes', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-  { name: 'Reports', href: '#', current: false },
+  { name: 'Weighted Groups', href: '#', current: true },
+  { name: 'Seating Chart', href: '#', current: false },
+  { name: 'Other1', href: '#', current: false },
+  { name: 'Other2', href: '#', current: false },
+  { name: 'Other3', href: '#', current: false },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -46,18 +46,18 @@ export default function Example() {
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <img
-                        className="h-8 w-8"
-                        src="http://s3-us-west-2.amazonaws.com/sportshub2-uploads-prod/files/sites/1649/2018/01/17164258/logo_outline.png"
+                        className="h-8 w-18"
+                        src="https://i.imgur.com/mGBBnE0.png"
                         alt="Your Company"
                       />
                     </div>
                     <div className="hidden md:block">
-                      <div className="ml-10 flex items-baseline space-x-4 space-y-0">
+                      <div className="ml-7 flex items-baseline space-x-2 space-y-0">
                         {new ListBox()}
                       </div>
                     </div>
                     <div className="hidden md:block">
-                      <div className="ml-10 flex items-baseline space-x-4">
+                      <div className="ml-7 flex items-baseline space-x-3">
                         {navigation.map((item) => (
                           <a
                             key={item.name}
