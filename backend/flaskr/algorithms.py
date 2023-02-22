@@ -26,18 +26,15 @@ def format_student_data(file_name):
 
     return students
 
-def alphabetical_student_sort(students,reverse=False,first_name = False):
+def student_sort(students,key="Last",reverse=False):
     """sorts students by either their first or last name
     
     Args:
         students (array): An array of dictionaries representing each student's data
         reverse (bool): A boolean representing if the sorted array should be reversed or not
-        first_name (bool): A boolean representing if the first name of the students should be used for sorting instead of the last name
+        key (str): The data in their dictionary the students should be sorted on
 
     Return:
-        sorted (array): The students array sorted alphabetically with the given parameters
+        sorted (array): The students array sorted with the given parameters
     """
-    key = "Last"
-    if first_name:
-        key = "First"
     return students.sort(reverse=reverse,key=key)
