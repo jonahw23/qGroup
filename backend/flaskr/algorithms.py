@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import random
 from numpy import loadtxt
 
 
@@ -20,12 +21,15 @@ def format_student_data(file_name):
 
     students = []
     for i in range(1,len(data)):
-        students.append({id:i})
+        students.append({"id":i})
         
         for j in range(len(data[i])):
             students[data[0][j]] = data[i][j]
 
     return students
+
+def helper_sort(key):
+    return lambda a : a[key]
 
 def student_sort(students,key="Last name",reverse=False):
     """sorts students by either their first or last name
@@ -38,19 +42,24 @@ def student_sort(students,key="Last name",reverse=False):
     Return:
         sorted (array): The students array sorted with the given parameters
     """
-    return students.sort(reverse=reverse,key=key)
+    students.sort(reverse=reverse,key=helper_sort(key))
+    return students
 
 def groups_of_fixed_size(students,n):
     leftover = len(students)%n
     total_groups = math.ceil(len(students)/n)
     num_small_groups = n - leftover
-    groups = [] * n
+    groups = []
+    for i in range(total_groups):
+        groups.append([])
     group_num = 0
     for i in range(len(students)):
         if (total_groups - group_num > num_small_groups and len(groups[group_num]) < n) or (total_groups - group_num <= num_small_groups and len(groups[group_num]) < n-1):
-            groups[group_num].append(students[i])
+            pass
         else:
             group_num += 1
+        #groups[group_num].append(students[i])
+        groups[group_num].append(students[i]["id"])
     return groups
 
 def groups_of_fixed_amount(students,k):
@@ -68,13 +77,38 @@ def group_students(students,group_amount=0,group_size=0,sort_by=False,reverse=Fa
         sort_by (str): If students should be sorted, what key will be used
         reverse (bool): A boolean representing if the sorted array should be reversed or not
         weights (array): wieghts matrix for students (UNIMPLEMENTED)
+    
+    Returns:
+        False if failed or the grouped students
     """
-    if sort_by:
+    if not sort_by == False:
         s = student_sort(students,key=sort_by,reverse=reverse)
         if group_size > 0:
             return groups_of_fixed_size(s,group_size)
-        elif group_size > 0:
+        elif group_amount > 0:
             return groups_of_fixed_amount(s,group_amount)
 
     if group_size <= 0 and group_amount <= 0:
         return False
+
+
+def generate_test_data(length,values):
+    """creates data to test grouping algorithms
+
+    Args:
+        length (int): how many rows
+        values (str array): what columns
+
+    Returns:
+        array of "students"    
+    """
+    students = []
+    for i in range(length):
+        students.append({"id": i})
+        for j in range(len(values)):
+            students[i][values[j]] = random.randint(0,100)
+    return students
+
+s = generate_test_data(100,["first_name","last_name","class_grade"])
+
+g = group_students(s,group_amount=12,sort_by="last_name")
