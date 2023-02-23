@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS UserClassroomMap
   (user_id INTEGER,
    classroom_id INTEGER);
 
+CREATE TABLE IF NOT EXISTS MetaGroup
+  (id INTEGER PRIMARY KEY,
+   name STRING);
+
 CREATE TABLE IF NOT EXISTS Group
   (id INTEGER PRIMARY KEY,
    name STRING);
@@ -28,8 +32,12 @@ CREATE TABLE IF NOT EXISTS StudentGroupMap
   (student_id INTEGER,
    group_id INTEGER);
 
-CREATE TABLE IF NOT EXISTS ClassroomGroupMap
+CREATE TABLE IF NOT EXISTS ClassroomMetaGroupMap
   (classroom_id INTEGER,
+   meta_group_id INTEGER);
+
+CREATE TABLE IF NOT EXISTS MetaGroupGroupMap
+  (meta_group_id INTEGER,
    group_id INTEGER);
 
 CREATE TABLE IF NOT EXISTS StudentStudentMap
