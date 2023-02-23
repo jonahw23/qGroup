@@ -25,7 +25,15 @@ def create_app():
     res = db.execute("""
       INSERT INTO Classrooms (name)
         VALUES ("{}")
+        RETURNING id
     """.format(request.args["name"]))
+
+    class_id = res.fetchone()[0]
+    user_id = request.args["user_id"]
+    db.execute("""
+      INSERT INTO UserClassroomMap (classroom_id, user_id)
+        VALUES ({}, {})
+    """.format(class_id, user_id))
     db.commit()
     return res.fetchall()
 
@@ -71,6 +79,41 @@ def create_app():
     db.commit()
     return res.fetchall()
     
+  @app.route("/api/user/new", methods = ["POST"])
+  def add_user():
+    db = database.get_db()
+    db.execute(f"""
+      INSERT INTO Users
+        VALUES (
+          {int(request.args["user_id"])},
+          "{request.args["name"]}",
+          "{request.args["password"]}"
+          );
+    """)
+    
+    db.commit()
+
+  @app.route("/api/user/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
+  def new_seating():
+    db = database.get_db()
+    res = db.execute(f"""
+      INSERT INTO Seating
+        VALUES (
+          "{request.args["name"]}"
+        )
+        RETURNING id
+    """)
+    seating_id = res.fetchone()[0]
+    
+    db.execute("""
+      INSERT INTO UserSeatingMap
+        VALUES ({user_id}, {seating_id})
+      """)
+    db.execute("""
+      INSERT INTO ClassroomSeatingMap
+        VALUES ({class_id}, {seating_id})
+      """)
+    db.commit()
 
   return app
 

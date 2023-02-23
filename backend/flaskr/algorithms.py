@@ -108,7 +108,3 @@ def generate_test_data(length,values):
         for j in range(len(values)):
             students[i][values[j]] = random.randint(0,100)
     return students
-
-s = generate_test_data(100,["first_name","last_name","class_grade"])
-
-g = group_students(s,group_amount=12,sort_by="last_name")
