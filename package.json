@@ -19,7 +19,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "init-db": "flask --app backend/flaskr init-db",
+    "backend": "flask --app backend/flaskr run"
   },
   "eslintConfig": {
     "extends": [
