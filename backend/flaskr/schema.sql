@@ -51,7 +51,10 @@ CREATE TABLE IF NOT EXISTS ClassroomSeatingMap
 
 CREATE TABLE IF NOT EXISTS Furniture
   (id INTEGER PRIMARY KEY,
-   type STRING);
+   type STRING,
+   x FLOAT,
+   y FLOAT,
+   theta FLOAT);
 
 CREATE TABLE IF NOT EXISTS FurnitureSeatingMap
   (furniture_id INTEGER,
