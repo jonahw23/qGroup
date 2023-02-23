@@ -140,7 +140,7 @@ return (
 
             {true && (
             <div>
-            <Listbox.Options static className="absolute max-h-[77vh] w-full overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options static className="absolute max-h-[76.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {people.map((person, personIdx) => (
                 <Listbox.Option static
                   key={personIdx}
