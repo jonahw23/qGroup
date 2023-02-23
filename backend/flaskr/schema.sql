@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS StudentStudentMap
    student_id2 INTEGER,
    weight INTEGER);
 
-CREATE TABLE IF NOT EXISTS SeatingArrangement
+CREATE TABLE IF NOT EXISTS Seating
   (id INTEGER PRIMARY KEY,
    name STRING);
 
