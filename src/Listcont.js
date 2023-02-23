@@ -129,9 +129,11 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ListCont() {
+export default function ListCont(height) {
 
 const [selected, setSelected] = useState(people[3])
+
+var totalHeight = height-1.5
 
 return (
     <div className="top-16 w-72">
@@ -140,7 +142,7 @@ return (
 
             {true && (
             <div>
-            <Listbox.Options static className="absolute max-h-[76.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Listbox.Options static className={"absolute max-h-[" + totalHeight + "vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"}>
               {people.map((person, personIdx) => (
                 <Listbox.Option static
                   key={personIdx}

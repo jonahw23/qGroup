@@ -191,11 +191,11 @@ export default function Example() {
         </Disclosure>
 
         <main>
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
             {/* Replace with your content */}
-            <div className="px-4 py-4 sm:px-0">
-              <div className="my-auto h-[78vh] rounded-lg border-4 border-dashed border-gray-200">
-              <div>{new ListCont()}</div>
+            <div className="px-4 py-1 sm:px-0">
+              <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
+              <div>{new ListCont(85)}</div>
               </div>
             </div>
             {/* /End replace */}
