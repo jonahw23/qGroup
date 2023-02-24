@@ -114,6 +114,14 @@ def create_app():
         VALUES ({class_id}, {seating_id})
       """)
     db.commit()
-
+  
+  @app.route("/api/user/list_users", methods = ["GET"])
+  def list_users():
+    db = database.get_db()
+    res = db.execute("""
+      SELECT * FROM User
+      """)
+    return [dict(row) for row in res.fetchall()]
+  
   return app
 
