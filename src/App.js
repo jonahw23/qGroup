@@ -195,7 +195,113 @@ export default function Example() {
             {/* Replace with your content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-              <div>{new ListCont(85)}</div>
+              <div>{new ListCont(85, [
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'Joe',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+  {
+    id: 1,
+    first_name: 'Wade',
+    last_name: 'Cooper',
+  },
+  {
+    id: 2,
+    first_name: 'SecondtoLastTest',
+    last_name: 'Bob',
+  },
+  {
+    id: 3,
+    first_name: 'FirstName',
+    last_name: 'LastName',
+  },
+])}</div>
               </div>
             </div>
             {/* /End replace */}
