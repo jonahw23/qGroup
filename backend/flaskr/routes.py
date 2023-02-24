@@ -67,6 +67,8 @@ def add_student(class_id):
 @routes.route("/api/user/new", methods = ["POST"])
 def add_user():
   db = database.get_db()
+  print("got")
+  print(request.json,request.get_json())
   db.execute(f"""
     INSERT INTO Users
       VALUES (
