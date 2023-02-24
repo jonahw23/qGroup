@@ -23,6 +23,132 @@ const userNavigation = [
   { name: 'Sign out', href: '#' },
 ]
 
+const testPeople = [{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'Joe',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},
+{
+  id: 1,
+  first_name: 'Wade',
+  last_name: 'Cooper',
+},
+{
+  id: 2,
+  first_name: 'SecondtoLastTest',
+  last_name: 'Bob',
+},
+{
+  id: 3,
+  first_name: 'FirstName',
+  last_name: 'LastName',
+},]
+
+const addUser = async () => {
+  const response = await fetch('http://127.0.0.1:5000/api/user/new', {
+    method: 'POST',
+    body: {
+      name:"Joe User",
+      user_id:"3351",
+      password:"35",
+    },
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response.json()
+}
+let x = 0
+while(x < 3){
+  addUser()
+  x++
+}
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -195,113 +321,7 @@ export default function Example() {
             {/* Replace with your content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-              <div>{new ListCont(85, [
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'SecondtoLastTest',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-])}</div>
+              <div>{new ListCont(85, testPeople)}</div>
               </div>
             </div>
             {/* /End replace */}
