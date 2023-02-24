@@ -8,10 +8,6 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-function getPeople(){
-  return people.peopleMap
-}
-
 var built = false
 
 function buildPeople(arr){
@@ -28,121 +24,14 @@ function buildPeople(arr){
 
 export default function ListCont(height, peopleNew) {
 
-const peopleHere = [
-  {
-    id: 1,
-    first_name: 'Mikey',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-  {
-    id: 1,
-    first_name: 'Wade',
-    last_name: 'Cooper',
-  },
-  {
-    id: 2,
-    first_name: 'Joe',
-    last_name: 'Bob',
-  },
-  {
-    id: 3,
-    first_name: 'FirstName',
-    last_name: 'LastName',
-  },
-]
-
 if(peopleNew){
   buildPeople(peopleNew)
 }
 
 const [selected, setSelected] = useState(people[0])
 
-var totalHeight = height-1.5
+var totalHeight = height - 1.5
+var hString = "absolute max-h-[" + totalHeight + "vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 
 return (
     <div className="top-16 w-72">
@@ -151,7 +40,7 @@ return (
 
             {true && (
             <div>
-            <Listbox.Options static className={"absolute max-h-[" + totalHeight + "vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"}>
+            <Listbox.Options static className={hString}>
               {people.map((person, personIdx) => (
                 <Listbox.Option static
                   key={personIdx}
