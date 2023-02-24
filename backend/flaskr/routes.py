@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import request
 from . import database
 
 routes = Blueprint("routes", __name__)
