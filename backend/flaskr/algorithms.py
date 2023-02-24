@@ -45,10 +45,20 @@ def student_sort(students,key="Last name",reverse=False):
     students.sort(reverse=reverse,key=helper_sort(key))
     return students
 
+def random_student_order(students):
+    index_list = [*range(len(students))]
+    randomized = []
+    for i in range(len(students)):
+        rand_index = random.randint(0,len(index_list)-1)
+        randomized.append(students[index_list[rand_index]])
+        index_list.pop(rand_index)
+
+    return randomized
+
 def groups_of_fixed_size(students,n):
     leftover = len(students)%n
     total_groups = math.ceil(len(students)/n)
-    num_small_groups = n - leftover
+    num_small_groups = (n - leftover)%n
     groups = []
     for i in range(total_groups):
         groups.append([])
@@ -82,7 +92,10 @@ def group_students(students,group_amount=0,group_size=0,sort_by=False,reverse=Fa
         False if failed or the grouped students
     """
     if not sort_by == False:
-        s = student_sort(students,key=sort_by,reverse=reverse)
+        if sort_by == "random":
+            s = random_student_order(students)
+        else:
+            s = student_sort(students,key=sort_by,reverse=reverse)
         if group_size > 0:
             return groups_of_fixed_size(s,group_size)
         elif group_amount > 0:
