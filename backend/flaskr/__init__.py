@@ -19,7 +19,7 @@ def create_app():
 
   database.init_app(app)
 
-  @app.route("/api/class/new", methods=["POST"])
+  @app.route("/api/user/<user_id>/class/new", methods=["POST"])
   def create_class():
     db = database.get_db()
     res = db.execute("""
@@ -37,7 +37,7 @@ def create_app():
     db.commit()
     return res.fetchall()
 
-  @app.route("/api/class/list", methods=["GET"])
+  @app.route("/api/user/<user_id>/class/list", methods=["GET"])
   def list_classes():
     db = database.get_db()
     res = db.execute("""
@@ -45,7 +45,7 @@ def create_app():
     """)
     return [dict(row) for row in res.fetchall()]
 
-  @app.route("/api/class/<class_id>/students", methods=["GET"])
+  @app.route("/api/user/<user_id>/class/<class_id>/students", methods=["GET"])
   def get_class_students(class_id):
     db = database.get_db()
     res = db.execute(f"""
@@ -56,7 +56,7 @@ def create_app():
     """)
     return [dict(row) for row in res.fetchall()]
 
-  @app.route("/api/class/<class_id>/add_student", methods=["POST"])
+  @app.route("/api/user/<user_id>/class/<class_id>/add_student", methods=["POST"])
   def add_student(class_id):
     db = database.get_db()
 
