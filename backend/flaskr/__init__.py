@@ -26,10 +26,10 @@ def create_app():
       INSERT INTO Classrooms (name)
         VALUES ("{}")
         RETURNING id
-    """.format(request.args["name"]))
+    """.format(request.json["name"]))
 
     class_id = res.fetchone()[0]
-    user_id = request.args["user_id"]
+    user_id = request.json["user_id"]
     db.execute("""
       INSERT INTO UserClassroomMap (classroom_id, user_id)
         VALUES ({}, {})
@@ -63,8 +63,8 @@ def create_app():
     res1 = db.execute(f"""
       INSERT INTO Students (first_name, last_name)
         VALUES (
-          "{request.args["first_name"]}",
-          "{request.args["last_name"]}"
+          "{request.json["first_name"]}",
+          "{request.json["last_name"]}"
         )
         RETURNING id
     """)
@@ -85,9 +85,9 @@ def create_app():
     db.execute(f"""
       INSERT INTO Users
         VALUES (
-          {int(request.args["user_id"])},
-          "{request.args["name"]}",
-          "{request.args["password"]}"
+          {int(request.json["user_id"])},
+          "{request.json["name"]}",
+          "{request.json["password"]}"
           );
     """)
     
@@ -99,7 +99,7 @@ def create_app():
     res = db.execute(f"""
       INSERT INTO Seating
         VALUES (
-          "{request.args["name"]}"
+          "{request.json["name"]}"
         )
         RETURNING id
     """)
