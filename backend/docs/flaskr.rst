@@ -20,6 +20,14 @@ flaskr.database module
    :undoc-members:
    :show-inheritance:
 
+flaskr.routes module
+--------------------
+
+.. automodule:: flaskr.routes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
