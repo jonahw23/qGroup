@@ -142,6 +142,7 @@ const addUser = async () => {
     }
   })
   const peopleAPI = await response.json()
+  console.log("Added?")
 }
 let x = 0
 while(x < 3){
