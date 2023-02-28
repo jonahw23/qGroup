@@ -6,7 +6,7 @@ from . import database
 routes = Blueprint("routes", __name__)
 
 
-@routes.route("/api/user/<user_id>/class/new", methods=["POST"])
+@routes.route("/api/users/<user_id>/class/new", methods=["POST"])
 @cross_origin()
 def create_class():
   db = database.get_db()
@@ -34,7 +34,7 @@ def list_classes():
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/<user_id>/class/<class_id>/students", methods=["GET"])
+@routes.route("/api/users/<user_id>/class/<class_id>/students", methods=["GET"])
 @cross_origin()
 def get_class_students(class_id):
   db = database.get_db()
@@ -46,7 +46,7 @@ def get_class_students(class_id):
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/<user_id>/class/<class_id>/add_student", methods=["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/add_student", methods=["POST"])
 @cross_origin()
 def add_student(class_id):
   db = database.get_db()
@@ -79,7 +79,7 @@ def list_students():
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/new", methods = ["POST"])
+@routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
 def add_user():
   db = database.get_db()
@@ -97,7 +97,7 @@ def add_user():
 
   return "", 201
 
-@routes.route("/api/user/list", methods = ["GET"])
+@routes.route("/api/users/list", methods = ["GET"])
 @cross_origin()
 def list_users():
   db = database.get_db()
@@ -106,7 +106,7 @@ def list_users():
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
 @cross_origin()
 def new_seating():
   db = database.get_db()
