@@ -132,19 +132,19 @@ const testPeople = [{
 const addUser = async () => {
   const response = await fetch('http://127.0.0.1:5000/api/user/new', {
     method: 'POST',
-    body: {
-      name:"Joe User",
-      user_id:"3351",
-      password:"35",
-    },
-    headers:{
+    body: JSON.stringify({
+      name: "Joe User",
+      user_id: "3351",
+      password: "35",
+    }),
+    headers: {
       'Content-Type': 'application/json'
     }
   })
   const peopleAPI = await response.json()
 }
 let x = 0
-while(x < 3){
+while (x < 3) {
   addUser()
   x++
 }
@@ -152,7 +152,7 @@ while(x < 3){
 const getUser = async () => {
   const response = await fetch('http://127.0.0.1:5000/api/user/list', {
     method: 'GET',
-    headers:{
+    headers: {
       'Content-Type': 'application/json'
     }
   })
@@ -334,7 +334,7 @@ export default function Example() {
             {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-              <div>{new ListCont(85, testPeople)}</div>
+                <div>{new ListCont(85, testPeople)}</div>
               </div>
             </div>
             {/* /End replace */}

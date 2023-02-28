@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from . import database
 from . import routes
 import os
@@ -20,6 +21,9 @@ def create_app():
 
   database.init_app(app)
   app.register_blueprint(routes.routes)
+
+  cors = CORS(app)
+  app.config['CORS_HEADERS'] = 'Content-Type'
 
   return app
 

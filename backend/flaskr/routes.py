@@ -1,11 +1,13 @@
 from flask import Blueprint
 from flask import request
+from flask_cors import cross_origin
 from . import database
 
 routes = Blueprint("routes", __name__)
 
 
 @routes.route("/api/user/<user_id>/class/new", methods=["POST"])
+@cross_origin()
 def create_class():
   db = database.get_db()
   res = db.execute("""
@@ -24,6 +26,7 @@ def create_class():
   return res.fetchall()
 
 @routes.route("/api/class/list", methods=["GET"])
+@cross_origin()
 def list_classes():
   db = database.get_db()
   res = db.execute("""
@@ -32,6 +35,7 @@ def list_classes():
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/user/<user_id>/class/<class_id>/students", methods=["GET"])
+@cross_origin()
 def get_class_students(class_id):
   db = database.get_db()
   res = db.execute(f"""
@@ -43,6 +47,7 @@ def get_class_students(class_id):
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/user/<user_id>/class/<class_id>/add_student", methods=["POST"])
+@cross_origin()
 def add_student(class_id):
   db = database.get_db()
 
@@ -66,6 +71,7 @@ def add_student(class_id):
   return res.fetchall()
   
 @routes.route("/api/student/list_students", methods = ["GET"])
+@cross_origin()
 def list_students():
   db = database.get_db()
   res = db.execute("""
@@ -74,14 +80,14 @@ def list_students():
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/user/new", methods = ["POST"])
+@cross_origin()
 def add_user():
   db = database.get_db()
   print("got")
   print(request.json,request.get_json())
   db.execute(f"""
-    INSERT INTO Users
+    INSERT INTO Users (name, password)
       VALUES (
-        {int(request.json["user_id"])},
         "{request.json["name"]}",
         "{request.json["password"]}"
         );
@@ -89,7 +95,10 @@ def add_user():
   
   db.commit()
 
+  return "", 201
+
 @routes.route("/api/user/list", methods = ["GET"])
+@cross_origin()
 def list_users():
   db = database.get_db()
   res = db.execute("""
@@ -98,6 +107,7 @@ def list_users():
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/user/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
+@cross_origin()
 def new_seating():
   db = database.get_db()
   res = db.execute(f"""
@@ -117,3 +127,5 @@ def new_seating():
       VALUES ({class_id}, {seating_id})
     """)
   db.commit()
+
+  return "", 201
