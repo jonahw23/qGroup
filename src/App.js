@@ -149,6 +149,19 @@ while(x < 3){
   x++
 }
 
+const getUser = async () => {
+  const response = await fetch('http://127.0.0.1:5000/api/user/list', {
+    method: 'GET',
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response.json()
+  console.log("Done")
+}
+
+console.log(getUser())
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -318,7 +331,7 @@ export default function Example() {
 
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
-            {/* Replace with your content */}
+            {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
               <div>{new ListCont(85, testPeople)}</div>
