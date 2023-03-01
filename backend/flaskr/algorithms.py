@@ -95,6 +95,9 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     Returns:
         False if failed or the grouped students
     """
+
+    students.sort(key="id")
+    
     if sort_by == "random":
         if weights == False:
             s = random_student_order(students)
