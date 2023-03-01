@@ -84,7 +84,7 @@ def list_students():
 def add_user():
   db = database.get_db()
   print("got")
-  print(request.json,request.get_json())
+  print(request.json, request.get_json())
   db.execute(f"""
     INSERT INTO Users (name, password)
       VALUES (
@@ -104,7 +104,7 @@ def list_users():
   res = db.execute("""
     SELECT * FROM Users
   """)
-  return [dict(row) for row in res.fetchall()]
+  return {"classes":[dict(row) for row in res.fetchall()]}
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
 @cross_origin()
