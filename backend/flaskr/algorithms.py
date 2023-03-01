@@ -97,7 +97,7 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     """
 
     students.sort(key="id")
-    
+
     if sort_by == "random":
         if weights == False:
             s = random_student_order(students)
@@ -156,14 +156,14 @@ def generate_test_weights(length,scale=5):
     return weights
 
 def most_connections(weights,val):
-    """Ranks the indecies with the most values in a matrix
+    """Ranks the indices with the most values in a matrix
 
     Args:
         weights (matrix): input weights
         val: what to look for in the matrix
 
     Returns:
-        indecies (int array): indecies of weight column sorted by the amount of times val appears
+        indices (int array): indices of weight column sorted by the amount of times val appears
         count (int array): the amount of times val appears for each index
 
     """
@@ -173,9 +173,9 @@ def most_connections(weights,val):
         for j in range(len(weights[i])):
             if weights[i][j] == val:
                 count[i] += 1
-    indecies = [*range(len(weights))]
-    indecies.sort(key=lambda w : count[w],reverse=True)
-    return indecies, count
+    indices = [*range(len(weights))]
+    indices.sort(key=lambda w : count[w],reverse=True)
+    return indices, count
 
 def place_student(student,groups,weights,student_group_map,max_group_size):
     """Places a student in a group with priorities for weight properties
@@ -190,7 +190,7 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
     Returns:
         success (boolean): if the placement was successful
         groups (int matrix): updates groups
-        student_group_map (dictionary): updated map from student indecies to the group they are in
+        student_group_map (dictionary): updated map from student indices to the group they are in
     """
     avalible_groups = []
     positive_weighted_groups = []
@@ -217,7 +217,7 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         #all
         all_group_pool.append(i)
 
-    #These contain the indecies for the original list, NOT the group number
+    #These contain the indices for the original list, NOT the group number
     rand_p_g_p = random_student_order(priority_group_pool)
     rand_g_p = random_student_order(group_pool)
     rand_a_g_p = random_student_order(all_group_pool)
