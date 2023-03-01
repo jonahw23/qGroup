@@ -130,7 +130,7 @@ const testPeople = [{
 },]
 
 const addUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/users/new', {
+  const response = await fetch('http://127.0.0.1:5000/api/user/new', {
     method: 'POST',
     body: JSON.stringify({
       name: "Joe User",
@@ -151,7 +151,7 @@ while (x < 3) {
 }
 
 const getUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/users/list', {
+  const response = await fetch('http://127.0.0.1:5000/api/user/list', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -343,5 +343,17 @@ export default function Example() {
         </main>
       </div>
     </>
+  )
+}
+
+export function display_student(student,styleClass=""){
+  //no css made for this yet...
+  return (
+    
+    <div className='student'>
+      <div className={styleClass}>
+            {student["last_name"] + " " + student["first_name"]}
+      </div>
+    </div>
   )
 }
