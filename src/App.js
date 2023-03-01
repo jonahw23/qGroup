@@ -346,3 +346,15 @@ export default function Example() {
     </>
   )
 }
+
+export function display_student(student,styleClass=""){
+  //no css made for this yet...
+  return (
+    
+    <div className='student'>
+      <div className={styleClass}>
+            {student["last_name"] + " " + student["first_name"]}
+      </div>
+    </div>
+  )
+}
