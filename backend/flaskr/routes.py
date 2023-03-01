@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request
 from flask_cors import cross_origin
-from . import database
+from . import database, algorithms
 
 routes = Blueprint("routes", __name__)
 
@@ -129,3 +129,37 @@ def new_seating():
   db.commit()
 
   return "", 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
+@cross_origin()
+def make_groups(class_id):
+  db = database.get_db()
+  res = db.execute("""
+    INSERT INTO MetaGroup (name)
+      VALUES (?)
+      RETURNING id
+  """, (request.json["meta_group_name"],))
+  meta_group_id = res.fetchone()[0]
+  db.execute("""
+    INSERT INTO ClassroomMetaGroupMap
+      VALUES (?,?)
+  """, (class_id, meta_group_id))
+  
+  students = get_class_students(class_id)
+  students = algorithms.random_student_order(students)
+  groups = algorithms.group_students(students, request.json["group_amount"], request.json["group_size"])
+
+  for i, group in enumerate(groups):
+    group_name = "Group " + str(i + 1)
+    res = db.execute("""
+      INSERT INTO StudentGroup (name)
+        VALUES (?)
+        RETURNING id
+    """, (group_name,))
+    group_id = res.fetchone()[0]
+    for student in group:
+      db.execute("""
+        INSERT INTO StudentGroupMap (student_id, group_id)
+          VALUES (?,?)
+      """, (group_id, student["id"]))
+  db.commit()
