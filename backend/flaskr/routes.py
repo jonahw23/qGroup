@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask_cors import cross_origin
 from . import database
-from algorithms import group_students
+from . import student_algorithms
 
 routes = Blueprint("routes", __name__)
 
