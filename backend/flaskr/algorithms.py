@@ -81,7 +81,7 @@ def groups_of_fixed_amount(students,k):
     return groups_of_fixed_size(students,size)
 
 
-def group_students(students,group_amount=0,group_size=0,sort_by=False,reverse=False,weights=False):
+def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse=False,weights=False):
     """sorts students into groupd with the corresponding parameters
 
     Args:
@@ -95,18 +95,17 @@ def group_students(students,group_amount=0,group_size=0,sort_by=False,reverse=Fa
     Returns:
         False if failed or the grouped students
     """
-    if not sort_by == False:
-        if sort_by == "random":
-            if weights == False:
-                s = random_student_order(students)
-            else:
-                return weighted_student_groups(students,weights,group_amount=group_amount,group_size=group_size,)
+    if sort_by == "random":
+        if weights == False:
+            s = random_student_order(students)
         else:
-            s = student_sort(students,key=sort_by,reverse=reverse)
-        if group_size > 0:
-            return groups_of_fixed_size(s,group_size)
-        elif group_amount > 0:
-            return groups_of_fixed_amount(s,group_amount)
+            return weighted_student_groups(students,weights,group_amount=group_amount,group_size=group_size,)
+    else:
+        s = student_sort(students,key=sort_by,reverse=reverse)
+    if group_size > 0:
+        return groups_of_fixed_size(s,group_size)
+    elif group_amount > 0:
+        return groups_of_fixed_amount(s,group_amount)
 
     if group_size <= 0 and group_amount <= 0:
         return False
