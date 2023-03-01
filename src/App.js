@@ -129,39 +129,40 @@ const testPeople = [{
   last_name: 'LastName',
 },]
 
-const addUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/user/new', {
+const addUser = async (userName, userPw) => {
+  const response = await fetch('http://127.0.0.1:5000/api/users/new', {
     method: 'POST',
     body: JSON.stringify({
-      name: "Joe User",
-      user_id: "3351",
-      password: "35",
+      name: userName,
+      password: userPw,
     }),
     headers: {
       'Content-Type': 'application/json'
     }
   })
-  const peopleAPI = await response.json()
-  console.log("Added?")
-}
-let x = 0
-while (x < 3) {
-  addUser()
-  x++
+  const peopleAPI = await response
+  console.log("Added")
 }
 
-const getUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/user/list', {
+const getUsers = async () => {
+  const response = await fetch('http://127.0.0.1:5000/api/users/list', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     }
   })
   const peopleAPI = await response.json()
-  console.log("Done")
+  console.log(peopleAPI)
 }
 
-console.log(getUser())
+//Testing the API, runs on refresh
+let x = 0
+while (x < 3) {
+  addUser("Joe User", "SafePassword")
+  x++
+}
+
+console.log(getUsers())
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
