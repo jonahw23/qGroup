@@ -105,7 +105,7 @@ def list_users():
   res = db.execute("""
     SELECT * FROM Users
   """)
-  return {"classes":[dict(row) for row in res.fetchall()]}
+  return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
 @cross_origin()
