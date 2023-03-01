@@ -130,7 +130,7 @@ const testPeople = [{
 },]
 
 const addUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/user/new', {
+  const response = await fetch('http://127.0.0.1:5000/api/users/new', {
     method: 'POST',
     body: JSON.stringify({
       name: "Joe User",
@@ -151,7 +151,7 @@ while (x < 3) {
 }
 
 const getUser = async () => {
-  const response = await fetch('http://127.0.0.1:5000/api/user/list', {
+  const response = await fetch('http://127.0.0.1:5000/api/users/list', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
