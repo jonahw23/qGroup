@@ -147,8 +147,10 @@ def make_groups(class_id):
   """, (class_id, meta_group_id))
   
   students = get_class_students(class_id)
-  students = algorithms.random_student_order(students)
-  groups = algorithms.group_students(students, request.json["group_amount"], request.json["group_size"])
+
+  students.sort(key = lambda a: a["id"])
+  
+  groups = student_algorithms.group_students(students, request.json["group_amount"], request.json["group_size"])
 
   for i, group in enumerate(groups):
     group_name = "Group " + str(i + 1)
@@ -162,5 +164,5 @@ def make_groups(class_id):
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
-      """, (group_id, student["id"]))
+      """, (group_id, students[student]["id"])) #student should be in order of ID
   db.commit()
