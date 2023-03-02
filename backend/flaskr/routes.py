@@ -1,7 +1,8 @@
 from flask import Blueprint
 from flask import request
 from flask_cors import cross_origin
-from . import database, algorithms
+from . import database
+from . import student_algorithms
 
 routes = Blueprint("routes", __name__)
 
@@ -84,7 +85,7 @@ def list_students():
 def add_user():
   db = database.get_db()
   print("got")
-  print(request.json,request.get_json())
+  print(request.json, request.get_json())
   db.execute(f"""
     INSERT INTO Users (name, password)
       VALUES (
