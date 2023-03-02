@@ -166,3 +166,38 @@ def make_groups(class_id):
           VALUES (?,?)
       """, (group_id, students[student]["id"])) #student should be in order of ID
   db.commit()
+
+@routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
+@cross_origin()
+def delete_meta_group(class_id, meta_group_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT group_id FROM MetaGroupGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  student_group_id_set = res.fetchall()
+  for id in student_group_id_set:
+    res = db.execute("""
+      DELETE FROM StudentGroupMap
+        WHERE id = (?)
+        RETURNING group_id
+    """, (id,))
+    group_id = res.fetchone()[0]
+    res = db.execute("""
+      DELETE FROM StudentGroup
+        WHERE id = (?)
+    """, (group_id,))
+  
+  db.execute("""
+    DELETE FROM MetaGroupGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  db.execute("""
+    DELETE FROM ClassroomMetaGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  db.execute("""
+    DELETE FROM MetaGroup
+      WHERE id = (?)
+  """, (meta_group_id,))
+  db.commit()
