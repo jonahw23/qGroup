@@ -144,6 +144,21 @@ const addUser = async (userName, userPw) => {
   console.log("Added")
 }
 
+const addClass = async (user_id, className) => {
+  const response = await fetch('http://127.0.0.1:5000/api/users/' + user_id + '/class/new', {
+    method: 'POST',
+    body: JSON.stringify({
+      user_id: user_id,
+      name: className,
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response
+  console.log("Added")
+}
+
 const getUsers = async () => {
   const response = await fetch('http://127.0.0.1:5000/api/users/list', {
     method: 'GET',
@@ -162,7 +177,11 @@ while (x < 3) {
   x++
 }
 
-console.log(getUsers())
+addClass(5, "AP Econ")
+
+const otherPeople = getUsers()
+console.log(otherPeople)
+console.log(testPeople)
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -336,7 +355,7 @@ export default function Example() {
             {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-                <div>{new ListCont(85, testPeople)}</div>
+                <div>{new ListCont(85, otherPeople)}</div>
               </div>
             </div>
             {/* /End replace */}

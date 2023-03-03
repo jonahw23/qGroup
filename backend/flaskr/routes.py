@@ -9,8 +9,13 @@ routes = Blueprint("routes", __name__)
 
 @routes.route("/api/users/<user_id>/class/new", methods=["POST"])
 @cross_origin()
-def create_class():
+def create_class(user_id=0):
   db = database.get_db()
+  print("""
+    INSERT INTO Classrooms (name)
+      VALUES ("{}")
+      RETURNING id
+  """.format(request.json["name"]))
   res = db.execute("""
     INSERT INTO Classrooms (name)
       VALUES ("{}")
