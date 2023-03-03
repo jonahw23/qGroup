@@ -377,3 +377,29 @@ export function display_student(student,styleClass=""){
     </div>
   )
 }
+
+export function display_group(groups,n,styleclass="",student_styleClass=""){
+  return(
+    <div className = "group">
+      <div className = {styleClass}>
+          {n}
+        {
+          
+          display_students(groups[n],student_styleClass)
+        }
+
+      </div>
+    </div>
+  )
+}
+
+function display_students(group,i,styleClass=""){
+  if (i < group.length){
+    return (
+      <div>
+        display_student(group[i],styleClass)
+      display_students(group,i+1,styleClass)
+      </div>
+    )
+  }
+}
