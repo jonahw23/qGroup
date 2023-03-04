@@ -366,19 +366,20 @@ export default function Example() {
   )
 }
 
-export function display_student(student,styleClass=""){
+export function display_student(student, styleClass=""){
   //no css made for this yet...
+  let style = styleClass
   return (
     
     <div className='student'>
-      <div className={styleClass}>
+      <div className={style}>
             {student["last_name"] + " " + student["first_name"]}
       </div>
     </div>
   )
 }
 
-export function display_group(groups,n,styleclass="",student_styleClass=""){
+export function display_group(groups,n, styleClass="", student_styleClass=""){
   return(
     <div className = "group">
       <div className = {styleClass}>
@@ -393,7 +394,7 @@ export function display_group(groups,n,styleclass="",student_styleClass=""){
   )
 }
 
-function display_students(group,i,styleClass=""){
+function display_students(group,i, styleClass=""){
   if (i < group.length){
     return (
       <div>
