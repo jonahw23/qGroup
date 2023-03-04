@@ -85,6 +85,19 @@ def list_students():
   """)
   return [dict(row) for row in res.fetchall()]
 
+@routes.route("/api/user/<user_id>/class/<class_id>/students/remove_student", methods = ["DELETE"])
+@cross_origin()
+def remove_student():
+  db = database.get_db()
+  db.execute("""
+    DELETE ClassroomsStudentMap, StudentGroupMap, Students
+    FROM Students
+    LEFT JOIN ClassroomStudentMap ON ClassroomStudentMap.student_id = Students.id
+    LEFT JOIN StudentGroupMap ON StudentGroupMap.student_id = Students.id
+    WHERE Students.id = (?)
+  """, (request.json["student_id"],))
+  db.commit()
+  
 @routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
 def add_user():
