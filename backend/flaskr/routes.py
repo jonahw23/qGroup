@@ -19,10 +19,9 @@ def create_class(user_id=0):
   res = db.execute("""
     INSERT INTO Classrooms (name)
       VALUES ("{}")
-      RETURNING id
   """.format(request.json["name"]))
 
-  class_id = res.fetchone()[0]
+  class_id = db.execute("""SELECT * FROM Classrooms ORDER BY id DESC LIMIT 1""").fetchone()[0]
   user_id = request.json["user_id"]
   db.execute("""
     INSERT INTO UserClassroomMap (classroom_id, user_id)
