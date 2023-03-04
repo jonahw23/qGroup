@@ -62,10 +62,8 @@ def add_student(class_id):
         "{request.json["first_name"]}",
         "{request.json["last_name"]}"
       )
-      RETURNING id
   """)
-  row = res1.fetchone()
-  (student_id, ) = row if row else None
+  student_id = db.exectue("SELECT id FROM Students ORDER BY id DESC").fetchone()[0]
 
   res = db.execute(f"""
     INSERT INTO ClassroomStudentMap
@@ -128,14 +126,13 @@ def list_users():
 @cross_origin()
 def new_seating():
   db = database.get_db()
-  res = db.execute(f"""
+  db.execute(f"""
     INSERT INTO Seating
       VALUES (
         "{request.json["name"]}"
       )
-      RETURNING id
   """)
-  seating_id = res.fetchone()[0]
+  seating_id = db.exectue("SELECT id FROM Seating ORDER BY id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO UserSeatingMap
       VALUES ({user_id}, {seating_id})
@@ -155,9 +152,8 @@ def make_groups(class_id):
   res = db.execute("""
     INSERT INTO MetaGroup (name)
       VALUES (?)
-      RETURNING id
   """, (request.json["meta_group_name"],))
-  meta_group_id = res.fetchone()[0]
+  meta_group_id = db.exectue("SELECT id FROM MetaGroup ORDER BY id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO ClassroomMetaGroupMap
       VALUES (?,?)
@@ -174,9 +170,8 @@ def make_groups(class_id):
     res = db.execute("""
       INSERT INTO StudentGroup (name)
         VALUES (?)
-        RETURNING id
     """, (group_name,))
-    group_id = res.fetchone()[0]
+    group_id = db.exectue("SELECT id FROM StudentGroup ORDER BY id DESC").fetchone()[0]
     for student in group:
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
@@ -195,15 +190,11 @@ def delete_meta_group(class_id, meta_group_id):
   student_group_id_set = res.fetchall()
   for id in student_group_id_set:
     res = db.execute("""
-      DELETE FROM StudentGroupMap
-        WHERE id = (?)
-        RETURNING group_id
+      DELETE StudentGroupMap, StudentGroup
+        FROM StudentGroup
+        LEFT JOIN StudentGroupMap ON StudentGroupMap.group_id = StudentGroup.id
+        WHERE StudentGroup.id = (?)
     """, (id,))
-    group_id = res.fetchone()[0]
-    res = db.execute("""
-      DELETE FROM StudentGroup
-        WHERE id = (?)
-    """, (group_id,))
   
   db.execute("""
     DELETE FROM MetaGroupGroupMap
