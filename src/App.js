@@ -167,7 +167,7 @@ const getUsers = async () => {
     }
   })
   const peopleAPI = await response.json()
-  console.log(peopleAPI)
+  console.log("PeopleAPI", peopleAPI)
 }
 
 //Testing the API, runs on refresh
@@ -180,8 +180,8 @@ while (x < 3) {
 addClass(5, "AP Econ")
 
 const otherPeople = getUsers()
-console.log(otherPeople)
-console.log(testPeople)
+console.log("OtherPeople", otherPeople)
+console.log("TestPeople", testPeople)
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -355,7 +355,7 @@ export default function Example() {
             {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-                <div>{new ListCont(85, otherPeople)}</div>
+                <div>{new ListCont(85, testPeople)}</div>
               </div>
             </div>
             {/* /End replace */}
