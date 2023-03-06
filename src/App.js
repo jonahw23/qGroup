@@ -1,4 +1,5 @@
 import { Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import ListBox from './Listbox'
@@ -168,6 +169,7 @@ const getUsers = async () => {
   })
   const peopleAPI = await response.json()
   console.log("PeopleAPI", peopleAPI)
+  return peopleAPI
 }
 
 //Testing the API, runs on refresh
@@ -188,6 +190,33 @@ function classNames(...classes) {
 }
 
 export default function Example() {
+
+  const [usersList, addToList] = useState([])
+  
+  const fetchData = async () => {
+    const response = await fetch('http://127.0.0.1:5000/api/users/list', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    if (!response.ok) {
+      throw new Error('Data coud not be fetched!')
+    } else {
+      return response.json()
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+      .then((res) => {
+        addToList(res)
+      })
+      .catch((e) => {
+        console.log(e.message)
+      })
+  }, [])
+
   return (
     <>
       {/*
