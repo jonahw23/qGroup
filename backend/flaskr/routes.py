@@ -147,7 +147,7 @@ def new_seating():
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
 @cross_origin()
-def make_groups(class_id):
+def make_groups(user_id, class_id):
   db = database.get_db()
   db.execute("""
     INSERT INTO MetaGroup (name)
@@ -163,7 +163,7 @@ def make_groups(class_id):
 
   students.sort(key = lambda a: a["id"])
   
-  groups = student_algorithms.group_students(students, request.json["group_amount"], request.json["group_size"])
+  groups = student_algorithms.group_students(students, group_amount=request.json["group_amount"], group_size=request.json["group_size"])
 
   for i, group in enumerate(groups):
     group_name = "Group " + str(i + 1)

@@ -172,10 +172,27 @@ const getUsers = async () => {
   return peopleAPI
 }
 
+const addMetaGroup = async (class_id, user_id, meta_group_name, group_size) => {
+  const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/meta_group/make_groups", {
+    method: 'POST',
+    body: JSON.stringify({
+      meta_group_name: meta_group_name,
+      group_size: group_size,
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response
+  console.log("Metagroup called")
+}
+
+addMetaGroup(1, 2, "NewMETAGROUP", 5)
+
 //Testing the API, runs on refresh
 let x = 0
 while (x < 3) {
-  addUser("Joe User", "SafePassword")
+  //addUser("Joe User", "SafePassword")
   x++
 }
 
@@ -203,6 +220,7 @@ export default function Example() {
     if (!response.ok) {
       throw new Error('Data coud not be fetched!')
     } else {
+      console.log('Data fetched correctly')
       return response.json()
     }
   }
