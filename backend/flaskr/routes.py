@@ -62,10 +62,8 @@ def add_student(class_id):
         "{request.json["first_name"]}",
         "{request.json["last_name"]}"
       )
-      RETURNING id
   """)
-  row = res1.fetchone()
-  (student_id, ) = row if row else None
+  student_id = db.execute("SELECT id FROM Students ORDER BY id DESC").fetchone()[0]
 
   res = db.execute(f"""
     INSERT INTO ClassroomStudentMap
@@ -84,6 +82,19 @@ def list_students():
   """)
   return [dict(row) for row in res.fetchall()]
 
+@routes.route("/api/user/<user_id>/class/<class_id>/students/remove_student", methods = ["DELETE"])
+@cross_origin()
+def remove_student():
+  db = database.get_db()
+  db.execute("""
+    DELETE ClassroomsStudentMap, StudentGroupMap, Students
+    FROM Students
+    LEFT JOIN ClassroomStudentMap ON ClassroomStudentMap.student_id = Students.id
+    LEFT JOIN StudentGroupMap ON StudentGroupMap.student_id = Students.id
+    WHERE Students.id = (?)
+  """, (request.json["student_id"],))
+  db.commit()
+  
 @routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
 def add_user():
@@ -115,14 +126,13 @@ def list_users():
 @cross_origin()
 def new_seating():
   db = database.get_db()
-  res = db.execute(f"""
+  db.execute(f"""
     INSERT INTO Seating
       VALUES (
         "{request.json["name"]}"
       )
-      RETURNING id
   """)
-  seating_id = res.fetchone()[0]
+  seating_id = db.execute("SELECT id FROM Seating ORDER BY id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO UserSeatingMap
       VALUES ({user_id}, {seating_id})
@@ -134,3 +144,71 @@ def new_seating():
   db.commit()
 
   return "", 201
+<<<<<<< HEAD
+=======
+
+@routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
+@cross_origin()
+def make_groups(class_id):
+  db = database.get_db()
+  db.execute("""
+    INSERT INTO MetaGroup (name)
+      VALUES (?)
+  """, (request.json["meta_group_name"],))
+  meta_group_id = db.execute("SELECT id FROM MetaGroup ORDER BY id DESC").fetchone()[0]
+  db.execute("""
+    INSERT INTO ClassroomMetaGroupMap
+      VALUES (?,?)
+  """, (class_id, meta_group_id))
+  
+  students = get_class_students(class_id)
+
+  students.sort(key = lambda a: a["id"])
+  
+  groups = student_algorithms.group_students(students, request.json["group_amount"], request.json["group_size"])
+
+  for i, group in enumerate(groups):
+    group_name = "Group " + str(i + 1)
+    db.execute("""
+      INSERT INTO StudentGroup (name)
+        VALUES (?)
+    """, (group_name,))
+    group_id = db.execute("SELECT id FROM StudentGroup ORDER BY id DESC").fetchone()[0]
+    for student in group:
+      db.execute("""
+        INSERT INTO StudentGroupMap (student_id, group_id)
+          VALUES (?,?)
+      """, (students[student]["id"], group_id)) #student should be in order of ID
+  db.commit()
+
+@routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
+@cross_origin()
+def delete_meta_group(class_id, meta_group_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT group_id FROM MetaGroupGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  student_group_id_set = res.fetchall()
+  for id in student_group_id_set:
+    db.execute("""
+      DELETE StudentGroupMap, StudentGroup
+        FROM StudentGroup
+        LEFT JOIN StudentGroupMap ON StudentGroupMap.group_id = StudentGroup.id
+        WHERE StudentGroup.id = (?)
+    """, (id,))
+  
+  db.execute("""
+    DELETE FROM MetaGroupGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  db.execute("""
+    DELETE FROM ClassroomMetaGroupMap
+      WHERE meta_group_id = (?)
+  """, (meta_group_id,))
+  db.execute("""
+    DELETE FROM MetaGroup
+      WHERE id = (?)
+  """, (meta_group_id,))
+  db.commit()
+>>>>>>> 603d2d4c7e33a946a09653d7cd569ba02a65ddbc
