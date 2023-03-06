@@ -144,8 +144,6 @@ def new_seating():
   db.commit()
 
   return "", 201
-<<<<<<< HEAD
-=======
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
 @cross_origin()
@@ -211,4 +209,3 @@ def delete_meta_group(class_id, meta_group_id):
       WHERE id = (?)
   """, (meta_group_id,))
   db.commit()
->>>>>>> 603d2d4c7e33a946a09653d7cd569ba02a65ddbc
