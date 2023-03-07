@@ -76,12 +76,27 @@ def groups_of_fixed_size(students,n):
         #groups[group_num].append(students[i]["id"])
     return groups
 
+def groups_of_custom_size(students,max_group_size):
+    groups = []
+    for i in range(max_group_size):
+        groups.append([])
+    group_num = 0
+    for i in range(len(students)):
+        if len(groups[group_num]) < max_group_size[group_num]:
+            pass
+        else:
+            group_num += 1
+        groups[group_num].append(students[i])
+        #groups[group_num].append(students[i]["id"])
+    return groups
+
+
 def groups_of_fixed_amount(students,k):
     size = math.ceil(len(students)/k)
     return groups_of_fixed_size(students,size)
 
 
-def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse=False,weights=False):
+def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse=False,weights=False,group_sizes=False):
     """sorts students into groupd with the corresponding parameters
 
     Args:
@@ -100,10 +115,12 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
         if weights == False:
             s = random_student_order(students)
         else:
-            return weighted_student_groups(students,weights,group_amount=group_amount,group_size=group_size,)
+            return weighted_student_groups(students,weights,group_amount=group_amount,group_size=group_size,group_sizes = group_sizes)
     else:
         s = student_sort(students,key=sort_by,reverse=reverse)
-    if group_size > 0:
+    if group_sizes != False:
+        return groups_of_custom_size(s,group_sizes)
+    elif group_size > 0:
         return groups_of_fixed_size(s,group_size)
     elif group_amount > 0:
         return groups_of_fixed_amount(s,group_amount)
@@ -241,7 +258,7 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
             return True, groups,student_group_map
     return False, groups,student_group_map 
 
-def weighted_student_groups(students,weights,group_amount=0,group_size=0):
+def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_sizes = False):
     """Groups students based on given weights with 1 being should be in the same group and -1 being should not
 
     Args:
@@ -261,7 +278,7 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0):
     n = group_size
     leftover = len(students)%n
     total_groups = math.ceil(len(students)/n)
-    num_small_groups = (n - leftover)%n
+    num_small_groups = (n - leftover)%n    
     groups = []
     max_group_size = []
     for i in range(total_groups):
@@ -270,6 +287,13 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0):
             max_group_size.append(group_size-1)
         else:
             max_group_size.append(group_size)
+            
+    if group_sizes != False:
+        max_group_size = group_sizes
+        groups = []
+        for i in range(len(max_group_size)):
+            groups.append([])
+        
     placed_students = []
     for i in range(len(students)):
         placed_students.append(False)
