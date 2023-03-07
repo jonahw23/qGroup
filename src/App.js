@@ -155,7 +155,7 @@ const addClass = async (user_id, className) => {
     headers: {
       'Content-Type': 'application/json'
     }
-  })
+  }) 
   const peopleAPI = await response
   console.log("Added")
 }
@@ -178,6 +178,7 @@ const addMetaGroup = async (class_id, user_id, meta_group_name, group_size) => {
     body: JSON.stringify({
       meta_group_name: meta_group_name,
       group_size: group_size,
+      group_amount: 0,
     }),
     headers: {
       'Content-Type': 'application/json'
@@ -187,7 +188,23 @@ const addMetaGroup = async (class_id, user_id, meta_group_name, group_size) => {
   console.log("Metagroup called")
 }
 
+const addStudent = async (class_id, user_id, first_name, last_name) => {
+  const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/add_student", {
+    method: 'POST',
+    body: JSON.stringify({
+      first_name: first_name,
+      last_name: last_name,
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response
+  console.log("Student added")
+}
+
 addMetaGroup(1, 2, "NewMETAGROUP", 5)
+addStudent(1, 3, "Bobstudent", "LastNameStudent")
 
 //Testing the API, runs on refresh
 let x = 0

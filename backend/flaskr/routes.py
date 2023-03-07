@@ -53,7 +53,7 @@ def get_class_students(class_id):
 
 @routes.route("/api/users/<user_id>/class/<class_id>/add_student", methods=["POST"])
 @cross_origin()
-def add_student(class_id):
+def add_student(user_id, class_id):
   db = database.get_db()
 
   res1 = db.execute(f"""
@@ -159,7 +159,7 @@ def make_groups(user_id, class_id):
       VALUES (?,?)
   """, (class_id, meta_group_id))
   
-  students = get_class_students(class_id)
+  students = get_class_students(class_id).json
 
   students.sort(key = lambda a: a["id"])
   
@@ -178,6 +178,8 @@ def make_groups(user_id, class_id):
           VALUES (?,?)
       """, (students[student]["id"], group_id)) #student should be in order of ID
   db.commit()
+  
+  return groups
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
 @cross_origin()
