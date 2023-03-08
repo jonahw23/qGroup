@@ -5,6 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import ListBox from './Listbox'
 import ListCont from './Listcont'
 import Header from './header'
+import SeatingEditor from './seating/SeatingEditor.js'
 import * as constants from './sharedData'
 
 const addUser = async (userName, userPw) => {
@@ -32,7 +33,7 @@ const addClass = async (user_id, className) => {
     headers: {
       'Content-Type': 'application/json'
     }
-  }) 
+  })
   const peopleAPI = await response
   console.log("Added")
 }
@@ -101,8 +102,8 @@ export default function Example() {
   const [state, addToState] = useState([])
 
   const startState = async () => {
-    if(state.length <= 0){
-      addToState({"people": getUsers()})
+    if (state.length <= 0) {
+      addToState({ "people": getUsers() })
     }
   }
   startState()
@@ -137,40 +138,38 @@ export default function Example() {
   )
 }
 
-export function display_student(student, styleClass=""){
+export function display_student(student, styleClass = "") {
   //no css made for this yet...
   let style = styleClass
   return (
-    
+
     <div className='student'>
       <div className={style}>
-            {student["last_name"] + " " + student["first_name"]}
+        {student["last_name"] + " " + student["first_name"]}
       </div>
     </div>
   )
 }
 
-export function display_group(groups,n, styleClass="", student_styleClass=""){
-  return(
-    <div className = "group">
-      <div className = {styleClass}>
-          {n}
+export function display_group(groups, n, styleClass = "", student_styleClass = "") {
+  return (
+    <div className="group">
+      <div className={styleClass}>
+        {n}
         {
-          
-          display_students(groups[n],student_styleClass)
+          display_students(groups[n], student_styleClass)
         }
-
       </div>
     </div>
   )
 }
 
-function display_students(group,i, styleClass=""){
-  if (i < group.length){
+function display_students(group, i, styleClass = "") {
+  if (i < group.length) {
     return (
       <div>
         display_student(group[i],styleClass)
-      display_students(group,i+1,styleClass)
+        display_students(group,i+1,styleClass)
       </div>
     )
   }
