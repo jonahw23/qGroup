@@ -6,6 +6,8 @@ import ListBox from './Listbox'
 import ListCont from './Listcont'
 import * as constants from './sharedData'
 
+//Header of main page
+
 export default function Header(){
     return(
         <>

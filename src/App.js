@@ -7,6 +7,8 @@ import ListCont from './Listcont'
 import Header from './header'
 import * as constants from './sharedData'
 
+//Body of main page and API calls
+
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
     method: 'POST',
@@ -98,16 +100,32 @@ console.log("TestPeople", constants.testPeople)
 
 export default function Example() {
 
-  const [state, addToState] = useState([])
+  const [state, addToState] = useState([{}])
 
-  const startState = async () => {
-    if(state.length <= 0){
-      addToState({"people": getUsers()})
-    }
+  console.log(state)
+
+  const startState = (stateUsers) => {
+    addToState({"people": stateUsers})
+    return state
   }
-  startState()
 
-  console.log("Users:", state)
+  useEffect(() => {
+    async function fetchData() {
+      const result = await (await fetch('http://127.0.0.1:5000/api/users/list', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, [])).json()
+    if(result){
+      addToState({"people": result})
+    }
+    else{
+      console.log("Didn't add")
+    }
+    }
+    fetchData()
+  }, [])
 
   return (
     <>
@@ -126,7 +144,8 @@ export default function Example() {
             {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-                <div>{new ListCont(85, constants.testPeople)}</div>
+                <div>{new ListCont(85, state.people)}</div>
+                <>{console.log("Here the state is", state.people)}</>
               </div>
             </div>
             {/* /End replace */}
