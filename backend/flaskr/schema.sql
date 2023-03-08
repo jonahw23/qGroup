@@ -70,8 +70,7 @@ CREATE TABLE IF NOT EXISTS FurnitureSeatingMap
 
 CREATE TABLE IF NOT EXISTS tableGroup
   (id INTEGER PRIMARY KEY,
-  name STRING
-  )
+  name STRING);
 
 CREATE TABLE IF NOT EXISTS FurnitureTableGroupMap
   (furniture_id INTEGER,

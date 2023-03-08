@@ -201,6 +201,10 @@ def make_groups(user_id, class_id):
         VALUES (?)
     """, (group_name,))
     group_id = db.execute("SELECT id FROM StudentGroup ORDER BY id DESC").fetchone()[0]
+    db.execute("""
+      INSERT INTO MetaGroupGroupMap
+        VALUES (?,?)
+    """, (meta_group_id, group_id))
     for student in group:
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
