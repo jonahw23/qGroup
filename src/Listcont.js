@@ -10,10 +10,10 @@ function classNames(...classes) {
 
 var built = false
 
-function buildPeople(arr){
+function buildPeople(arr, oneName){
   if(!built){
   for(let i = 0; i < arr.length; i++){
-    people.push({
+    people.push(oneName ? {name: arr[i].name} : {
       first_name: arr[i].first_name,
       last_name: arr[i].last_name
     })
@@ -22,10 +22,11 @@ function buildPeople(arr){
   }
 }
 
-export default function ListCont(height, peopleNew) {
+export default function ListCont(height, peopleNew, oneName) {
+//Visual height, array of people, true/false of whether there's "name" or "first_name, last_name"
 
 if(peopleNew){
-  buildPeople(peopleNew)
+  buildPeople(peopleNew, oneName)
 }
 
 const [selected, setSelected] = useState(people[0])
@@ -58,7 +59,7 @@ return (
                           selected ? 'font-medium' : 'font-normal'
                         }`}
                       >
-                        {person.first_name + " " + person.last_name}
+                        {oneName ? person.name : person.first_name + " " + person.last_name}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
