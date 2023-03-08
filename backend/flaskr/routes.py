@@ -145,6 +145,35 @@ def new_seating():
 
   return "", 201
 
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/new_furniture", methods = ["POST"])
+@cross_origin()
+def new_furniture(seating_id):
+  db = database.get_db()
+  db.execute("""
+    INSERT INTO Furniture (type, x, y, theta)
+      VALUES (?, ?, ?, ?) 
+  """, (request.json["furniture_type"], request.json["x"], request.json["y"], request.json["theta"]))
+  #Should position be hard coded in or set by the user?
+  furn_id = db.execute("SELECT id FROM Furniture ORDER BY id DESC").fetchone()[0]
+  db.execute("""
+    INSERT INTO FurnitureSeatingMap
+      VALUES (?, ?)
+  """, (furn_id, seating_id))
+  db.commit()
+  return "", 201
+
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/<furniture_id>/move_furn", methods = ["PATCH"])
+@cross_origin()
+def move_furn(furniture_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE Furniture
+    SET x = (?), y = (?), theta = (?)
+      WHERE id = (?)
+  """, (request.json["new_x"], request.json["new_y"], request.json["new_theta"], furniture_id))
+  db.commit()
+  return "", 200
+
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
 @cross_origin()
 def make_groups(user_id, class_id):
