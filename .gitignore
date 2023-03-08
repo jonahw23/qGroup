@@ -24,3 +24,4 @@ yarn-error.log*
 
 __pycache__/
 *.sqlite
+*.code-workspace
