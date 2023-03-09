@@ -7,6 +7,11 @@ import ListCont from './Listcont'
 import Header from './header'
 import SeatingEditor from './seating/SeatingEditor.js'
 import * as constants from './sharedData'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom"
 
 //Body of main page and API calls
 
@@ -106,54 +111,54 @@ export default function Example() {
   console.log(state)
 
   const startState = (stateUsers) => {
-    addToState({"people": stateUsers})
+    addToState({ "people": stateUsers })
     return state
   }
 
   useEffect(() => {
     async function fetchData() {
       const result = await (await fetch('http://127.0.0.1:5000/api/users/list', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (result) {
+        addToState({ "people": result })
       }
-    }, [])).json()
-    if(result){
-      addToState({"people": result})
-    }
-    else{
-      console.log("Didn't add")
-    }
+      else {
+        console.log("Didn't add")
+      }
     }
     fetchData()
   }, [])
 
   return (
-    <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
+    <Router>
       <div className="min-h-full">
+
         {new Header()}
+
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
-            {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
+
                 <div>{new ListCont(85, state.people, true)}</div>
                 <>{console.log("Here the state is", state.people)}</>
+
+                <Routes>
+                  <Route path="/" element={""} />
+                  <Route path="/seating" element={<SeatingEditor />} />
+                </Routes>
+
               </div>
             </div>
-            {/* /End replace */}
           </div>
         </main>
+
       </div>
-    </>
+    </Router>
   )
 }
 
