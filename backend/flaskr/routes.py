@@ -124,10 +124,10 @@ def list_users():
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/new_seating", methods = ["POST"])
 @cross_origin()
-def new_seating():
+def new_seating(user_id, class_id):
   db = database.get_db()
   db.execute(f"""
-    INSERT INTO Seating
+    INSERT INTO Seating (name)
       VALUES (
         "{request.json["name"]}"
       )
@@ -135,12 +135,12 @@ def new_seating():
   seating_id = db.execute("SELECT id FROM Seating ORDER BY id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO UserSeatingMap
-      VALUES ({user_id}, {seating_id})
-    """)
+      VALUES (?,?)
+    """, (user_id, seating_id))
   db.execute("""
     INSERT INTO ClassroomSeatingMap
-      VALUES ({class_id}, {seating_id})
-    """)
+      VALUES (?,?)
+    """, (class_id, seating_id))
   db.commit()
 
   return "", 201
@@ -162,7 +162,7 @@ def new_furniture(seating_id):
   db.commit()
   return "", 201
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/<furniture_id>/move_furn", methods = ["PATCH"])
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>//furniture/<furniture_id>/move_furn", methods = ["PATCH"])
 @cross_origin()
 def move_furn(furniture_id):
   db = database.get_db()
@@ -173,6 +173,33 @@ def move_furn(furniture_id):
   """, (request.json["new_x"], request.json["new_y"], request.json["new_theta"], furniture_id))
   db.commit()
   return "", 200
+
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
+@cross_origin()
+def new_tableGroup(seating_id):
+  db = database.get_db()
+  db.execute("""
+    INSERT INTO tableGroup (name)
+      VALUES (?)
+  """, (request.json["table_group_name"],))
+  tableGroup_id = db.execute("SELECT id FROM tableGroup ORDER BY id DESC").fetchone()[0]
+  db.execute("""
+    INSERT INTO tableGroupSeatingMap
+      VALUES (?,?)
+  """, (tableGroup_id, seating_id))
+  db.commit()
+  return "", 201
+
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/<table_group_id>/map_furn", methods = ["POST"])
+@cross_origin()
+def map_furn_group(table_group_id):
+  db = database.get_db()
+  db.execute("""
+    INSERT INTO FurnitureTableGroupMap
+      VALUES (?,?)
+  """, (request.json["furn_id"], request.json["table_group_id"]))
+  db.commit()
+  return "", 201
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
 @cross_origin()
