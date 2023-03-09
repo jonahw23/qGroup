@@ -10,6 +10,9 @@ import * as constants from './sharedData'
 
 //Body of main page and API calls
 
+const pageUserId = 3
+const pageClassId = 1
+
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
     method: 'POST',
@@ -49,6 +52,18 @@ const getUsers = async () => {
   })
   const peopleAPI = await response.json()
   console.log("PeopleAPI", peopleAPI)
+  return peopleAPI
+}
+
+const getStudents = async (user_id, class_id) => {
+  const response = await fetch('http://127.0.0.1:5000/api/users/' + user_id + '/class/' + class_id + '/students', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response.json()
+  console.log("students", peopleAPI)
   return peopleAPI
 }
 
@@ -99,34 +114,39 @@ const otherPeople = getUsers()
 console.log("OtherPeople", otherPeople)
 console.log("TestPeople", constants.testPeople)
 
+getStudents(3, 1)
+
 export default function Example() {
 
-  const [state, addToState] = useState([{}])
+  const [state, addToState] = useState([])
 
-  console.log(state)
-
-  const startState = (stateUsers) => {
-    addToState({"people": stateUsers})
-    return state
-  }
+  console.log("state", state)
 
   useEffect(() => {
     async function fetchData() {
-      const result = await (await fetch('http://127.0.0.1:5000/api/users/list', {
+      const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     }, [])).json()
-    if(result){
-      addToState({"people": result})
+    const students = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    if(students && users){
+      addToState({"students": students, "users": users})
     }
     else{
-      console.log("Didn't add")
+      console.log("Didn't add students or users")
     }
     }
     fetchData()
   }, [])
+
+  console.log("state", state)
 
   return (
     <>
@@ -145,8 +165,8 @@ export default function Example() {
             {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-                <div>{new ListCont(85, state.people, true)}</div>
-                <>{console.log("Here the state is", state.people)}</>
+                <div>{new ListCont(85, state.students, false)}</div>
+                <>{/* /Debugging line */}</>
               </div>
             </div>
             {/* /End replace */}

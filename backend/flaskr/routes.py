@@ -41,7 +41,7 @@ def list_classes():
 
 @routes.route("/api/users/<user_id>/class/<class_id>/students", methods=["GET"])
 @cross_origin()
-def get_class_students(class_id):
+def get_class_students(user_id, class_id):
   db = database.get_db()
   res = db.execute(f"""
     SELECT s.* FROM Classrooms c
@@ -188,7 +188,7 @@ def make_groups(user_id, class_id):
       VALUES (?,?)
   """, (class_id, meta_group_id))
   
-  students = get_class_students(class_id).json
+  students = get_class_students(user_id, class_id).json
 
   students.sort(key = lambda a: a["id"])
   
