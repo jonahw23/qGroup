@@ -164,8 +164,8 @@ export default function Example() {
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
-                <div>{new ListCont(85, state.people, true)}</div>
-                <>{console.log("Here the state is", state.people)}</>
+                <div>{new ListCont(85, state.students, false)}</div>
+                <>{}</>
 
                 <Routes>
                   <Route path="/" element={""} />
