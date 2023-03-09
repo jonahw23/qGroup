@@ -7,6 +7,11 @@ import ListCont from './Listcont'
 import Header from './header'
 import SeatingEditor from './seating/SeatingEditor.js'
 import * as constants from './sharedData'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom"
 
 //Body of main page and API calls
 
@@ -149,31 +154,31 @@ export default function Example() {
   console.log("state", state)
 
   return (
-    <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
+    <Router>
       <div className="min-h-full">
+
         {new Header()}
+
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
-            {/* /Add content */}
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
-                <div>{new ListCont(85, state.students, false)}</div>
-                <>{/* /Debugging line */}</>
+
+                <div>{new ListCont(85, state.people, true)}</div>
+                <>{console.log("Here the state is", state.people)}</>
+
+                <Routes>
+                  <Route path="/" element={""} />
+                  <Route path="/seating" element={<SeatingEditor />} />
+                </Routes>
+
               </div>
             </div>
-            {/* /End replace */}
           </div>
         </main>
+
       </div>
-    </>
+    </Router>
   )
 }
 

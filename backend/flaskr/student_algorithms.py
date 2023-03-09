@@ -2,6 +2,7 @@ import numpy as np
 import math
 import random
 from numpy import loadtxt
+import csv
 
 
 def format_student_data(file_name):
@@ -17,14 +18,27 @@ def format_student_data(file_name):
     file = open(file_name, 'rt')
     #last,first,...
 
-    data = loadtxt(file,dtype=np.str_, delimiter=',')
+    c = csv.reader(file,delimiter = ",",quotechar="\"")
+    data = []
+    index = 0
+    for row in c:
+        if index != 0:
+            data.append(row)
+        index += 1
+
+    #data = loadtxt(file,dtype=np.str_, delimiter=',')
 
     students = []
-    for i in range(1,len(data)):
+    for i in range(len(data)):
         students.append({"id":i})
-        
-        for j in range(len(data[i])):
-            students[data[0][j]] = data[i][j]
+
+        name = data[i][0].split(", ")
+        fname = name[1].split(" ")
+
+        students[i]["first_name"] = fname[0]
+        students[i]["last_name"] = name[0]
+        for j in range(1,len(data[i])):
+            students[i][data[0][j]] = data[i][j]
 
     return students
 
@@ -106,6 +120,7 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
         sort_by (str): If students should be sorted, what key will be used
         reverse (bool): A boolean representing if the sorted array should be reversed or not
         weights (array): wieghts matrix for students
+        group_sizes (int array): Optional parameter that gives custom group sizes instead of uniform groups
     
     Returns:
         False if failed or the grouped students
