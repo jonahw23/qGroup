@@ -271,3 +271,29 @@ def delete_meta_group(class_id, meta_group_id):
       WHERE id = (?)
   """, (meta_group_id,))
   db.commit()
+
+
+@routes.route("/api/users/<user_id>/class/<class_id>/upload_students", methods = ["POST"])
+@cross_origin()
+def upload_students(class_id):
+    db = database.get_db()
+    csv = request.files["students"]
+    students = student_algorithms.format_student_data(csv)
+    for i in range(len(students)):
+      student = students[i]
+      res1 = db.execute(f"""
+    INSERT INTO Students (first_name, last_name)
+      VALUES (
+        "{student["first_name"]}",
+        "{student["last_name"]}"
+      )
+      """)
+      student_id = db.execute("SELECT id FROM Students ORDER BY id DESC").fetchone()[0]
+
+      res = db.execute(f"""
+      INSERT INTO ClassroomStudentMap
+      VALUES ({class_id}, {student_id})
+      """)
+
+    db.commit()
+    return res.fetchall()

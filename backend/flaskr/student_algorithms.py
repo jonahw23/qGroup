@@ -5,7 +5,7 @@ from numpy import loadtxt
 import csv
 
 
-def format_student_data(file_name):
+def format_student_data(file):
     """converts a csv from synergy into the data used in the grouping algorithms
 
     Args:
@@ -15,7 +15,7 @@ def format_student_data(file_name):
         students (array): Dictionaries of each student's information based on the csv file
     
     """
-    file = open(file_name, 'rt')
+    #file = open(file_name, 'rt')
     #last,first,...
 
     c = csv.reader(file,delimiter = ",",quotechar="\"")
