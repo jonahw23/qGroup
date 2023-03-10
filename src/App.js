@@ -1,11 +1,7 @@
-import { Fragment } from 'react'
 import React, { useState, useEffect } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import ListBox from './Listbox'
 import ListCont from './Listcont'
-import Header from './header'
-import SeatingEditor from './seating/SeatingEditor.js'
+import Header from './Header'
+import SeatingEditor from './seating/SeatingEditor'
 import * as constants from './sharedData'
 import {
   BrowserRouter as Router,
@@ -130,23 +126,23 @@ export default function Example() {
   useEffect(() => {
     async function fetchData() {
       const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      const students = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
+      if (students && users) {
+        addToState({ "students": students, "users": users })
       }
-    }, [])).json()
-    const students = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+      else {
+        console.log("Didn't add students or users")
       }
-    })).json()
-    if(students && users){
-      addToState({"students": students, "users": users})
-    }
-    else{
-      console.log("Didn't add students or users")
-    }
     }
     fetchData()
   }, [])
@@ -157,7 +153,7 @@ export default function Example() {
     <Router>
       <div className="min-h-full">
 
-        {new Header()}
+        <Header />
 
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
