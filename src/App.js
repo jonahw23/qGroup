@@ -12,11 +12,15 @@ import {
   Routes,
   Route,
 } from "react-router-dom"
+import ButtonBox from './buttonBox'
 
 //Body of main page and API calls
 
-const pageUserId = 3
-const pageClassId = 1
+
+//Constants for user and class 
+//Current user 2 class 10 (Loe's Empty Class)
+const pageUserId = 2
+const pageClassId = 10
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -88,7 +92,7 @@ const addMetaGroup = async (class_id, user_id, meta_group_name, group_size) => {
   console.log("Metagroup called")
 }
 
-const addStudent = async (class_id, user_id, first_name, last_name) => {
+const addStudent = async (user_id, class_id, first_name, last_name) => {
   const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/add_student", {
     method: 'POST',
     body: JSON.stringify({
@@ -103,17 +107,13 @@ const addStudent = async (class_id, user_id, first_name, last_name) => {
   console.log("Student added")
 }
 
-addMetaGroup(1, 2, "NewMETAGROUP", 5)
-addStudent(1, 3, "Bobstudent", "LastNameStudent")
+//addMetaGroup(1, 2, "NewMETAGROUP", 5)
 
 //Testing the API, runs on refresh
-let x = 0
-while (x < 3) {
-  //addUser("Joe User", "SafePassword")
-  x++
-}
 
-addClass(5, "AP Econ")
+//addUser("Joe User", "SafePassword")
+
+//addClass(user_id, class_name)
 
 const otherPeople = getUsers()
 console.log("OtherPeople", otherPeople)
@@ -164,14 +164,16 @@ export default function Example() {
             <div className="px-4 py-1 sm:px-0">
               <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
-                <div>{new ListCont(85, state.students, false)}</div>
-                <>{}</>
+                <div>
+                  <div className="mx-auto">{new ListCont(85, state.students, false)}</div>
+                  <div className="mx-72 py-4">{new ButtonBox(85, state.students, false)}</div>
+                </div>
+                <></>
 
                 <Routes>
                   <Route path="/" element={""} />
                   <Route path="/seating" element={<SeatingEditor />} />
                 </Routes>
-
               </div>
             </div>
           </div>
