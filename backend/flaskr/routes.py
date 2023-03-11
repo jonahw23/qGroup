@@ -174,6 +174,18 @@ def move_furn(furniture_id):
   db.commit()
   return "", 200
 
+@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/furniture/get_furniture_loc", methods = ["GET"])
+@cross_origin()
+def furniture_locations(seating_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT Furniture.* 
+    FROM Seating s
+      JOIN FurnitureSeatingMap m ON m.furniture_id = s.id
+      WHERE m.seating_id = (?)
+  """, (seating_id,))
+  return [dict(row) for row in res.fetchall()]
+  
 @routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
 @cross_origin()
 def new_tableGroup(seating_id):
