@@ -180,8 +180,8 @@ def furniture_locations(seating_id):
   db = database.get_db()
   res = db.execute("""
     SELECT Furniture.* 
-    FROM Seating s
-      JOIN FurnitureSeatingMap m ON m.furniture_id = s.id
+    FROM Furniture f
+      JOIN FurnitureSeatingMap m ON m.furniture_id = f.id
       WHERE m.seating_id = (?)
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
