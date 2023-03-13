@@ -44,7 +44,9 @@ const rowStrings = [
   'px-3 py-42 rounded-md text-sm font-medium',
 ]
 
-const rowChange = () => {
+for (let i = 0; i < people.length; i += 1) {
+  people[i].sizeStr = rowStrings[currentRow]
+  console.log(people[i].sizeStr)
   rowIndex += 1
   {
     if(rowIndex >= rowSize){
@@ -53,6 +55,7 @@ const rowChange = () => {
     }
   }
 }
+
 
 //hardcoded for now ^
 return (
@@ -68,13 +71,11 @@ return (
                             person.current
                               ? 'bg-gray-800 text-white'
                               : 'text-gray-800 hover:bg-gray-700 hover:text-white',
-                            rowStrings[currentRow]
+                            person.sizeStr
                           )}
                           aria-current={person.current ? 'page' : undefined}
                         >
                           {person.first_name + " " + person.last_name}
-                          {rowChange()}
-                          {console.log(currentRow)}
                         </div>
                         </div>
                       ))}
