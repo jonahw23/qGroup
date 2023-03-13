@@ -33,12 +33,34 @@ if(peopleNew){
 const [selected, setSelected] = useState(people[0])
 
 var totalHeight = height - 1.5
+const rowSize = 8
+var rowIndex = 0
+var currentRow = 0
+const rowStrings = [
+  'px-3 py-2 rounded-md text-sm font-medium',
+  'px-3 py-12 rounded-md text-sm font-medium',
+  'px-3 py-22 rounded-md text-sm font-medium',
+  'px-3 py-32 rounded-md text-sm font-medium',
+  'px-3 py-42 rounded-md text-sm font-medium',
+]
+
+const rowChange = () => {
+  rowIndex += 1
+  {
+    if(rowIndex >= rowSize){
+      currentRow += 1
+      rowIndex = 0
+    }
+  }
+}
+
 //hardcoded for now ^
 return (
     <div className="top-16 w-72">
       <div className="hidden md:block">
                     <div className="ml-7 flex items-baseline space-x-10">
                       {people.map((person, personIdx) => (
+                        <div>
                         <div
                           key={person.name}
                           to={person.href}
@@ -46,11 +68,14 @@ return (
                             person.current
                               ? 'bg-gray-800 text-white'
                               : 'text-gray-800 hover:bg-gray-700 hover:text-white',
-                            'px-3 py-2 rounded-md text-sm font-medium'
+                            rowStrings[currentRow]
                           )}
                           aria-current={person.current ? 'page' : undefined}
                         >
                           {person.first_name + " " + person.last_name}
+                          {rowChange()}
+                          {console.log(currentRow)}
+                        </div>
                         </div>
                       ))}
                     </div>
