@@ -4,7 +4,8 @@ import Draggable from 'react-draggable';
 
 export default class SeatingEditor extends React.Component {
   state = {
-    furniture: []
+    furniture: [],
+    rotate: 0,
   }
 
   componentDidMount = () => {
@@ -31,14 +32,21 @@ export default class SeatingEditor extends React.Component {
   onDrag = (id, element) => {
     
     const index = this.state.furniture.findIndex(x => x.id === id);
-    
+    const rotate = this.state.rotate
     let furniture = [...this.state.furniture];
     furniture[index].theta = (furniture[index].theta?furniture[index].theta:0) + 1
 
     this.setState({ furniture: furniture});
+    
 
 
-    this.mainGrid.allowDragging = 0
+  }
+  onMouseDown = (id, element) => {
+    
+
+    this.setState({ rotate: 1});
+
+    
 
 
   }
@@ -47,23 +55,28 @@ export default class SeatingEditor extends React.Component {
 
     const width = this.getWidth();
     const index = this.state.furniture.findIndex(x => x.id === id);
+    const rotate = this.state.rotate
     
     let furniture = [...this.state.furniture];
-    //if (this.mainGrid.allowDragging){
+    if (!rotate){
     furniture[index].x = element.x / width;
     furniture[index].y = element.y / width;
-    //}
+    }else{
+      this.setState({ rotate: 0 });
+    }
 
     // post new coords... maybe debounce too?
 
     this.setState({ furniture: furniture });
   }
 
+
   render = () => {
     const furnitureElements = this.state.furniture.map(f => {
       const width = this.getWidth();
       return (
         <Draggable
+        //disabled = {this.state.rotate}
           key={f.id}
           position={{
             x: f.x * width,
@@ -72,7 +85,8 @@ export default class SeatingEditor extends React.Component {
           data={this.state.data}
           bounds="parent"
           onStop={(_event, element) => this.stopDrag(f.id, element)}
-          onDrag = {(_event,element) => this.onDrag(f.id,element)}>
+          onDrag = {(_event,element) => this.onDrag(f.id,element)}
+          onMouseDown = {(_event,element) => this.onMouseDown(f.id,element)}>
           <div className = "clear-seat-element">
             <div className = "seat-element" style = {{ rotate : (f.theta?f.theta:0)+"deg"}}>
             x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
