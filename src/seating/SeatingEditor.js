@@ -34,22 +34,24 @@ export default class SeatingEditor extends React.Component {
     const index = this.state.furniture.findIndex(x => x.id === id);
     const rotate = this.state.rotate
     let furniture = [...this.state.furniture];
-    furniture[index].theta = (furniture[index].theta?furniture[index].theta:0) + 1
 
     this.setState({ furniture: furniture});
+
+    if (rotate){
+      furniture[index].theta = (furniture[index].theta?furniture[index].theta:0) + 1
+
+      throw new Error('No Drag');
+
+    }else{
+
+    }
+
+
     
 
 
   }
-  onMouseDown = (id, element) => {
-    
 
-    this.setState({ rotate: 1});
-
-    
-
-
-  }
 
   stopDrag = (id, element) => {
 
@@ -62,12 +64,16 @@ export default class SeatingEditor extends React.Component {
     furniture[index].x = element.x / width;
     furniture[index].y = element.y / width;
     }else{
-      this.setState({ rotate: 0 });
+      //this.setState({ rotate: 0 });
     }
 
     // post new coords... maybe debounce too?
 
     this.setState({ furniture: furniture });
+  }
+
+  onKeyPressed = (e) => {
+    this.setState({ rotate: !this.state.rotate });
   }
 
 
@@ -76,7 +82,7 @@ export default class SeatingEditor extends React.Component {
       const width = this.getWidth();
       return (
         <Draggable
-        //disabled = {this.state.rotate}
+          //disabled = {this.state.rotate}
           key={f.id}
           position={{
             x: f.x * width,
@@ -84,11 +90,12 @@ export default class SeatingEditor extends React.Component {
           }}
           data={this.state.data}
           bounds="parent"
+          onClick = {() => console.log("click")}
           onStop={(_event, element) => this.stopDrag(f.id, element)}
           onDrag = {(_event,element) => this.onDrag(f.id,element)}
-          onMouseDown = {(_event,element) => this.onMouseDown(f.id,element)}>
-          <div className = "clear-seat-element">
-            <div className = "seat-element" style = {{ rotate : (f.theta?f.theta:0)+"deg"}}>
+          >
+          <div className = "clear-seat-element" >
+            <div className = "seat-element" style = {{ rotate : (f.theta?f.theta:0)+"deg"}}  onKeyDown={this.onKeyPressed}    tabIndex={0}>
             x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
             </div>
           </div>

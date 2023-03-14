@@ -11,6 +11,7 @@
   padding: 5px;
   border-radius: 5px;
   position: absolute;
+    outline: none;
 }
 
 .clear-seat-element {
