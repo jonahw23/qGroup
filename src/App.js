@@ -158,18 +158,17 @@ export default function Example() {
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
             <div className="px-4 py-1 sm:px-0">
-              <div className="my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
+              <div className="flex my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
-                <div>
-                  <div className="mx-auto">{new ListCont(85, state.students, false)}</div>
-                  <div className="mx-72 py-4">{new ButtonBox(85, state.students, false)}</div>
+                <div className="w-18">{new ListCont(85, state.students, false)}</div>
+
+                <div className="w-full py-4 h-full">
+                  <Routes>
+                    <Route path="/" element={new ButtonBox(85, state.students, false)} />
+                    <Route path="/seating" element={<SeatingEditor />} />
+                  </Routes>
                 </div>
-                <></>
 
-                <Routes>
-                  <Route path="/" element={""} />
-                  <Route path="/seating" element={<SeatingEditor />} />
-                </Routes>
               </div>
             </div>
           </div>
