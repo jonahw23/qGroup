@@ -139,7 +139,7 @@ def new_seating(user_id, class_id):
 
   return "", 201
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/new_furniture", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_furniture", methods = ["POST"])
 @cross_origin()
 def new_furniture(seating_id):
   db = database.get_db()
@@ -152,7 +152,7 @@ def new_furniture(seating_id):
   db.commit()
   return "", 201
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>//furniture/<furniture_id>/move_furn", methods = ["PATCH"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>//furniture/<furniture_id>/move_furn", methods = ["PATCH"])
 @cross_origin()
 def move_furn(furniture_id):
   db = database.get_db()
@@ -164,7 +164,7 @@ def move_furn(furniture_id):
   db.commit()
   return "", 200
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/furniture/get_furniture_loc", methods = ["GET"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/get_furniture_loc", methods = ["GET"])
 @cross_origin()
 def furniture_locations(seating_id):
   db = database.get_db()
@@ -174,7 +174,7 @@ def furniture_locations(seating_id):
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
   
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
 @cross_origin()
 def new_tableGroup(seating_id):
   db = database.get_db()
@@ -190,7 +190,7 @@ def new_tableGroup(seating_id):
   db.commit()
   return "", 201
 
-@routes.route("/api/user/<user_id>/class/<class_id>/seating/<seating_id>/<table_group_id>/map_furn", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/<table_group_id>/map_furn", methods = ["POST"])
 @cross_origin()
 def map_furn_group(table_group_id):
   db = database.get_db()
@@ -198,6 +198,29 @@ def map_furn_group(table_group_id):
     INSERT INTO FurnitureTableGroupMap
       VALUES (?,?)
   """, (request.json["furn_id"], request.json["table_group_id"]))
+  db.commit()
+  return "", 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/<seating_id>", methods = ["POST"])
+@cross_origin()
+def map_stud_furn(user_id, class_id, seating_id):
+  db = database.get_db()
+
+  students = get_class_students(user_id, class_id).json
+
+  res = db.execute("""
+    SELECT furn_id FROM Furniture
+      WHERE seating_id = (?) AND type = (?)
+  """, (seating_id, "desk"))
+  seats = res.fetchall()
+
+  for i,student in enumerate(students): 
+    #Assumes the number of students is greater than or equal to the number of seats
+    db.execute("""
+      INSERT INTO StudentFurnMap 
+        VALUES (?, ?)
+    """, (students[student]["id"], seats[i])) 
+
   db.commit()
   return "", 201
 

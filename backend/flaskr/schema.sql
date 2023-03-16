@@ -73,6 +73,10 @@ CREATE TABLE IF NOT EXISTS FurnitureSeatingMap
   (furniture_id INTEGER,
    seating_id INTEGER);
 
+CREATE TABLE IF NOT EXISTS StudentFurnMap
+  (student_id INTEGER,
+  furn_id INTEGER);
+
 CREATE TABLE IF NOT EXISTS tableGroup
   (table_id INTEGER PRIMARY KEY,
   name STRING);
