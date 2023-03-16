@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS StudentStudentMap
 
 CREATE TABLE IF NOT EXISTS Seating
   (seating_id INTEGER PRIMARY KEY,
-   name STRING
-   class_id INTEGER
+   name STRING,
+   class_id INTEGER,
    FOREIGN KEY(class_id) REFERENCES Classrooms(class_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS UserSeatingMap
@@ -65,13 +65,17 @@ CREATE TABLE IF NOT EXISTS Furniture
    type STRING,
    x FLOAT,
    y FLOAT,
-   theta FLOAT
+   theta FLOAT,
    seating_id INTEGER,
    FOREIGN KEY(seating_id) REFERENCES Seating(seating_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS FurnitureSeatingMap
   (furniture_id INTEGER,
    seating_id INTEGER);
+
+CREATE TABLE IF NOT EXISTS StudentFurnMap
+  (student_id INTEGER,
+  furn_id INTEGER);
 
 CREATE TABLE IF NOT EXISTS tableGroup
   (table_id INTEGER PRIMARY KEY,
