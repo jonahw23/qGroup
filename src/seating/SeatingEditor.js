@@ -129,6 +129,7 @@ export default class SeatingEditor extends React.Component {
 
     return (
       <div className="seating-container" ref={e => { this.divElement = e }}>
+        <div> {this.state.rotate?"Rotate Mode":"Movement Mode"}</div>
         {furnitureElements}
       </div>
     );
