@@ -126,21 +126,15 @@ def list_users():
 @cross_origin()
 def new_seating(user_id, class_id):
   db = database.get_db()
-  db.execute(f"""
-    INSERT INTO Seating (name)
-      VALUES (
-        "{request.json["name"]}"
-      )
-  """)
+  db.execute("""
+    INSERT INTO Seating (name, class_id)
+      VALUES (?, ?)
+  """, (request.json["name"], class_id))
   seating_id = db.execute("SELECT id FROM Seating ORDER BY id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO UserSeatingMap
       VALUES (?,?)
     """, (user_id, seating_id))
-  db.execute("""
-    INSERT INTO ClassroomSeatingMap
-      VALUES (?,?)
-    """, (class_id, seating_id))
   db.commit()
 
   return "", 201
@@ -150,15 +144,11 @@ def new_seating(user_id, class_id):
 def new_furniture(seating_id):
   db = database.get_db()
   db.execute("""
-    INSERT INTO Furniture (type, x, y, theta)
-      VALUES (?, ?, ?, ?) 
-  """, (request.json["furniture_type"], request.json["x"], request.json["y"], request.json["theta"]))
+    INSERT INTO Furniture (type, x, y, theta, seating_id)
+      VALUES (?, ?, ?, ?, ?) 
+  """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], seating_id))
   #Should position be hard coded in or set by the user?
   furn_id = db.execute("SELECT id FROM Furniture ORDER BY id DESC").fetchone()[0]
-  db.execute("""
-    INSERT INTO FurnitureSeatingMap
-      VALUES (?, ?)
-  """, (furn_id, seating_id))
   db.commit()
   return "", 201
 
@@ -179,10 +169,8 @@ def move_furn(furniture_id):
 def furniture_locations(seating_id):
   db = database.get_db()
   res = db.execute("""
-    SELECT Furniture.* 
-    FROM Furniture f
-      JOIN FurnitureSeatingMap m ON m.furniture_id = f.id
-      WHERE m.seating_id = (?)
+    SELECT FROM Furniture
+      WHERE seating_id = (?)
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
   

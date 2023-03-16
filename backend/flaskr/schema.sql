@@ -1,5 +1,11 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS Users
+  (user_id INTEGER PRIMARY KEY,
+   name STRING,
+   password STRING);
+
 CREATE TABLE IF NOT EXISTS Classrooms
-  (id INTEGER PRIMARY KEY,
+  (class_id INTEGER PRIMARY KEY,
    name STRING);
   
 CREATE TABLE IF NOT EXISTS Students
@@ -11,17 +17,12 @@ CREATE TABLE IF NOT EXISTS ClassroomStudentMap
   (classroom_id INTEGER,
    student_id INTEGER);
 
-CREATE TABLE IF NOT EXISTS Users
-  (id INTEGER PRIMARY KEY,
-   name STRING,
-   password STRING);
-
 CREATE TABLE IF NOT EXISTS UserClassroomMap
   (user_id INTEGER,
    classroom_id INTEGER);
 
 CREATE TABLE IF NOT EXISTS MetaGroup
-  (id INTEGER PRIMARY KEY,
+  (meta_group_id INTEGER PRIMARY KEY,
    name STRING);
 
 CREATE TABLE IF NOT EXISTS StudentGroup
@@ -46,8 +47,10 @@ CREATE TABLE IF NOT EXISTS StudentStudentMap
    weight INTEGER);
 
 CREATE TABLE IF NOT EXISTS Seating
-  (id INTEGER PRIMARY KEY,
-   name STRING);
+  (seating_id INTEGER PRIMARY KEY,
+   name STRING
+   class_id INTEGER
+   FOREIGN KEY(class_id) REFERENCES Classrooms(class_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS UserSeatingMap
   (user_id INTEGER,
@@ -58,18 +61,20 @@ CREATE TABLE IF NOT EXISTS ClassroomSeatingMap
    seating_id INTEGER);
 
 CREATE TABLE IF NOT EXISTS Furniture
-  (id INTEGER PRIMARY KEY,
+  (furn_id INTEGER PRIMARY KEY,
    type STRING,
    x FLOAT,
    y FLOAT,
-   theta FLOAT);
+   theta FLOAT
+   seating_id INTEGER,
+   FOREIGN KEY(seating_id) REFERENCES Seating(seating_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS FurnitureSeatingMap
   (furniture_id INTEGER,
    seating_id INTEGER);
 
 CREATE TABLE IF NOT EXISTS tableGroup
-  (id INTEGER PRIMARY KEY,
+  (table_id INTEGER PRIMARY KEY,
   name STRING);
 
 CREATE TABLE IF NOT EXISTS FurnitureTableGroupMap

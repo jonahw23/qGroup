@@ -56,12 +56,9 @@ for (let i = 0; i < people.length; i += 1) {
   }
 }
 
-
-//hardcoded for now ^
 return (
-    <div className="top-16 w-72">
-      <div className="hidden md:block">
-                    <div className="ml-7 flex items-baseline space-x-10">
+    <div className="top-16 w-fill">
+                    <div className="ml-7 flex flex-wrap items-stretch space-x-0">
                       {people.map((person, personIdx) => (
                         <div>
                         <div
@@ -71,16 +68,16 @@ return (
                             person.current
                               ? 'bg-gray-800 text-white'
                               : 'text-gray-800 hover:bg-gray-700 hover:text-white',
-                            person.sizeStr
+                              'w-60 px-2 py-2 rounded-md text-sm font-medium'
                           )}
                           aria-current={person.current ? 'page' : undefined}
                         >
                           {person.first_name + " " + person.last_name}
+
                         </div>
                         </div>
                       ))}
                     </div>
-                  </div>
     </div>
   )
 }
