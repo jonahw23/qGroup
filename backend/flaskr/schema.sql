@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS Seating
   (seating_id INTEGER PRIMARY KEY,
    name STRING
    class_id INTEGER
-   FOREIGN KEY class_id REFERENCES Classrooms(class_id) ON DELETE CASCADE);
+   FOREIGN KEY(class_id) REFERENCES Classrooms(class_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS UserSeatingMap
   (user_id INTEGER,
