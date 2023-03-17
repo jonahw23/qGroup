@@ -30,15 +30,14 @@ function buildPeople(arr, oneName){
 }
 
 function buildGroups(arr){
-  if(!builtGroups){
+  groups = []
   for(let i = 0; i < arr.length; i++){
     groups.push(arr[i])
     for(let j = 0; j < groups[i].length; j++){
       people[groups[i][j]].group = i
     }
   }
-    builtGroups = true
-  }
+  //console.log("people", people)
 }
 
 function randColor(){
@@ -55,7 +54,10 @@ if(groupsNew){
   buildGroups(groupsNew)
 }
 
-const [selected, setSelected] = useState(people[0])
+const [selected, setSelected] = useState()
+
+//Random factor for render debugging
+var randomColor = Math.floor(Math.random()*16777215).toString(16)
 
 return (
     <div className="top-16 w-fill">
