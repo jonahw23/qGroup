@@ -111,17 +111,36 @@ const addStudent = async (user_id, class_id, first_name, last_name) => {
 
 //addClass(user_id, class_name)
 
-const otherPeople = getUsers()
-console.log("OtherPeople", otherPeople)
-console.log("TestPeople", constants.testPeople)
+//const otherPeople = getUsers()
+//console.log("OtherPeople", otherPeople)
+//console.log("TestPeople", constants.testPeople)
 
-getStudents(3, 1)
+function fillUsers(){
+  //Refill database users after database reset
+  for(let i = 0; i < constants.testUsers.length; i++){
+    addUser(constants.testUsers[i].name, constants.testUsers[i].password)
+  }
+}
+
+function fillClasses(){
+  //Refill database classes after database reset (fill users first)
+  for(let i = 0; i < constants.testClasses.length; i++){
+    addClass(constants.testClasses[i].id, constants.testClasses[i].name)
+  }
+}
+
+function fillStudents(){
+  //Refill database students after database reset (fill classes first)
+  for(let i = 0; i < constants.testStudents.length; i++){
+    addStudent(pageUserId, pageClassId, constants.testStudents[i].first_name, constants.testStudents[i].last_name)
+  }
+}
 
 export default function Example() {
 
   const [state, addToState] = useState([])
 
-  console.log("state", state)
+  //console.log("state", state)
 
   useEffect(() => {
     async function fetchData() {
@@ -137,11 +156,22 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })).json()
-      if (students && users) {
-        addToState({ "students": students, "users": users })
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
+        method: 'POST',
+        body: JSON.stringify({
+          meta_group_name: "Test metagroup name",
+          group_size: 0,
+          group_amount: 4,
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (students && users && groups) {
+        addToState({ "students": students, "users": users, "groups":groups })
       }
       else {
-        console.log("Didn't add students or users")
+        console.log("Didn't add students or users or groups")
       }
     }
     fetchData()
@@ -164,7 +194,7 @@ export default function Example() {
 
                 <div className="w-full py-4 h-full">
                   <Routes>
-                    <Route path="/" element={new ButtonBox(85, state.students, false)} />
+                    <Route path="/" element={new ButtonBox(85, state.students, state.groups, false)} />
                     <Route path="/seating" element={<SeatingEditor />} />
                   </Routes>
                 </div>
