@@ -5,7 +5,7 @@ from numpy import loadtxt
 import csv
 
 
-def format_student_data(file):
+def format_student_data(file_name):
     """converts a csv from synergy into the data used in the grouping algorithms
 
     Args:
@@ -15,7 +15,7 @@ def format_student_data(file):
         students (array): Dictionaries of each student's information based on the csv file
     
     """
-    #file = open(file_name, 'rt')
+    file = open(file_name, 'rt')
     #last,first,...
 
     c = csv.reader(file,delimiter = ",",quotechar="\"")
@@ -25,9 +25,11 @@ def format_student_data(file):
         if index != 0:
             data.append(row)
         index += 1
+    print(data)
 
     #data = loadtxt(file,dtype=np.str_, delimiter=',')
 
+    print("done?")
     students = []
     for i in range(len(data)):
         students.append({"id":i})
@@ -92,7 +94,7 @@ def groups_of_fixed_size(students,n):
 
 def groups_of_custom_size(students,max_group_size):
     groups = []
-    for i in range(max_group_size):
+    for i in range(len(max_group_size)):
         groups.append([])
     group_num = 0
     for i in range(len(students)):
@@ -109,13 +111,52 @@ def groups_of_fixed_amount(students,k):
     size = math.ceil(len(students)/k)
     return groups_of_fixed_size(students,size)
 
+def get_sizes_for_groups_of_fixed_size(students,max_group_size):
+    """gets a size of group sizes bounded by a max group
+
+    Args:
+        students (array): An array of dictionaries representing each student's data
+        max_group_size (int): largest size a group can be
+    
+    Returns:
+        list of group sizes
+
+    """
+
+    group_sizes = []
+    base_size = 1
+    
+    for i in range(max_group_size-1,1,-1):
+        if len(students) % i <= math.floor(len(students)/i):
+            base_size = i
+            break;
+    for i in range(math.floor(len(students)/base_size)):
+        group_sizes.append(base_size)
+    for i in range(len(students)% base_size):
+        group_sizes[i] += 1
+    return group_sizes
+
+def get_sizes_for_groups_of_fixed_amount(students,group_amount):
+    """gets a size of group sizes bounded by a max group
+
+    Args:
+        students (array): An array of dictionaries representing each student's data
+        group_amount (int): amount of groups to make
+    
+    Returns:
+        list of group sizes
+
+    """
+    size = math.ceil(len(students)/group_amount)
+    return get_sizes_for_groups_of_fixed_size(students,size)                
+
 
 def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse=False,weights=False,group_sizes=False):
     """sorts students into groupd with the corresponding parameters
 
     Args:
         students (array): An array of dictionaries representing each student's data
-        group_amount (int): How many groups should the students be sorted inti
+        group_amount (int): How many groups should the students be sorted in it
         group_size (int): How many students should be in each group (will be overriden if group_amount is set)
         sort_by (str): If students should be sorted, what key will be used
         reverse (bool): A boolean representing if the sorted array should be reversed or not
@@ -136,9 +177,11 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     if group_sizes != False:
         return groups_of_custom_size(s,group_sizes)
     elif group_size > 0:
-        return groups_of_fixed_size(s,group_size)
+        return groups_of_custom_size(s,get_sizes_for_groups_of_fixed_size(s,group_size))
+        #return groups_of_fixed_size(s,group_size)
     elif group_amount > 0:
-        return groups_of_fixed_amount(s,group_amount)
+        return groups_of_custom_size(s,get_sizes_for_groups_of_fixed_amount(s,group_amount))
+        #return groups_of_fixed_amount(s,group_amount)
 
     if group_size <= 0 and group_amount <= 0:
         return False
