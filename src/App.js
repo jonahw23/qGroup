@@ -251,7 +251,7 @@ export default function Example() {
                       <div>
                         <div className="px-7 py-5">
                           <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
-<input id="steps-range" type="range" onChange={(event) => setRangeval(event.target.value)} min="1" max="8" step="1" className=" w-[20%] mb-0 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+<input id="steps-range" type="range" onChange={(event) => setRangeval(event.target.value)} min="1" max="8" step="1" value={rangeval} className=" w-[20%] mb-0 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
                             <output className="ml-2 text-base font-medium text-gray-900">{rangeval}</output>
                             <button onClick={useButtonSize} className="ml-3 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make groups of that size
