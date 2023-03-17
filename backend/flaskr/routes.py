@@ -242,6 +242,9 @@ def make_groups(user_id, class_id):
 
   students.sort(key = lambda a: a["id"])
   
+  print("Amount:", request.json["group_amount"])
+  print("size:", {request.json["group_size"]})
+  
   groups = student_algorithms.group_students(students, group_amount=request.json["group_amount"], group_size=request.json["group_size"])
 
   for i, group in enumerate(groups):

@@ -72,20 +72,20 @@ const getStudents = async (user_id, class_id) => {
   return peopleAPI
 }
 
-const addMetaGroup = async (class_id, user_id, meta_group_name, group_size) => {
+const getNumGroup = async (class_id, user_id, group_num) => {
   const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/meta_group/make_groups", {
     method: 'POST',
     body: JSON.stringify({
-      meta_group_name: meta_group_name,
-      group_size: group_size,
-      group_amount: 0,
+      meta_group_name: "meta_group_name",
+      group_size: 0,
+      group_amount: group_num,
     }),
     headers: {
       'Content-Type': 'application/json'
     }
   })
   const peopleAPI = await response
-  console.log("Metagroup called")
+  return peopleAPI
 }
 
 const addStudent = async (user_id, class_id, first_name, last_name) => {
@@ -111,17 +111,40 @@ const addStudent = async (user_id, class_id, first_name, last_name) => {
 
 //addClass(user_id, class_name)
 
-const otherPeople = getUsers()
-console.log("OtherPeople", otherPeople)
-console.log("TestPeople", constants.testPeople)
+//const otherPeople = getUsers()
+//console.log("OtherPeople", otherPeople)
+//console.log("TestPeople", constants.testPeople)
 
-getStudents(3, 1)
+function fillUsers(){
+  //Refill database users after database reset
+  for(let i = 0; i < constants.testUsers.length; i++){
+    addUser(constants.testUsers[i].name, constants.testUsers[i].password)
+  }
+}
+
+function fillClasses(){
+  //Refill database classes after database reset (fill users first)
+  for(let i = 0; i < constants.testClasses.length; i++){
+    addClass(constants.testClasses[i].id, constants.testClasses[i].name)
+  }
+}
+
+function fillStudents(){
+  //Refill database students after database reset (fill classes first)
+  for(let i = 0; i < constants.testStudents.length; i++){
+    addStudent(pageUserId, pageClassId, constants.testStudents[i].first_name, constants.testStudents[i].last_name)
+  }
+}
 
 export default function Example() {
 
   const [state, addToState] = useState([])
+  const [rangeval, setRangeval] = useState(8)
 
-  console.log("state", state)
+  //Random factor for render debugging
+  var randomColor = Math.floor(Math.random()*16777215).toString(16)
+
+  //console.log("state", state)
 
   useEffect(() => {
     async function fetchData() {
@@ -137,17 +160,76 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })).json()
-      if (students && users) {
-        addToState({ "students": students, "users": users })
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
+        method: 'POST',
+        body: JSON.stringify({
+          meta_group_name: "Test metagroup name",
+          group_size: 4,
+          group_amount: 0,
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (students && users && groups) {
+        addToState({ "students": students, "users": users, "groups":groups })
       }
       else {
-        console.log("Didn't add students or users")
+        console.log("Didn't add students or users or groups")
       }
     }
     fetchData()
   }, [])
 
-  console.log("state", state)
+  function useButtonSize () {
+    async function fetchData() {
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
+        method: 'POST',
+        body: JSON.stringify({
+          meta_group_name: "Test metagroup name",
+          group_size: Number(rangeval),
+          group_amount: 0,
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (groups) {
+        console.log("groups:", groups)
+        addToState({ "students": state.students, "users": state.users, "groups": groups })
+      }
+      else {
+        console.log("Didn't change groups")
+      }
+    }
+    fetchData()
+  }
+
+  function useButtonNum () {
+    async function fetchData() {
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
+        method: 'POST',
+        body: JSON.stringify({
+          meta_group_name: "Test metagroup name",
+          group_size: 0,
+          group_amount: Number(rangeval),
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (groups) {
+        console.log("groups:", groups)
+        addToState({ "students": state.students, "users": state.users, "groups": groups })
+      }
+      else {
+        console.log("Didn't change groups")
+      }
+    }
+    fetchData()
+  }
+
+  //console.log("state", state)
 
   return (
     <Router>
@@ -160,11 +242,26 @@ export default function Example() {
             <div className="px-4 py-1 sm:px-0">
               <div className="flex my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
-                <div className="w-18">{new ListCont(85, state.students, false)}</div>
+                <div className="w-18">{ListCont(85, state.students, false)}</div>
 
                 <div className="w-full py-4 h-full">
                   <Routes>
-                    <Route path="/" element={new ButtonBox(85, state.students, false)} />
+                    <Route path="/" element={<>
+                      {ButtonBox(85, state.students, state.groups, false)}
+                      <div>
+                        <div className="px-7 py-5">
+                          <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
+<input id="steps-range" type="range" onChange={(event) => setRangeval(event.target.value)} min="1" max="8" step="1" value={rangeval} className=" w-[20%] mb-0 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+                            <output className="ml-2 text-base font-medium text-gray-900">{rangeval}</output>
+                            <button onClick={useButtonSize} className="ml-3 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                              Make groups of that size
+                            </button>
+                            <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                              Make that many groups
+                            </button>
+                        </div>
+                      </div>
+                    </>} />
                     <Route path="/seating" element={<SeatingEditor />} />
                   </Routes>
                 </div>
