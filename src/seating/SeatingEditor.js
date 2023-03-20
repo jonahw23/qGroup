@@ -5,7 +5,7 @@ import Draggable from 'react-draggable';
 export default class SeatingEditor extends React.Component {
   state = {
     furniture: [],
-    rotate: 0,
+    mode: "movement",
     id:0,
   }
 
@@ -33,18 +33,18 @@ export default class SeatingEditor extends React.Component {
   onDrag = (id, element) => {
 
     const index = this.state.furniture.findIndex(x => x.id === id);
-    const rotate = this.state.rotate
+    const mode = this.state.mode
     let furniture = [...this.state.furniture];
 
     this.setState({ furniture: furniture, id: index});
 
-    if (rotate){
+    if (mode != "movement"){
       //furniture[index].theta = (furniture[index].theta?furniture[index].theta:0) + 1
 
       throw new Error('No Drag');
 
     } else {
-
+      
     }
 
   }
@@ -54,10 +54,10 @@ export default class SeatingEditor extends React.Component {
 
     const width = this.getWidth();
     const index = this.state.furniture.findIndex(x => x.id === id);
-    const rotate = this.state.rotate
+    const mode = this.state.mode
 
     let furniture = [...this.state.furniture];
-    if (!rotate) {
+    if (mode == "movement") {
       furniture[index].x = element.x / width;
       furniture[index].y = element.y / width;
     } else {
@@ -70,10 +70,15 @@ export default class SeatingEditor extends React.Component {
   }
 
   onKeyPressed = (e) => {
-    this.setState({ rotate: !this.state.rotate });
+    if (e.key === 'r'){
+    this.setState({ mode: this.state.mode === "rotate"?"movement":"rotate" });
+    }else if(e.key === 'n'){
+      this.setState({ mode: this.state.mode === "place"?"movement":"place" });
+
+    }
   }
   onMouseMove = (e) => {
-    const rotate = this.state.rotate
+    const mode = this.state.mode
     const index = this.state.id
     const width = this.getWidth();
 
@@ -94,9 +99,17 @@ export default class SeatingEditor extends React.Component {
 
     let angle = Math.atan2(y,x)
 
-    if(rotate && e.clientX > rect.left && e.clientX < rect.right && e.clientY < rect.bottom && e.clientY > rect.top){
+    if(mode == "rotate" && e.clientX > rect.left && e.clientX < rect.right && e.clientY < rect.bottom && e.clientY > rect.top){
     furniture[index].theta = 90+angle * (180/Math.PI)//(furniture[index].theta?furniture[index].theta:0) + 10*(angle - dAngle) 
     }
+  }
+
+  addSeat = (e) => {
+    let furniture = [...this.state.furniture];
+    const width = this.getWidth();
+
+    furniture.push({x:e.clientX / width,y:e.clientY/width, theta:0})
+    this.setState({ furniture: furniture});
   }
 
 
@@ -118,7 +131,7 @@ export default class SeatingEditor extends React.Component {
           onDrag={(_event, element) => this.onDrag(f.id, element)}
         >
           <div className="clear-seat-element">
-            <div className="seat-element" style={{ rotate: (f.theta ? f.theta : 0) + "deg" }} onKeyDown={this.onKeyPressed} onMouseMove={this.onMouseMove}
+            <div className="seat-element" style={{ rotate: (f.theta ? f.theta : 0) + "deg" }}  onMouseMove={this.onMouseMove}
  tabIndex={0}>
               x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
             </div>
@@ -128,8 +141,12 @@ export default class SeatingEditor extends React.Component {
     })
 
     return (
-      <div className="seating-container" ref={e => { this.divElement = e }}>
-        <div> {this.state.rotate?"Rotate Mode":"Movement Mode"}</div>
+      <div className="seating-container" ref={e => { this.divElement = e }} 
+      tabIndex = {0}
+      onClick = { e => {if(this.state.mode === "place"){this.addSeat(e)}} }
+      onKeyDown={this.onKeyPressed}
+      >
+        <div> {"Mode: " + this.state.mode}</div>
         {furnitureElements}
       </div>
     );
