@@ -301,7 +301,7 @@ def delete_meta_group(class_id, meta_group_id):
 
 @routes.route("/api/users/<user_id>/class/<class_id>/upload_students", methods = ["POST"])
 @cross_origin()
-def upload_students(class_id):
+def upload_students(class_id, user_id):
     db = database.get_db()
     csv = request.files["students"]
     students = student_algorithms.format_student_data(csv)

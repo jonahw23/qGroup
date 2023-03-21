@@ -32,7 +32,7 @@ if(peopleNew){
 const [selected, setSelected] = useState(people[0])
 
 var totalHeight = height - 1.5
-var hString = "absolute max-h-[83.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+var hString = "absolute max-h-[65.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 //hardcoded for now ^
 return (
     <div className="top-16 w-72">
