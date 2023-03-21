@@ -45,9 +45,9 @@ def get_class_students(user_id, class_id):
   db = database.get_db()
   res = db.execute(f"""
     SELECT s.* FROM Classrooms c
-      JOIN ClassroomStudentMap m ON m.classroom_id = c.id
+      JOIN ClassroomStudentMap m ON m.classroom_id = c.class_id
       JOIN Students s ON m.student_id = s.id
-      WHERE c.id = {class_id}
+      WHERE c.class_id = {class_id}
   """)
   return [dict(row) for row in res.fetchall()]
 
@@ -141,35 +141,35 @@ def new_seating(user_id, class_id):
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_furniture", methods = ["POST"])
 @cross_origin()
-def new_furniture(seating_id):
+def new_furniture(user_id, class_id, seating_id):
   db = database.get_db()
   db.execute("""
     INSERT INTO Furniture (type, x, y, theta, seating_id)
       VALUES (?, ?, ?, ?, ?) 
   """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], seating_id))
   #Should position be hard coded in or set by the user?
-  furn_id = db.execute("SELECT id FROM Furniture ORDER BY id DESC").fetchone()[0]
+  furn_id = db.execute("SELECT furn_id FROM Furniture ORDER BY furn_id DESC").fetchone()[0]
   db.commit()
-  return "", 201
+  return { "furn_id": furn_id }, 201
 
-@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>//furniture/<furniture_id>/move_furn", methods = ["PATCH"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/<furniture_id>/move_furn", methods = ["PUT"])
 @cross_origin()
-def move_furn(furniture_id):
+def move_furn(user_id, class_id, seating_id, furniture_id):
   db = database.get_db()
   db.execute("""
     UPDATE Furniture
     SET x = (?), y = (?), theta = (?)
-      WHERE id = (?)
+      WHERE furn_id = (?)
   """, (request.json["new_x"], request.json["new_y"], request.json["new_theta"], furniture_id))
   db.commit()
   return "", 200
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/get_furniture_loc", methods = ["GET"])
 @cross_origin()
-def furniture_locations(seating_id):
+def furniture_locations(user_id, class_id, seating_id):
   db = database.get_db()
   res = db.execute("""
-    SELECT FROM Furniture
+    SELECT * FROM Furniture
       WHERE seating_id = (?)
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
@@ -232,7 +232,7 @@ def make_groups(user_id, class_id):
     INSERT INTO MetaGroup (name)
       VALUES (?)
   """, (request.json["meta_group_name"],))
-  meta_group_id = db.execute("SELECT id FROM MetaGroup ORDER BY id DESC").fetchone()[0]
+  meta_group_id = db.execute("SELECT meta_group_id FROM MetaGroup ORDER BY meta_group_id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO ClassroomMetaGroupMap
       VALUES (?,?)
