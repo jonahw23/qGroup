@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 
 var people = []
+var groups = []
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -22,17 +23,31 @@ function buildPeople(arr, oneName){
   }
 }
 
-export default function ListCont(height, peopleNew, oneName) {
+function buildGroups(arr){
+  groups = []
+  for(let i = 0; i < arr.length; i++){
+    groups.push(arr[i])
+    for(let j = 0; j < groups[i].length; j++){
+      people[groups[i][j]].group = i
+    }
+  }
+  //console.log("people", people)
+}
+
+export default function ListCont(height, peopleNew, groupsNew, oneName) {
 //Visual height, array of people, true/false of whether there's "name" or "first_name, last_name"
 
 if(peopleNew){
   buildPeople(peopleNew, oneName)
 }
+if(groupsNew){
+  buildGroups(groupsNew)
+}
 
 const [selected, setSelected] = useState(people[0])
 
 var totalHeight = height - 1.5
-var hString = "absolute max-h-[83.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+var hString = "absolute max-h-[65.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 //hardcoded for now ^
 return (
     <div className="top-16 w-72">
