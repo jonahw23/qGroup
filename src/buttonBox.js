@@ -54,6 +54,8 @@ if(groupsNew){
   buildGroups(groupsNew)
 }
 
+people.sort(function(a,b){return (a.group>b.group?1:-1)})
+
 const [selected, setSelected] = useState()
 
 //Random factor for render debugging
