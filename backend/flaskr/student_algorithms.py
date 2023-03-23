@@ -5,7 +5,7 @@ from numpy import loadtxt
 import csv
 
 
-def format_student_data(file):
+def format_student_data(file_name):
     """converts a csv from synergy into the data used in the grouping algorithms
 
     Args:
@@ -15,7 +15,7 @@ def format_student_data(file):
         students (array): Dictionaries of each student's information based on the csv file
     
     """
-    #file = open(file_name, 'rt')
+    file = open(file_name, 'rt')
     #last,first,...
 
     c = csv.reader(file,delimiter = ",",quotechar="\"")
@@ -130,9 +130,11 @@ def get_sizes_for_groups_of_fixed_size(students,max_group_size):
         if len(students) % i <= math.floor(len(students)/i):
             base_size = i
             break;
-    for i in range(math.floor(len(students)/base_size)):
+    num_groups = math.floor(len(students)/base_size)
+    num_groups = math.ceil((len(students)-0)/max_group_size)
+    for i in range(num_groups):
         group_sizes.append(base_size)
-    for i in range(len(students)% base_size):
+    for i in range(len(students) - base_size * num_groups):
         group_sizes[i] += 1
     return group_sizes
 
