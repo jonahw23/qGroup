@@ -20,12 +20,10 @@ export default class SeatingEditor extends React.Component {
       .then(json => { this.setState({ furniture: json }) });
 
     this.setState({ width: this.getWidth() });
-    window.addEventListener("resize", this.resize.bind(this));
+    window.addEventListener("resize", () => {
+      this.setState({ width: this.getWidth() });
+    });
 
-  }
-
-  resize = () => {
-    this.setState({ width: this.getWidth() });
   }
 
   getWidth = () => {
@@ -34,13 +32,9 @@ export default class SeatingEditor extends React.Component {
 
   onDrag = (id, element) => {
 
-    let furniture = [...this.state.furniture];
-    const index = furniture.findIndex(x => x.furn_id === id);
-    const mode = this.state.mode;
+    this.setState({ id: id, element: element });
 
-    this.setState({ furniture: furniture, id: index });
-
-    if (mode !== "movement") {
+    if (this.state.mode !== "movement") {
       // This prevents movement while rotating or adding
       throw new Error('No Drag');
     }
@@ -50,11 +44,10 @@ export default class SeatingEditor extends React.Component {
   stopDrag = (id, element) => {
 
     let furniture = [...this.state.furniture];
-    const width = this.getWidth();
+    const width = this.state.width;
     const index = furniture.findIndex(x => x.furn_id === id);
-    const mode = this.state.mode;
 
-    if (mode === "movement") {
+    if (this.state.mode === "movement") {
       furniture[index].x = element.x / width;
       furniture[index].y = element.y / width;
     }
@@ -71,43 +64,42 @@ export default class SeatingEditor extends React.Component {
       body: JSON.stringify(body),
     })
 
-    this.setState({ furniture: furniture, id: index });
+    this.setState({ furniture: furniture });
 
   }
 
   onKeyPressed = (e) => {
+
     if (e.key === 'r') {
       this.setState({ mode: this.state.mode === "rotate" ? "movement" : "rotate" });
     } else if (e.key === 'n') {
       this.setState({ mode: this.state.mode === "place" ? "movement" : "place" });
     }
+
   }
 
   onMouseMove = (e) => {
-    const mode = this.state.mode;
-    const index = this.state.id;
 
-    let furniture = [...this.state.furniture];
+    if (this.state.mode === "rotate") {
+      const rect = this.state.element.node.getBoundingClientRect();
 
-    const target = e.target;
+      // Mouse position
+      const x = e.clientX - (rect.left + rect.width / 2);
+      const y = e.clientY - (rect.top + rect.height / 2);
 
-    // Get the bounding rectangle of target
-    const rect = target.getBoundingClientRect();
+      let angle = Math.atan2(y, x);
 
-    // Mouse position
-    const x = e.clientX - (rect.left + rect.width / 2);
-    const y = e.clientY - (rect.top + rect.height / 2);
+      let furniture = [...this.state.furniture];
+      const index = furniture.findIndex(x => x.furn_id === this.state.id);
 
-    let angle = Math.atan2(y, x);
-
-    if (mode === "rotate" && e.clientX > rect.left && e.clientX < rect.right && e.clientY < rect.bottom && e.clientY > rect.top) {
-      furniture[index].theta = 90 + angle * (180 / Math.PI)//(furniture[index].theta?furniture[index].theta:0) + 10*(angle - dAngle) 
+      furniture[index].theta = 90 + angle * (180 / Math.PI)
     }
+
   }
 
   addSeat = (e) => {
 
-    const bounds = this.divElement?.getBoundingClientRect() ?? 0;
+    const bounds = this.divElement.getBoundingClientRect();
 
     const x = (e.clientX - bounds.left) / bounds.width;
     const y = (e.clientY - bounds.top) / bounds.width;
@@ -141,7 +133,7 @@ export default class SeatingEditor extends React.Component {
       const width = this.getWidth();
       return (
         <Draggable
-          key={f.id}
+          key={f.furn_id}
           position={{
             x: f.x * width,
             y: f.y * width
@@ -152,9 +144,8 @@ export default class SeatingEditor extends React.Component {
         >
           <div className="clear-seat-element">
             <div
-              className="seat-element"
+              className={`seat-element ${this.state.id === f.furn_id ? "border-2 border-cyan-500" : ""}`}
               style={{ rotate: (f.theta ? f.theta : 0) + "deg" }}
-              onMouseMove={this.onMouseMove}
               tabIndex={0}
             >
               id: {f.furn_id} x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
@@ -165,16 +156,20 @@ export default class SeatingEditor extends React.Component {
     });
 
     return (
-      <div className="h-full">
+      <div className="h-full flex flex-col">
 
-        <div>{"Mode: " + this.state.mode}</div>
+        <div className="p-5 bg-gray-200">
+          {"Mode: " + this.state.mode}
+          {"ID: " + this.state.id}
+        </div>
 
         <div
-          className="seating-container h-full"
+          className="seating-container border-solid border border-slate-200 flex-1"
           ref={e => { this.divElement = e }}
           tabIndex={0}
           onClick={e => { if (this.state.mode === "place") { this.addSeat(e) } }}
           onKeyDown={this.onKeyPressed}
+          onMouseMove={this.onMouseMove}
         >
           {furnitureElements}
         </div>
