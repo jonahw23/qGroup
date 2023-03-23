@@ -303,7 +303,8 @@ def delete_meta_group(class_id, meta_group_id):
 @cross_origin()
 def upload_students(class_id, user_id):
     db = database.get_db()
-    csv = request.json["students"]
+    print(request)
+    csv = request.files["students"]
     students = student_algorithms.format_student_data(csv)
     for i in range(len(students)):
       student = students[i]
@@ -321,5 +322,5 @@ def upload_students(class_id, user_id):
       VALUES ({class_id}, {student_id})
       """)
 
-      db.commit()
-      return res.fetchall()
+    db.commit()
+    return "done"

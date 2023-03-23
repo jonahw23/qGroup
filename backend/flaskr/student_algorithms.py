@@ -17,7 +17,6 @@ def format_student_data(file):
     """
     #file = open(file_name, 'rt')
     #last,first,...
-
     c = csv.reader(file,delimiter = ",",quotechar="\"")
     data = []
     index = 0
