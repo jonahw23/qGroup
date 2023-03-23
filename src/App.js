@@ -9,6 +9,7 @@ import {
   Route,
 } from "react-router-dom"
 import ButtonBox from './buttonBox'
+import Papa from 'papaparse'
 
 //Body of main page and API calls
 
@@ -207,11 +208,15 @@ export default function Example() {
   }
 
   const uploadStudents = async (user_id, class_id) => {
+    console.log("Uploaded", uploadedFile)
     const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/upload_students", {
       method: 'POST',
       body: JSON.stringify({
         students: uploadedFile
       }),
+      files: {
+        students: uploadedFile
+       },
       headers: {
         'Content-Type': 'application/json'
       }
@@ -247,6 +252,10 @@ export default function Example() {
     console.log(uploadedFile)
     const inputFile = uploadedFile
     console.log(inputFile[0])
+    Papa.parse(inputFile[0], {
+      complete: function(results) {
+        console.log("Finished:", results.data);
+    }})
     uploadStudents(1, 7)
   }
 
