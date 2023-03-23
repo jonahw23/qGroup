@@ -15,7 +15,7 @@ export const userNavigation = [
 ]
 
 export const tailwindColorOptions = [
-  "red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink",
+  "red", "orange", "yellow", "green", "cyan", "blue","purple","pink"
 ]
 
 export const testStudents = [
