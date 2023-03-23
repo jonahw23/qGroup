@@ -7,6 +7,7 @@ export default class SeatingEditor extends React.Component {
     furniture: [],
     mode: "movement",
     id: 0,
+    width: 0,
   }
 
   componentDidMount = () => {
@@ -18,6 +19,13 @@ export default class SeatingEditor extends React.Component {
       .then(res => { return res.json() })
       .then(json => { this.setState({ furniture: json }) });
 
+    this.setState({ width: this.getWidth() });
+    window.addEventListener("resize", this.resize.bind(this));
+
+  }
+
+  resize = () => {
+    this.setState({ width: this.getWidth() });
   }
 
   getWidth = () => {
@@ -161,7 +169,9 @@ export default class SeatingEditor extends React.Component {
 
         <div>{"Mode: " + this.state.mode}</div>
 
-        <div className="seating-container h-full" ref={e => { this.divElement = e }}
+        <div
+          className="seating-container h-full"
+          ref={e => { this.divElement = e }}
           tabIndex={0}
           onClick={e => { if (this.state.mode === "place") { this.addSeat(e) } }}
           onKeyDown={this.onKeyPressed}

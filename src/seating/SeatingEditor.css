@@ -6,7 +6,7 @@
 
 }
 
-.seat-element {
+.seat-element, .clear-seat-element {
   background: #888888;
   width: 8em;
   height: 8em;
@@ -14,15 +14,9 @@
   padding: 5px;
   border-radius: 5px;
   position: absolute;
-    outline: none;
+  outline: none;
 }
 
 .clear-seat-element {
   background: rgba(0,0,0,0);
-  width: 8em;
-  height: 8em;
-  font-size: 12px;
-  padding: 5px;
-  border-radius: 5px;
-  position: absolute;
 }
