@@ -39,6 +39,17 @@ def list_classes():
   """)
   return [dict(row) for row in res.fetchall()]
 
+@routes.route("/api/user/<user_id>/get_classes", methods = ["GET"])
+@cross_origin()
+def list_classes_user(user_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT * FROM Classrooms c 
+      JOIN UserClassroomMap m ON m.classroom_id = c.class_id
+      WHERE m.user_id = (?)
+  """, (user_id))
+  return [dict(row) for row in res.fetchall()]
+  
 @routes.route("/api/users/<user_id>/class/<class_id>/students", methods=["GET"])
 @cross_origin()
 def get_class_students(user_id, class_id):
@@ -60,7 +71,8 @@ def add_student(user_id, class_id):
     INSERT INTO Students (first_name, last_name)
       VALUES (
         "{request.json["first_name"]}",
-        "{request.json["last_name"]}"
+        "{request.json["last_name"]}",
+        "{request.json["class_id"]}"
       )
   """)
   student_id = db.execute("SELECT id FROM Students ORDER BY id DESC").fetchone()[0]
@@ -224,6 +236,17 @@ def map_stud_furn(user_id, class_id, seating_id):
   db.commit()
   return "", 201
 
+@routes.route("/api/class/<class_id>/students/set_weight", methods = ["POST"])
+@cross_origin()
+def set_weight():
+  db = database.get_db()
+  db.execute("""
+    INSERT INTO StudentStudentMap
+      VALUES (?, ?, ?)
+  """, (request.json["stud_id1"], request.json["stud_id2"], request.json["weight"]))
+  db.commit()
+  return "", 201
+
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_group/make_groups", methods = ["POST"])
 @cross_origin()
 def make_groups(user_id, class_id):
@@ -244,8 +267,12 @@ def make_groups(user_id, class_id):
   
   print("Amount:", request.json["group_amount"])
   print("size:", {request.json["group_size"]})
-  
-  groups = student_algorithms.group_students(students, group_amount=request.json["group_amount"], group_size=request.json["group_size"])
+
+  groups = student_algorithms.group_students(
+    students, 
+    group_amount=request.json["group_amount"], 
+    group_size=request.json["group_size"]
+  )
 
   for i, group in enumerate(groups):
     group_name = "Group " + str(i + 1)
