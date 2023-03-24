@@ -324,3 +324,30 @@ def upload_students(class_id, user_id):
 
     db.commit()
     return "done"
+
+@routes.route("/api/users/<user_id>/class/<class_id>/get_weights", methods = ["GET"])
+@cross_origin()
+def get_weights(class_id, user_id):
+    db = database.get_db()
+
+    weights = []
+
+    students = get_class_students(user_id, class_id).json
+
+    for i in range(len(students)):
+        weights.append([])
+        for j in range(len(students)):
+          weights[i].append(0)
+
+
+    for student in students:
+      res = db.execute(f"""SELECT * FROM StudentStudentMap WHERE student_id1 = ({student.id})""")
+      student_weights = [dict(row) for row in res.fetchall()]
+      print(student_weights)
+      for weight in student_weights:
+        weights[weight["student_id1"]][weight["student_id2"]] = weight["weight"]
+
+
+    return weights
+
+
