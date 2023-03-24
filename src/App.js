@@ -17,8 +17,8 @@ import Papa from 'papaparse'
 //Constants for user and class 
 //Current user 2 class 10 (Loe's Empty Class)
 //CSV goes to user 1 class 7 (Alice's world history class)
-const pageUserId = 2
-const pageClassId = 10
+const pageUserId = 1
+const pageClassId = 7
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
