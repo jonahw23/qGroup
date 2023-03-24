@@ -16,6 +16,7 @@ import Papa from 'papaparse'
 
 //Constants for user and class 
 //Current user 2 class 10 (Loe's Empty Class)
+//CSV goes to user 1 class 7 (Alice's world history class)
 const pageUserId = 2
 const pageClassId = 10
 
@@ -207,16 +208,13 @@ export default function Example() {
     fetchData()
   }
 
-  const uploadStudents = async (user_id, class_id) => {
-    console.log("Uploaded", uploadedFile)
+  const uploadStudents = async (user_id, class_id, dataFile) => {
+    console.log("Uploaded", dataFile)
     const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/upload_students", {
       method: 'POST',
       body: JSON.stringify({
-        students: uploadedFile
+        students: dataFile
       }),
-      files: {
-        students: uploadedFile
-       },
       headers: {
         'Content-Type': 'application/json'
       }
@@ -248,15 +246,30 @@ export default function Example() {
     fetchData()
   }
 
+  function parseResults(dataFile){
+    const returnJson = []
+    for(let i = 0; i < dataFile.length; i++){
+      const arr = dataFile[i][0].split(",")
+      if(arr[0] && arr[1]){
+        const lastName = arr[0].trim()
+        const firstName = arr[1].trim()
+        returnJson.push({first_name: firstName, last_name: lastName})
+      }
+    }
+    console.log("json", returnJson)
+    return returnJson
+  }
+
   function submitForm(){
     console.log(uploadedFile)
     const inputFile = uploadedFile
-    console.log(inputFile[0])
     Papa.parse(inputFile[0], {
       complete: function(results) {
-        console.log("Finished:", results.data);
+        const unparsedFile = results.data
+        const parsedFile = parseResults(unparsedFile)
+        console.log("File", parsedFile)
+        uploadStudents(1, 7, parsedFile)
     }})
-    uploadStudents(1, 7)
   }
 
   function csvToArray(str, delimiter = ",") {

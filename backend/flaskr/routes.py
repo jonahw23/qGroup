@@ -304,8 +304,7 @@ def delete_meta_group(class_id, meta_group_id):
 def upload_students(class_id, user_id):
     db = database.get_db()
     print(request)
-    csv = request.files["students"]
-    students = student_algorithms.format_student_data(csv)
+    students = request.json["students"]
     for i in range(len(students)):
       student = students[i]
       res1 = db.execute(f"""
