@@ -209,7 +209,7 @@ export default function Example() {
   }
 
   const uploadStudents = async (user_id, class_id, dataFile) => {
-    console.log("Uploaded", dataFile)
+    console.log("Uploading", dataFile)
     const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/upload_students", {
       method: 'POST',
       body: JSON.stringify({
@@ -272,13 +272,6 @@ export default function Example() {
     }})
   }
 
-  function csvToArray(str, delimiter = ",") {
-    let array = str.split("\\r\\n").map(function (line) {
-        return line.split(delimiter);
-    });
-
-    return array;
-  }
   //console.log("state", state)
 
   return (
@@ -293,7 +286,7 @@ export default function Example() {
               <div className="flex my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
                 <div className="w-18">
-                  <div>{ListCont(85, state.students, state.groups, false)}</div>
+                  <div>{ListCont(70, state.students, state.groups, false)}</div>
                   <label class="block ml-5 mt-[66vh] text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
                   <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
                   <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
