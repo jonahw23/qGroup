@@ -63,7 +63,7 @@ var randomColor = Math.floor(Math.random()*16777215).toString(16)
 
 return (
     <div className="top-16 w-fill">
-                    <div className="ml-7 flex flex-wrap justify-start gap-x-3 gap-y-3">
+                    <div className="ml-7 flex flex-wrap justify-start gap-x-3 gap-y-2">
                       {people.map((person, personIdx) => (
                         <div>
                         <div
