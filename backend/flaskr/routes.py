@@ -362,10 +362,9 @@ def get_weights(class_id, user_id):
 
 
     for student in students:
-      res = db.execute(f"""SELECT * FROM StudentStudentMap WHERE student_id1 = ({student.id})""")
+      res = db.execute(f"""SELECT * FROM StudentStudentMap WHERE student_id1 = ({student["id"]})""")
       student_weights = [dict(row) for row in res.fetchall()]
-      print(student_weights)
-      weights[student.id] = {}
+      weights[student["id"]] = {}
       for weight in student_weights:
 
         weights[weight["student_id1"]][weight["student_id2"]] = weight["weight"]
