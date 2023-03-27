@@ -6,7 +6,8 @@ export default class SeatingEditor extends React.Component {
   state = {
     furniture: [],
     mode: "movement",
-    id: 0,
+    furn_id: 0,
+    draggable: undefined,
     width: 0,
   }
 
@@ -19,7 +20,6 @@ export default class SeatingEditor extends React.Component {
       .then(res => { return res.json() })
       .then(json => { this.setState({ furniture: json }) });
 
-    this.setState({ width: this.getWidth() });
     window.addEventListener("resize", () => {
       this.setState({ width: this.getWidth() });
     });
@@ -30,26 +30,23 @@ export default class SeatingEditor extends React.Component {
     return this.divElement?.clientWidth ?? 0;
   }
 
-  onDrag = (id, element) => {
-
-    this.setState({ id: id, element: element });
-
-    if (this.state.mode !== "movement") {
-      // This prevents movement while rotating or adding
-      throw new Error('No Drag');
+  onKeyPressed = (e) => {
+    if (e.key === 'n') {
+      this.setState({ mode: this.state.mode === "place" ? "movement" : "place" });
     }
-
   }
 
-  stopDrag = (id, element) => {
+  onStart = (furn_id, draggable) => {
+    this.setState({ furn_id: furn_id, draggable: draggable });
+  }
 
+  onStop = (furn_id, draggable) => {
     let furniture = [...this.state.furniture];
-    const width = this.state.width;
-    const index = furniture.findIndex(x => x.furn_id === id);
+    const index = furniture.findIndex(x => x.furn_id === furn_id);
 
-    if (this.state.mode === "movement") {
-      furniture[index].x = element.x / width;
-      furniture[index].y = element.y / width;
+    if (draggable) {
+      furniture[index].x = draggable.x / this.getWidth();
+      furniture[index].y = draggable.y / this.getWidth();
     }
 
     const body = {
@@ -58,43 +55,29 @@ export default class SeatingEditor extends React.Component {
       new_theta: furniture[index].theta,
     };
 
-    fetch(`http://127.0.0.1:5000/api/users/3/class/1/seating/1/furniture/${id}/move_furn`, {
+    fetch(`http://127.0.0.1:5000/api/users/3/class/1/seating/1/furniture/${furn_id}/move_furn`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
 
     this.setState({ furniture: furniture });
-
   }
 
-  onKeyPressed = (e) => {
+  onDragRotate = (event, furn_id) => {
+    const rect = this.state.draggable.node.getBoundingClientRect();
 
-    if (e.key === 'r') {
-      this.setState({ mode: this.state.mode === "rotate" ? "movement" : "rotate" });
-    } else if (e.key === 'n') {
-      this.setState({ mode: this.state.mode === "place" ? "movement" : "place" });
-    }
+    // Mouse position
+    const x = event.clientX - (rect.left + rect.width / 2);
+    const y = event.clientY - (rect.top + rect.height / 2);
 
-  }
+    let angle = Math.atan2(y, x);
 
-  onMouseMove = (e) => {
+    let furniture = [...this.state.furniture];
+    const index = furniture.findIndex(x => x.furn_id === furn_id);
 
-    if (this.state.mode === "rotate") {
-      const rect = this.state.element.node.getBoundingClientRect();
-
-      // Mouse position
-      const x = e.clientX - (rect.left + rect.width / 2);
-      const y = e.clientY - (rect.top + rect.height / 2);
-
-      let angle = Math.atan2(y, x);
-
-      let furniture = [...this.state.furniture];
-      const index = furniture.findIndex(x => x.furn_id === this.state.id);
-
-      furniture[index].theta = 90 + angle * (180 / Math.PI)
-    }
-
+    furniture[index].theta = 90 + angle * (180 / Math.PI);
+    this.setState({ furniture: furniture });
   }
 
   addSeat = (e) => {
@@ -131,6 +114,8 @@ export default class SeatingEditor extends React.Component {
 
     const furnitureElements = this.state.furniture.map(f => {
       const width = this.getWidth();
+      const selected = this.state.furn_id === f.furn_id;
+
       return (
         <Draggable
           key={f.furn_id}
@@ -139,15 +124,32 @@ export default class SeatingEditor extends React.Component {
             y: f.y * width
           }}
           bounds="parent"
-          onStop={(_event, element) => this.stopDrag(f.furn_id, element)}
-          onDrag={(_event, element) => this.onDrag(f.furn_id, element)}
+          onStart={(_e, draggable) => { return this.onStart(f.furn_id, draggable) }}
+          onStop={(_e, draggable) => { return this.onStop(f.furn_id, draggable) }}
+          cancel=".rotateHandle"
         >
           <div className="clear-seat-element">
             <div
-              className={`seat-element ${this.state.id === f.furn_id ? "border-2 border-cyan-500" : ""}`}
+              className={`seat-element ${selected ? "border-2 border-cyan-500" : ""}`}
               style={{ rotate: (f.theta ? f.theta : 0) + "deg" }}
               tabIndex={0}
             >
+
+              {selected ?
+                <div className="rotateHandle w-4 h-4 -translate-x-1/2 absolute -top-8 left-1/2">
+                  <Draggable
+                    position={{ x: 0, y: 0 }}
+                    onDrag={(e) => { return this.onDragRotate(e, f.furn_id) }}
+                    onStop={(_e) => { return this.onStop(f.furn_id) }}
+                  >
+                    <div className="w-full h-full absolute z-999"></div>
+                  </Draggable>
+                  <div className="w-full h-full bg-cyan-500 rounded-full"></div>
+                  <div className="w-0.5 h-full bg-cyan-500 absolute top-full left-1/2 -translate-x-1/2"></div>
+                </div>
+                : null
+              }
+
               id: {f.furn_id} x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
             </div>
           </div>
@@ -160,7 +162,6 @@ export default class SeatingEditor extends React.Component {
 
         <div className="p-5 bg-gray-200">
           {"Mode: " + this.state.mode}
-          {"ID: " + this.state.id}
         </div>
 
         <div
@@ -169,7 +170,6 @@ export default class SeatingEditor extends React.Component {
           tabIndex={0}
           onClick={e => { if (this.state.mode === "place") { this.addSeat(e) } }}
           onKeyDown={this.onKeyPressed}
-          onMouseMove={this.onMouseMove}
         >
           {furnitureElements}
         </div>
