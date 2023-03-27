@@ -16,7 +16,8 @@ function buildPeople(arr, oneName){
   for(let i = 0; i < arr.length; i++){
     people.push(oneName ? {name: arr[i].name} : {
       first_name: arr[i].first_name,
-      last_name: arr[i].last_name
+      last_name: arr[i].last_name,
+      id: arr[i].id
     })
   }
     built = true
@@ -49,7 +50,7 @@ const [selected, setSelected] = useState(people[0])
 var totalHeight = height - 1.5
 var hString = "absolute max-h-[45.5vh] w-full overflow-auto rounded-md bg-white text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
 //hardcoded for now ^
-return (
+return ({ element:
     <div className="top-16 w-72">
       <Listbox value={selected} onChange={setSelected}>
         <div className="relative mt-0">
@@ -89,6 +90,6 @@ return (
             </div>)} 
         </div>
       </Listbox>
-    </div>
-  )
+    </div>, value: selected
+                      })
 }

@@ -147,6 +147,9 @@ export default function Example() {
   //Random factor for render debugging
   var randomColor = Math.floor(Math.random()*16777215).toString(16)
 
+  //ListCont instance (dict where element:element, value:selected)
+  const theList = ListCont('HardCoded', state.students, state.groups, false)
+
   //console.log("state", state)
 
   useEffect(() => {
@@ -222,6 +225,18 @@ export default function Example() {
     const peopleAPI = await response
   }
 
+  const deleteStudent = async (user_id, class_id, student_id) => {
+    const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/remove_student", {
+      method: 'DELETE',
+      body: JSON.stringify({
+        student_id:student_id
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }
+
   function useButtonNum () {
     async function fetchData() {
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
@@ -272,6 +287,11 @@ export default function Example() {
     }})
   }
 
+  function deleteStudentButton(){
+    const delId = theList.value.id
+    deleteStudent(pageUserId, pageClassId, delId)
+  }
+
   //console.log("state", state)
 
   return (
@@ -286,12 +306,17 @@ export default function Example() {
               <div className="flex my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
 
                 <div className="w-18">
-                  <div>{ListCont('HardCoded', state.students, state.groups, false)}</div>
-                  <label class="block ml-5 mt-[66vh] text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+                  <div>{theList.element}</div>
+                  <div class="mt-[47vh]">
+                  <button onClick={deleteStudentButton} className="ml-3 w-48 mt-0 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
+                    Delete Selected Student
+                  </button>
+                  <label class="block ml-5 mt-4 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
                   <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
                   <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                     Submit CSV
                   </button>
+                  </div>
                 </div>
 
                 <div className="w-full py-4 h-full">
