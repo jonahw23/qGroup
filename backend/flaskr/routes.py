@@ -356,21 +356,18 @@ def upload_students(class_id, user_id):
 def get_weights(class_id, user_id):
     db = database.get_db()
 
-    weights = []
+    weights = {}
 
     students = get_class_students(user_id, class_id).json
-
-    for i in range(len(students)):
-        weights.append([])
-        for j in range(len(students)):
-          weights[i].append(0)
 
 
     for student in students:
       res = db.execute(f"""SELECT * FROM StudentStudentMap WHERE student_id1 = ({student.id})""")
       student_weights = [dict(row) for row in res.fetchall()]
       print(student_weights)
+      weights[student.id] = {}
       for weight in student_weights:
+
         weights[weight["student_id1"]][weight["student_id2"]] = weight["weight"]
 
 
