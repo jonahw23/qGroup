@@ -163,6 +163,12 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })).json()
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
         method: 'POST',
         body: JSON.stringify({
@@ -175,7 +181,7 @@ export default function Example() {
         }
       }, [])).json()
       if (students && users && groups) {
-        addToState({ "students": students, "users": users, "groups":groups })
+        addToState({ "students": students, "users": users, "groups":groups,"weights":weights })
       }
       else {
         console.log("Didn't add students or users or groups")
@@ -297,7 +303,7 @@ export default function Example() {
                 <div className="w-full py-4 h-full">
                   <Routes>
                     <Route path="/" element={<>
-                      {ButtonBox(85, state.students, state.groups, false)}
+                      {ButtonBox(85, state.students, state.groups, false, state.weights)}
                       <div>
                         <div className="px-7 py-5">
                           <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
