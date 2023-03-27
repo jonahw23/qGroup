@@ -94,9 +94,9 @@ def list_students():
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/<user_id>/class/<class_id>/students/remove_student", methods = ["DELETE"])
+@routes.route("/api/users/<user_id>/class/<class_id>/students/remove_student", methods = ["DELETE"])
 @cross_origin()
-def remove_student():
+def remove_student(user_id, class_id):
   db = database.get_db()
   db.execute("""
     DELETE ClassroomsStudentMap, StudentGroupMap, Students
