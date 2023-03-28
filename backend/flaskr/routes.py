@@ -39,7 +39,7 @@ def list_classes():
   """)
   return [dict(row) for row in res.fetchall()]
 
-@routes.route("/api/user/<user_id>/get_classes", methods = ["GET"])
+@routes.route("/api/users/<user_id>/get_classes", methods = ["GET"])
 @cross_origin()
 def list_classes_user(user_id):
   db = database.get_db()
@@ -71,8 +71,7 @@ def add_student(user_id, class_id):
     INSERT INTO Students (first_name, last_name)
       VALUES (
         "{request.json["first_name"]}",
-        "{request.json["last_name"]}",
-        "{request.json["class_id"]}"
+        "{request.json["last_name"]}"
       )
   """)
   student_id = db.execute("SELECT id FROM Students ORDER BY id DESC").fetchone()[0]
