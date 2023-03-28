@@ -42,7 +42,7 @@ function buildGroups(arr){
 }
 
 function getWeight(id1,id2,weights){
-  console.log(id1,id2,weights)
+  //console.log(id1,id2,weights)
   if(weights){
   if (weights[id1]){
     return weights[id1][id2]
