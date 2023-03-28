@@ -90,6 +90,6 @@ return ({ element:
             </div>)} 
         </div>
       </Listbox>
-    </div>, value: selected
+    </div>, value: selected ? selected : {id:0}
                       })
 }
