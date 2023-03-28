@@ -68,10 +68,18 @@ export default class SeatingEditor extends React.Component {
     const rect = this.state.draggable.node.getBoundingClientRect();
 
     // Mouse position
-    const x = event.clientX - (rect.left + rect.width / 2);
-    const y = event.clientY - (rect.top + rect.height / 2);
+    let x, y;
+    if (event.type === "mousemove") {
+      x = event.clientX;
+      y = event.clientY;
+    } else if (event.type === "touchmove") {
+      x = event.touches[0].clientX;
+      y = event.touches[0].clientY;
+    }
+    x -= rect.left + rect.width / 2;
+    y -= rect.top + rect.height / 2;
 
-    let angle = Math.atan2(y, x);
+    const angle = Math.atan2(y, x);
 
     let furniture = [...this.state.furniture];
     const index = furniture.findIndex(x => x.furn_id === furn_id);
@@ -165,7 +173,7 @@ export default class SeatingEditor extends React.Component {
         </div>
 
         <div
-          className="seating-container border-solid border border-slate-200 flex-1"
+          className="relative border-solid border border-slate-200 flex-1"
           ref={e => { this.divElement = e }}
           tabIndex={0}
           onClick={e => { if (this.state.mode === "place") { this.addSeat(e) } }}

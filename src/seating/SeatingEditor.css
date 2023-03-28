@@ -1,8 +1,3 @@
-.seating-container {
-  position: relative;
-  outline: none;
-}
-
 .seat-element, .clear-seat-element {
   background: #888888;
   width: 8em;
