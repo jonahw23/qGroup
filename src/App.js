@@ -15,10 +15,10 @@ import Papa from 'papaparse'
 
 
 //Constants for user and class 
-//Current user 2 class 10 (Loe's Empty Class)
-//CSV goes to user 1 class 7 (Alice's world history class)
-const pageUserId = 1
-const pageClassId = 7
+//Current user 1 class 1 (Alice's Geometry Class)
+//CSV goes to user 6 class 8 (Joe's optics class)
+const pageUserId = 6
+const pageClassId = 8
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -96,6 +96,7 @@ const addStudent = async (user_id, class_id, first_name, last_name) => {
     body: JSON.stringify({
       first_name: first_name,
       last_name: last_name,
+      class_id: class_id
     }),
     headers: {
       'Content-Type': 'application/json'
@@ -166,6 +167,12 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })).json()
+      const classes = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/get_classes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
       const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
         method: 'GET',
         headers: {
@@ -184,7 +191,7 @@ export default function Example() {
         }
       }, [])).json()
       if (students && users && groups) {
-        addToState({ "students": students, "users": users, "groups": groups, "weights": weights })
+        addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights })
       }
       else {
         console.log("Didn't add students or users or groups")
@@ -289,7 +296,8 @@ export default function Example() {
         const unparsedFile = results.data
         const parsedFile = parseResults(unparsedFile)
         console.log("File", parsedFile)
-        uploadStudents(1, 7, parsedFile)
+        //This is file destination, should be changed to not be hardcoded
+        uploadStudents(6, 8, parsedFile)
       }
     })
   }
@@ -299,13 +307,13 @@ export default function Example() {
     deleteStudent(pageUserId, pageClassId, delId)
   }
 
-  //console.log("state", state)
+  //console.log("state classes", state.classes)
 
   return (
     <Router>
       <div className="min-h-full">
 
-        <Header />
+        <Header stateClass={state.classes}/>
 
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">

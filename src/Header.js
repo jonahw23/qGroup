@@ -16,7 +16,7 @@ export default class Header extends React.Component {
       { name: 'Other1', href: '#', current: false },
       { name: 'Other2', href: '#', current: false },
       { name: 'Other3', href: '#', current: false },
-    ]
+    ],
   }
 
   onClickNavigation = (index) => {
@@ -46,7 +46,7 @@ export default class Header extends React.Component {
 
                     <div className="hidden md:block">
                       <div className="ml-7 flex items-baseline space-x-2 space-y-0">
-                        {new ListBox()}
+                        {new ListBox(this.props.stateClass)}
                       </div>
                     </div>
 

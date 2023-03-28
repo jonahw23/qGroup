@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS Furniture
    y FLOAT,
    theta FLOAT,
    seating_id INTEGER,
-   FOREIGN KEY(seating_id) REFERENCES Seating(seating_id) ON DELETE CASCADE)
+   FOREIGN KEY(seating_id) REFERENCES Seating(seating_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS StudentFurnMap
   (student_id INTEGER,
