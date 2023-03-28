@@ -17,16 +17,24 @@ const pageClassId = 10
 var builtPeople = false
 var builtGroups = false
 
-function buildPeople(arr, oneName){
+function buildPeople(arr, oneName,sId){
+  if (sId < 0){
+    sId = null
+  }
   if(!builtPeople){
   for(let i = 0; i < arr.length; i++){
     people.push(oneName ? {name: arr[i].name} : {
       first_name: arr[i].first_name,
       last_name: arr[i].last_name,
+      id:  arr[i].id,
       group:0,
     })
   }
     builtPeople = true
+  }
+  for(let i = 0; i < arr.length;i++){
+    people[i].selected = sId
+
   }
 }
 
@@ -55,11 +63,11 @@ function randColor(){
   return constants.tailwindColorOptions[Math.floor(Math.random()*constants.tailwindColorOptions.length)]
 }
 
-export default function ButtonBox(height, peopleNew, groupsNew, oneName,weights) {
+export default function ButtonBox(height, peopleNew, groupsNew, oneName,weights,selectedStudent) {
 //Visual height, array of people, true/false of whether there's "name" or "first_name, last_name"
 
 if(peopleNew){
-  buildPeople(peopleNew, oneName)
+  buildPeople(peopleNew, oneName,(selectedStudent?selectedStudent.id:-1))
 }
 if(groupsNew){
   buildGroups(groupsNew)
@@ -80,11 +88,23 @@ return (
                         <div
                           key={person.name}
                           to={person.href}
+                          onClick = {(e) => {
+                            console.log("click",person)
+                            if(person.selected){
+                              weights[person.selected][person.id] = weights[person.selected][person.id]?weights[person.selected][person.id]*-1:1
+                              weights[person.id][person.selected] = weights[person.selected][person.id]?weights[person.selected][person.id]*-1:1
+
+                              console.log(person.selected,person.id, weights[person.selected][person.id]); 
+
+                            }
+
+                          }}
                           className={constants.classNames(
                             person.current
                               ? 'bg-gray-800 text-white'
-                              : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white',
-                              'w-60 px-4 py-2 rounded-md text-sm font-medium ' + (getWeight(personIdx,0,weights)?'outline: 2px solid;':'')
+                              : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + 
+                              '-300 hover:bg-gray-700 hover:text-white ' + (getWeight(person.id,person.selected,weights)?'outline: 2px solid;':''),
+                              'w-60 px-4 py-2 rounded-md text-sm font-medium '
                           )}
                           //aria-current={person.current ? 'page' : undefined}
                         >
