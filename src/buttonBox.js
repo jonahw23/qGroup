@@ -46,9 +46,6 @@ function buildWeights(dict){
   weights = {}
   for (const [key1, value1] of Object.entries(dict)) {
     weights[key1] = value1
-    for (const [key2, value2] of Object.entries(weights[key1])) {
-      weights[key2] = {[key1]:value2}
-    }
   }
   console.log("weights", weights)
 }
@@ -57,7 +54,14 @@ function getWeight(id1,id2){
   //console.log("checking", id1, id2)
   if(weights){
   if (weights[id1]){
-    return weights[id1][id2]
+    if(weights[id1][id2]){
+      return weights[id1][id2]
+    }
+    else if(weights[id2]){
+      if(weights[id2][id1]){
+        return weights[id2][id1]
+      }
+    }
   }
 }
   return false
@@ -99,7 +103,7 @@ return (
                             person.current
                               ? 'bg-gray-800 text-white'
                               : person.id === selectedStudent ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-black' 
-                              : getWeight(person.id, selectedStudent) > 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-green-500'
+                              : getWeight(person.id, selectedStudent) > 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-green-700'
                               : getWeight(person.id, selectedStudent) < 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-red-500'
                               : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline-black'
                           )}
