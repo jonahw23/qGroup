@@ -184,7 +184,7 @@ export default function Example() {
         }
       }, [])).json()
       if (students && users && groups) {
-        addToState({ "students": students, "users": users, "groups":groups,"weights":weights })
+        addToState({ "students": students, "users": users, "groups":groups, "weights":weights })
       }
       else {
         console.log("Didn't add students or users or groups")
