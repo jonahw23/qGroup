@@ -117,23 +117,23 @@ const addStudent = async (user_id, class_id, first_name, last_name) => {
 //console.log("OtherPeople", otherPeople)
 //console.log("TestPeople", constants.testPeople)
 
-function fillUsers(){
+function fillUsers() {
   //Refill database users after database reset
-  for(let i = 0; i < constants.testUsers.length; i++){
+  for (let i = 0; i < constants.testUsers.length; i++) {
     addUser(constants.testUsers[i].name, constants.testUsers[i].password)
   }
 }
 
-function fillClasses(){
+function fillClasses() {
   //Refill database classes after database reset (fill users first)
-  for(let i = 0; i < constants.testClasses.length; i++){
+  for (let i = 0; i < constants.testClasses.length; i++) {
     addClass(constants.testClasses[i].id, constants.testClasses[i].name)
   }
 }
 
-function fillStudents(){
+function fillStudents() {
   //Refill database students after database reset (fill classes first)
-  for(let i = 0; i < constants.testStudents.length; i++){
+  for (let i = 0; i < constants.testStudents.length; i++) {
     addStudent(pageUserId, pageClassId, constants.testStudents[i].first_name, constants.testStudents[i].last_name)
   }
 }
@@ -145,7 +145,7 @@ export default function Example() {
   const [uploadedFile, setUploadedFile] = useState()
 
   //Random factor for render debugging
-  var randomColor = Math.floor(Math.random()*16777215).toString(16)
+  var randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
   //ListCont instance (dict where element:element, value:selected)
   const theList = ListCont('HardCoded', state.students, state.groups, false)
@@ -184,7 +184,7 @@ export default function Example() {
         }
       }, [])).json()
       if (students && users && groups) {
-        addToState({ "students": students, "users": users, "groups":groups,"weights":weights })
+        addToState({ "students": students, "users": users, "groups": groups, "weights": weights })
       }
       else {
         console.log("Didn't add students or users or groups")
@@ -193,7 +193,7 @@ export default function Example() {
     fetchData()
   }, [])
 
-  function useButtonSize () {
+  function useButtonSize() {
     async function fetchData() {
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
         method: 'POST',
@@ -235,7 +235,7 @@ export default function Example() {
     const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/remove_student", {
       method: 'DELETE',
       body: JSON.stringify({
-        student_id:student_id
+        student_id: student_id
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -243,7 +243,7 @@ export default function Example() {
     })
   }
 
-  function useButtonNum () {
+  function useButtonNum() {
     async function fetchData() {
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
         method: 'POST',
@@ -267,21 +267,21 @@ export default function Example() {
     fetchData()
   }
 
-  function parseResults(dataFile){
+  function parseResults(dataFile) {
     const returnJson = []
-    for(let i = 0; i < dataFile.length; i++){
+    for (let i = 0; i < dataFile.length; i++) {
       const arr = dataFile[i][0].split(",")
-      if(arr[0] && arr[1]){
+      if (arr[0] && arr[1]) {
         const lastName = arr[0].trim()
         const firstName = arr[1].trim()
-        returnJson.push({first_name: firstName, last_name: lastName})
+        returnJson.push({ first_name: firstName, last_name: lastName })
       }
     }
     console.log("json", returnJson)
     return returnJson
   }
 
-  function submitForm(){
+  function submitForm() {
     console.log(uploadedFile)
     const inputFile = uploadedFile
     Papa.parse(inputFile[0], {
@@ -290,10 +290,11 @@ export default function Example() {
         const parsedFile = parseResults(unparsedFile)
         console.log("File", parsedFile)
         uploadStudents(1, 7, parsedFile)
-    }})
+      }
+    })
   }
 
-  function deleteStudentButton(){
+  function deleteStudentButton() {
     const delId = theList.value.id
     deleteStudent(pageUserId, pageClassId, delId)
   }
@@ -314,25 +315,26 @@ export default function Example() {
                 <div className="w-18">
                   <div>{theList.element}</div>
                   <div class="mt-[47vh]">
-                  <button onClick={deleteStudentButton} className="ml-3 w-48 mt-0 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
-                    Delete Selected Student
-                  </button>
-                  <label class="block ml-5 mt-4 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
-                  <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
-                  <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
-                    Submit CSV
-                  </button>
+                    <button onClick={deleteStudentButton} className="ml-3 w-48 mt-0 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
+                      Delete Selected Student
+                    </button>
+                    <label class="block ml-5 mt-4 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+                    <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
+                    <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                      Submit CSV
+                    </button>
                   </div>
                 </div>
 
-                <div className="w-full py-4 h-full">
+                <div className="w-full h-full">
                   <Routes>
-                    <Route path="/" element={<>
-                      {ButtonBox(85, state.students, state.groups, false, state.weights)}
-                      <div>
-                        <div className="px-7 py-5">
-                          <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
-<input id="steps-range" type="range" onChange={(event) => setRangeval(event.target.value)} min="1" max="8" step="1" value={rangeval} className=" w-[20%] mb-0 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+                    <Route path="/" element={
+                      <div className="py-4">
+                        {ButtonBox(85, state.students, state.groups, false, state.weights)}
+                        <div>
+                          <div className="px-7 py-5">
+                            <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
+                            <input id="steps-range" type="range" onChange={(event) => setRangeval(event.target.value)} min="1" max="8" step="1" value={rangeval} className=" w-[20%] mb-0 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
                             <output className="ml-2 text-base font-medium text-gray-900">{rangeval}</output>
                             <button onClick={useButtonSize} className="ml-3 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make groups of that size
@@ -340,9 +342,10 @@ export default function Example() {
                             <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make that many groups
                             </button>
+                          </div>
                         </div>
                       </div>
-                    </>} />
+                    } />
                     <Route path="/seating" element={<SeatingEditor />} />
                   </Routes>
                 </div>
