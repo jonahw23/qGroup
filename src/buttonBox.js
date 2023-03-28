@@ -44,10 +44,13 @@ function buildGroups(arr){
 
 function buildWeights(dict){
   weights = {}
-  for (const [key, value] of Object.entries(dict)) {
-    weights[key] = value
+  for (const [key1, value1] of Object.entries(dict)) {
+    weights[key1] = value1
+    for (const [key2, value2] of Object.entries(weights[key1])) {
+      weights[key2] = {[key1]:value2}
+    }
   }
-  //console.log("weights", weights)
+  console.log("weights", weights)
 }
 
 function getWeight(id1,id2){

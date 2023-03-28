@@ -340,7 +340,7 @@ export default function Example() {
     }
   }
 
-  //console.log("state classes", state.classes)
+  //console.log("state weights", state.weights)
 
   return (
     <Router>
