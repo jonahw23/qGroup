@@ -330,7 +330,7 @@ export default function Example() {
                   <Routes>
                     <Route path="/" element={
                       <div className="py-4">
-                        {ButtonBox(85, state.students, state.groups, false, state.weights)}
+                        {ButtonBox(85, state.students, state.groups, false, state.weights,theList.value)}
                         <div>
                           <div className="px-7 py-5">
                             <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
