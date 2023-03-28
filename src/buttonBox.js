@@ -102,9 +102,9 @@ return (
                           className={constants.classNames(
                             person.current
                               ? 'bg-gray-800 text-white'
-                              : person.id === selectedStudent ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-black' 
-                              : getWeight(person.id, selectedStudent) > 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-green-700'
-                              : getWeight(person.id, selectedStudent) < 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-red-500'
+                              : person.id === selectedStudent ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-400 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-3 outline-black' 
+                              : getWeight(person.id, selectedStudent) > 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-200 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-green-700'
+                              : getWeight(person.id, selectedStudent) < 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-200 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-red-500'
                               : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline-black'
                           )}
                           //aria-current={person.current ? 'page' : undefined}
