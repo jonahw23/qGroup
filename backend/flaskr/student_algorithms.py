@@ -270,6 +270,7 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         groups (int matrix): updates groups
         student_group_map (dictionary): updated map from student indecies to the group they are in
     """
+    print("FROM PLACESTUDENT:", weights)
     avalible_groups = []
     positive_weighted_groups = []
     for i in range(len(groups)):
