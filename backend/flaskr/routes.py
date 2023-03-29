@@ -97,14 +97,15 @@ def list_students():
 @cross_origin()
 def remove_student(user_id, class_id):
   db = database.get_db()
-  db.execute("""
-    DELETE ClassroomStudentMap, StudentGroupMap, Students
-    FROM Students
-    LEFT JOIN ClassroomStudentMap ON ClassroomStudentMap.student_id = Students.id
-    LEFT JOIN StudentGroupMap ON StudentGroupMap.student_id = Students.id
-    WHERE Students.id = (?)
-  """, (request.json["student_id"]))
+  stud_id = request.json["student_id"]
+
+  db.execute("DELETE FROM Students WHERE id = (?)", (stud_id,))
+  db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (stud_id,))
+  db.execute("DELETE FROM StudentGroupMap WHERE student_id = (?)", (stud_id,))
+  db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (stud_id, stud_id))
+  
   db.commit()
+  return "", 201
   
 @routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
