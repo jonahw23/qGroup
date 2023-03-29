@@ -308,8 +308,31 @@ export default function Example() {
 
   function deleteStudentButton() {
     //Should be refactored for auto-state-update, see below
+    async function fetchData(user_id, class_id, student_id) {
+      const deleteStudents = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/remove_student", {
+          method: 'DELETE',
+          body: JSON.stringify({
+            student_id: student_id
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      const students = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })).json()
+      if (deleteStudents && students) {
+        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
+      }
+      else {
+        console.log("Didn't delete students or refind")
+      }
+    }
     const delId = theList.value.id
-    deleteStudent(pageUserId, pageClassId, delId)
+    fetchData(pageUserId, pageClassId, delId)
   }
 
   function minusWeightButton() {
@@ -385,6 +408,7 @@ export default function Example() {
   }
 
   //console.log("state weights", state.weights)
+  console.log("state students", state.groups)
 
   return (
     <Router>
