@@ -277,10 +277,10 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         positive_weighted_groups.append(False)
     for i in student_group_map:
         #set avalability for groups with neg weights to false
-        if weights[student][i] == -1:
+        if weights[str(student)][str(i)] == -1:
             avalible_groups[student_group_map[i]] = False
         #set groups with positive weights to True
-        elif weights[student][i] == 1:
+        elif weights[str(student)][str(i)] == 1:
             positive_weighted_groups[student_group_map[i]] = True
     priority_group_pool = []
     group_pool = []
@@ -359,7 +359,7 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
         
     placed_students = {}
     for i in range(len(students)):
-        print(students[i])
+        #print(students[i])
         placed_students[students[i]['id']] = False
     student_group_map = {}
 
@@ -369,9 +369,9 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
 
     for i in range(len(most_neg)):
         student = most_neg[i]
-        if neg_amount[student] > 0 and placed_students[student] == False:
+        if neg_amount[student] > 0 and placed_students[int(student)] == False:
             success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
-            placed_students[student] = success
+            placed_students[int(student)] = success
 
     most_pos, pos_amount = most_connections(weights,-1)
     
@@ -379,9 +379,9 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
 
     for i in range(len(most_pos)):
         student = most_pos[i]
-        if pos_amount[student] > 0 and placed_students[student] == False:
+        if pos_amount[str(student)] > 0 and placed_students[int(student)] == False:
             success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
-            placed_students[student] = success
+            placed_students[int(student)] = success
 
     #place everyone else
 
@@ -389,8 +389,9 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
 
     for i in range(len(rand_student)):
         student = rand_student[i]
-        if placed_students[student] == False:
-            success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
-            placed_students[student] = success
+        if(int(student) in placed_students):
+            if placed_students[int(student)] == False:
+                success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
+                placed_students[int(student)] = success
 
     return groups

@@ -186,12 +186,13 @@ export default function Example() {
           meta_group_name: "Test metagroup name",
           group_size: 4,
           group_amount: 0,
+          weights:weights
         }),
         headers: {
           'Content-Type': 'application/json'
         }
       }, [])).json()
-      if (students && users && groups) {
+      if (students && users && weights && groups) {
         addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights })
       }
       else {
@@ -209,6 +210,7 @@ export default function Example() {
           meta_group_name: "Test metagroup name",
           group_size: Number(rangeval),
           group_amount: 0,
+          weights: state.weights
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -233,6 +235,7 @@ export default function Example() {
           meta_group_name: "Test metagroup name",
           group_size: 0,
           group_amount: Number(rangeval),
+          weights: state.weights
         }),
         headers: {
           'Content-Type': 'application/json'

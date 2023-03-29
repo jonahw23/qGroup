@@ -270,7 +270,8 @@ def make_groups(user_id, class_id):
   groups = student_algorithms.group_students(
     students, 
     group_amount=request.json["group_amount"], 
-    group_size=request.json["group_size"]
+    group_size=request.json["group_size"],
+    weights=request.json["weights"]
   )
 
   for i, group in enumerate(groups):
@@ -288,7 +289,7 @@ def make_groups(user_id, class_id):
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
-      """, (students[student]["id"], group_id)) #student should be in order of ID
+      """, (students[int(student)]["id"], group_id)) #student should be in order of ID
   db.commit()
   
   return groups
@@ -359,16 +360,26 @@ def get_weights(class_id, user_id):
 
     students = get_class_students(user_id, class_id).json
 
-
     for student in students:
       res = db.execute(f"""SELECT * FROM StudentStudentMap WHERE student_id1 = ({student["id"]})""")
       student_weights = [dict(row) for row in res.fetchall()]
-      weights[student["id"]] = {}
+      
+      if(not student["id"] in weights):
+        weights[student["id"]] = {}
+        
+      for key in weights:
+        student_weights.append({"student_id1":student["id"], "student_id2":key, "weight":0})
+      
       for weight in student_weights:
-
-        weights[weight["student_id1"]][weight["student_id2"]] = weight["weight"]
-
-
+        if(not (weight["weight"] == 0) or not weight["student_id2"] in weights[weight["student_id1"]]):
+          weights[weight["student_id1"]][weight["student_id2"]] = weight["weight"]
+          if(weight["student_id2"] in weights):
+            weights[weight["student_id2"]][weight["student_id1"]] = weight["weight"]
+          else:
+            weights[weight["student_id2"]] = {}
+            weights[weight["student_id2"]][weight["student_id1"]] = weight["weight"]
+      
+    print("weights:", weights)
     return weights
 
 
