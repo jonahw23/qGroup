@@ -215,14 +215,17 @@ def generate_test_weights(length,scale=5):
     Returns:
         matrix of weights    
     """
-    weights = []
+    randIds = []
     for i in range(length):
-        weights.append([])
+        randIds.append(i)
+    weights = {}
+    for i in range(length):
+        weights[randIds[i]] = {}
         for j in range(length):
-            weights[i].append(0)
+            weights[randIds[i]][randIds[j]] = 0
     for i in range(length * scale):
-        a = random.randint(0,length-1)
-        b = random.randint(0,length-1)
+        a = randIds[random.randint(0,length-1)]
+        b = randIds[random.randint(0,length-1)]
         w = random.randint(-1,1)
         if a != b:
             weights[a][b] = w
@@ -241,13 +244,14 @@ def most_connections(weights,val):
         count (int array): the amount of times val appears for each index
 
     """
-    count = []
-    for i in range(len(weights)):
-        count.append(0)
-        for j in range(len(weights[i])):
+    count = {}
+    #for key in a_dict.keys():
+    for i in weights.keys():
+        count[i] = 0
+        for j in weights[i].keys():
             if weights[i][j] == val:
                 count[i] += 1
-    indecies = [*range(len(weights))]
+    indecies = [*weights.keys()]
     indecies.sort(key=lambda w : count[w],reverse=True)
     return indecies, count
 
@@ -353,9 +357,10 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
         for i in range(len(max_group_size)):
             groups.append([])
         
-    placed_students = []
+    placed_students = {}
     for i in range(len(students)):
-        placed_students.append(False)
+        print(students[i])
+        placed_students[students[i]['id']] = False
     student_group_map = {}
 
     most_neg, neg_amount = most_connections(weights,-1)
