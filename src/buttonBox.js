@@ -17,10 +17,7 @@ const pageClassId = 10
 var builtPeople = false
 var builtGroups = false
 
-function buildPeople(arr, oneName,sId){
-  if (sId < 0){
-    sId = null
-  }
+function buildPeople(arr, oneName){
   if(!builtPeople){
   for(let i = 0; i < arr.length; i++){
     people.push(oneName ? {name: arr[i].name} : {
@@ -31,10 +28,6 @@ function buildPeople(arr, oneName,sId){
     })
   }
     builtPeople = true
-  }
-  for(let i = 0; i < arr.length;i++){
-    people[i].selected = sId
-
   }
 }
 
@@ -49,11 +42,26 @@ function buildGroups(arr){
   //console.log("people", people)
 }
 
-function getWeight(id1,id2,weights){
-  //console.log(id1,id2,weights)
+function buildWeights(dict){
+  weights = {}
+  for (const [key1, value1] of Object.entries(dict)) {
+    weights[key1] = value1
+  }
+  console.log("weights", weights)
+}
+
+function getWeight(id1,id2){
+  //console.log("checking", id1, id2)
   if(weights){
   if (weights[id1]){
-    return weights[id1][id2]
+    if(weights[id1][id2]){
+      return weights[id1][id2]
+    }
+    else if(weights[id2]){
+      if(weights[id2][id1]){
+        return weights[id2][id1]
+      }
+    }
   }
 }
   return false
@@ -63,14 +71,17 @@ function randColor(){
   return constants.tailwindColorOptions[Math.floor(Math.random()*constants.tailwindColorOptions.length)]
 }
 
-export default function ButtonBox(height, peopleNew, groupsNew, oneName,weights,selectedStudent) {
+export default function ButtonBox(height, peopleNew, groupsNew, oneName, weightsNew, selectedStudent) {
 //Visual height, array of people, true/false of whether there's "name" or "first_name, last_name"
 
 if(peopleNew){
-  buildPeople(peopleNew, oneName,(selectedStudent?selectedStudent.id:-1))
+  buildPeople(peopleNew, oneName, selectedStudent)
 }
 if(groupsNew){
   buildGroups(groupsNew)
+}
+if(weightsNew){
+  buildWeights(weightsNew)
 }
 
 people.sort(function(a,b){return (a.group>b.group?1:-1)})
@@ -88,23 +99,13 @@ return (
                         <div
                           key={person.name}
                           to={person.href}
-                          onClick = {(e) => {
-                            console.log("click",person)
-                            if(person.selected){
-                              weights[person.selected][person.id] = weights[person.selected][person.id]?weights[person.selected][person.id]*-1:1
-                              weights[person.id][person.selected] = weights[person.selected][person.id]?weights[person.selected][person.id]*-1:1
-
-                              console.log(person.selected,person.id, weights[person.selected][person.id]); 
-
-                            }
-
-                          }}
                           className={constants.classNames(
                             person.current
                               ? 'bg-gray-800 text-white'
-                              : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + 
-                              '-300 hover:bg-gray-700 hover:text-white ' + (getWeight(person.id,person.selected,weights)?'outline: 2px solid;':''),
-                              'w-60 px-4 py-2 rounded-md text-sm font-medium '
+                              : person.id === selectedStudent ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-400 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-3 outline-black' 
+                              : getWeight(person.id, selectedStudent) > 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-200 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-green-700'
+                              : getWeight(person.id, selectedStudent) < 0 ? 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-200 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline outline-2 outline-red-500'
+                              : 'text-gray-800 bg-' + constants.tailwindColorOptions[person.group] + '-300 hover:bg-gray-700 hover:text-white w-60 px-4 py-2 rounded-md text-sm font-medium outline-black'
                           )}
                           //aria-current={person.current ? 'page' : undefined}
                         >

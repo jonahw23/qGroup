@@ -98,12 +98,12 @@ def list_students():
 def remove_student(user_id, class_id):
   db = database.get_db()
   db.execute("""
-    DELETE ClassroomsStudentMap, StudentGroupMap, Students
+    DELETE ClassroomStudentMap, StudentGroupMap, Students
     FROM Students
     LEFT JOIN ClassroomStudentMap ON ClassroomStudentMap.student_id = Students.id
     LEFT JOIN StudentGroupMap ON StudentGroupMap.student_id = Students.id
     WHERE Students.id = (?)
-  """, (request.json["student_id"],))
+  """, (request.json["student_id"]))
   db.commit()
   
 @routes.route("/api/users/new", methods = ["POST"])
@@ -235,9 +235,9 @@ def map_stud_furn(user_id, class_id, seating_id):
   db.commit()
   return "", 201
 
-@routes.route("/api/class/<class_id>/students/set_weight", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/students/set_weight", methods = ["POST"])
 @cross_origin()
-def set_weight():
+def set_weight(user_id, class_id):
   db = database.get_db()
   db.execute("""
     INSERT INTO StudentStudentMap

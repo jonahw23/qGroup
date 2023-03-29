@@ -35,7 +35,7 @@ function buildGroups(arr){
   //console.log("people", people)
 }
 
-export default function ListCont(height, peopleNew, groupsNew, oneName) {
+export default function ListCont(height, peopleNew, groupsNew, oneName, lastSelected) {
 //Visual height, array of people, true/false of whether there's "name" or "first_name, last_name"
 
 if(peopleNew){
@@ -63,7 +63,7 @@ return ({ element:
                   key={personIdx}
                   className={({ selected }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                       selected ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
+                       selected ? 'bg-amber-100 text-amber-900' : person.id === lastSelected ? 'bg-blue-100 text-blue-900': 'text-gray-900'
                     }`
                   }
                   value={person}
@@ -90,6 +90,6 @@ return ({ element:
             </div>)} 
         </div>
       </Listbox>
-    </div>, value: selected
+    </div>, value: selected ? selected : {id:0}
                       })
 }

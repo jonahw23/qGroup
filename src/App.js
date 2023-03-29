@@ -17,8 +17,8 @@ import Papa from 'papaparse'
 //Constants for user and class 
 //Current user 1 class 1 (Alice's Geometry Class)
 //CSV goes to user 6 class 8 (Joe's optics class)
-const pageUserId = 6
-const pageClassId = 8
+const pageUserId = 1
+const pageClassId = 1
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -144,12 +144,13 @@ export default function Example() {
   const [state, addToState] = useState([])
   const [rangeval, setRangeval] = useState(8)
   const [uploadedFile, setUploadedFile] = useState()
+  const [lastClicked, setLastClicked] = useState(-1)
 
   //Random factor for render debugging
   var randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
   //ListCont instance (dict where element:element, value:selected)
-  const theList = ListCont('HardCoded', state.students, state.groups, false)
+  const theList = ListCont('HardCoded', state.students, state.groups, false, lastClicked)
 
   //console.log("state", state)
 
@@ -215,7 +216,31 @@ export default function Example() {
       }, [])).json()
       if (groups) {
         console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups })
+        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights })
+      }
+      else {
+        console.log("Didn't change groups")
+      }
+    }
+    fetchData()
+  }
+
+  function useButtonNum() {
+    async function fetchData() {
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
+        method: 'POST',
+        body: JSON.stringify({
+          meta_group_name: "Test metagroup name",
+          group_size: 0,
+          group_amount: Number(rangeval),
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, [])).json()
+      if (groups) {
+        console.log("groups:", groups)
+        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights})
       }
       else {
         console.log("Didn't change groups")
@@ -250,30 +275,6 @@ export default function Example() {
     })
   }
 
-  function useButtonNum() {
-    async function fetchData() {
-      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
-        method: 'POST',
-        body: JSON.stringify({
-          meta_group_name: "Test metagroup name",
-          group_size: 0,
-          group_amount: Number(rangeval),
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }, [])).json()
-      if (groups) {
-        console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups })
-      }
-      else {
-        console.log("Didn't change groups")
-      }
-    }
-    fetchData()
-  }
-
   function parseResults(dataFile) {
     const returnJson = []
     for (let i = 0; i < dataFile.length; i++) {
@@ -303,11 +304,84 @@ export default function Example() {
   }
 
   function deleteStudentButton() {
+    //Should be refactored for auto-state-update, see below
     const delId = theList.value.id
     deleteStudent(pageUserId, pageClassId, delId)
   }
 
-  //console.log("state classes", state.classes)
+  function minusWeightButton() {
+    async function fetchData(user_id, class_id, stud_id1, stud_id2, weight) {
+      const groupsUpdate = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
+        method: 'POST',
+        body: JSON.stringify({
+          stud_id1: stud_id1,
+          stud_id2: stud_id2,
+          weight: weight
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
+      if (groupsUpdate && weights) {
+        console.log("weights:", weights)
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+      }
+      else {
+        console.log("Didn't change weights")
+      }
+    }
+    if(lastClicked > 0){
+      fetchData(pageUserId, pageClassId, theList.value.id, lastClicked, -1)
+      setLastClicked(-1)
+    }
+    else{
+      setLastClicked(theList.value.id)
+    }
+  }
+
+  function plusWeightButton() {
+    async function fetchData(user_id, class_id, stud_id1, stud_id2, weight) {
+      const groupsUpdate = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
+        method: 'POST',
+        body: JSON.stringify({
+          stud_id1: stud_id1,
+          stud_id2: stud_id2,
+          weight: weight
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
+      if (groupsUpdate && weights) {
+        console.log("weights:", weights)
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+      }
+      else {
+        console.log("Didn't change weights")
+      }
+    }
+    if(lastClicked > 0){
+      fetchData(pageUserId, pageClassId, theList.value.id, lastClicked, 1)
+      setLastClicked(-1)
+    }
+    else{
+      setLastClicked(theList.value.id)
+    }
+  }
+
+  //console.log("state weights", state.weights)
 
   return (
     <Router>
@@ -323,10 +397,16 @@ export default function Example() {
                 <div className="w-18">
                   <div>{theList.element}</div>
                   <div class="mt-[47vh]">
-                    <button onClick={deleteStudentButton} className="ml-3 w-48 mt-0 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
+                    <button onClick={minusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-red-500 text-white text-sm font-medium">
+                      Add Negative Weight
+                    </button>
+                    <button onClick={plusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-green-500 text-white text-sm font-medium">
+                      Add Positive Weight
+                    </button>
+                    <button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
                       Delete Selected Student
                     </button>
-                    <label class="block ml-5 mt-4 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+                    <label class="block ml-5 mt-3 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
                     <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
                     <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                       Submit CSV
@@ -338,7 +418,7 @@ export default function Example() {
                   <Routes>
                     <Route path="/" element={
                       <div className="py-4">
-                        {ButtonBox(85, state.students, state.groups, false, state.weights,theList.value)}
+                        {ButtonBox(85, state.students, state.groups, false, state.weights, theList.value.id)}
                         <div>
                           <div className="px-7 py-5">
                             <label for="steps-range" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Group size/number</label>
