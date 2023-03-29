@@ -275,20 +275,6 @@ export default function Example() {
     })
   }
 
-  const updateWeight = async (user_id, class_id, stud_id1, stud_id2, weight) => {
-    const response = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
-      method: 'POST',
-      body: JSON.stringify({
-        stud_id1: stud_id1,
-        stud_id2: stud_id2,
-        weight: weight
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-  }
-
   function parseResults(dataFile) {
     const returnJson = []
     for (let i = 0; i < dataFile.length; i++) {
@@ -318,21 +304,76 @@ export default function Example() {
   }
 
   function deleteStudentButton() {
+    //Should be refactored for auto-state-update, see below
     const delId = theList.value.id
     deleteStudent(pageUserId, pageClassId, delId)
   }
+
   function minusWeightButton() {
+    async function fetchData(user_id, class_id, stud_id1, stud_id2, weight) {
+      const groupsUpdate = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
+        method: 'POST',
+        body: JSON.stringify({
+          stud_id1: stud_id1,
+          stud_id2: stud_id2,
+          weight: weight
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
+      if (groupsUpdate && weights) {
+        console.log("weights:", weights)
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+      }
+      else {
+        console.log("Didn't change weights")
+      }
+    }
     if(lastClicked > 0){
-      updateWeight(pageUserId, pageClassId, theList.value.id, lastClicked, -1)
+      fetchData(pageUserId, pageClassId, theList.value.id, lastClicked, -1)
       setLastClicked(-1)
     }
     else{
       setLastClicked(theList.value.id)
     }
   }
+
   function plusWeightButton() {
+    async function fetchData(user_id, class_id, stud_id1, stud_id2, weight) {
+      const groupsUpdate = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
+        method: 'POST',
+        body: JSON.stringify({
+          stud_id1: stud_id1,
+          stud_id2: stud_id2,
+          weight: weight
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/get_weights', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json()
+      if (groupsUpdate && weights) {
+        console.log("weights:", weights)
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+      }
+      else {
+        console.log("Didn't change weights")
+      }
+    }
     if(lastClicked > 0){
-      updateWeight(pageUserId, pageClassId, theList.value.id, lastClicked, 1)
+      fetchData(pageUserId, pageClassId, theList.value.id, lastClicked, 1)
       setLastClicked(-1)
     }
     else{
