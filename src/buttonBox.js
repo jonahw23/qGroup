@@ -23,11 +23,20 @@ function buildPeople(arr, oneName){
     people.push(oneName ? {name: arr[i].name} : {
       first_name: arr[i].first_name,
       last_name: arr[i].last_name,
-      id:  arr[i].id,
-      group:0,
+      id: arr[i].id
     })
   }
     builtPeople = true
+  }
+  if(arr.length !== people.length){
+    people = []
+    for(let i = 0; i < arr.length; i++){
+      people.push(oneName ? {name: arr[i].name} : {
+        first_name: arr[i].first_name,
+        last_name: arr[i].last_name,
+        id: arr[i].id
+      })
+    }
   }
 }
 
@@ -36,7 +45,12 @@ function buildGroups(arr){
   for(let i = 0; i < arr.length; i++){
     groups.push(arr[i])
     for(let j = 0; j < groups[i].length; j++){
-      people[groups[i][j]].group = i
+      if(people[groups[i][j]]){
+        people[groups[i][j]].group = i
+      }
+      else{
+        console.log(groups[i][j])
+      }
     }
   }
   //console.log("people", people)
