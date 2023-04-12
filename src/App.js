@@ -17,8 +17,8 @@ import Papa from 'papaparse'
 //Constants for user and class 
 //Current user 1 class 1 (Alice's Geometry Class)
 //CSV goes to user 6 class 8 (Joe's optics class)
-const pageUserId = 1
-const pageClassId = 1
+const pageUserId = 6
+const pageClassId = 8
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -308,31 +308,32 @@ export default function Example() {
 
   function deleteStudentButton() {
     //Should be refactored for auto-state-update, see below
-    async function fetchData(user_id, class_id, student_id) {
-      const deleteStudents = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/remove_student", {
+    async function fetchData() {
+      const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + pageUserId + "/class/" + pageClassId + "/students/remove_student", {
           method: 'DELETE',
           body: JSON.stringify({
-            student_id: student_id
+            student_id: theList.value.id
           }),
           headers: {
             'Content-Type': 'application/json'
           }
-        })
-      const students = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })).json()
+        }))
+      const students = await ((await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/students', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json())
       if (deleteStudents && students) {
+        console.log(students)
         addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
       }
       else {
         console.log("Didn't delete students or refind")
       }
     }
-    const delId = theList.value.id
-    fetchData(pageUserId, pageClassId, delId)
+    fetchData()
+    console.log("NewSetudenst:", state.students)
   }
 
   function minusWeightButton() {

@@ -281,7 +281,7 @@ def make_groups(user_id, class_id):
     students, 
     group_amount=request.json["group_amount"], 
     group_size=request.json["group_size"],
-    weights=request.json["weights"]
+    #weights=request.json["weights"]
   )
 
   for i, group in enumerate(groups):
