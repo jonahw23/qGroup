@@ -268,6 +268,15 @@ def make_groups(user_id, class_id):
   print("Amount:", request.json["group_amount"])
   print("size:", {request.json["group_size"]})
 
+  w = request.json["weights"]
+
+  for s1 in w:
+    text = str(s1)+":"
+    for s2 in w[s1]:
+        if w[s1][s2] != 0:
+          text = text + " ("+str(s2)+", "+str(w[s1][s2])+")"
+    print(text)
+
   groups = student_algorithms.group_students(
     students, 
     group_amount=request.json["group_amount"], 
