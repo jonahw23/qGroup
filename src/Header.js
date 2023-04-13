@@ -46,7 +46,7 @@ export default class Header extends React.Component {
 
                     <div className="hidden md:block">
                       <div className="ml-7 flex items-baseline space-x-2 space-y-0">
-                        {new ListBox(this.props.stateClass)}
+                        {new ListBox(this.props.stateClass).element}
                       </div>
                     </div>
 

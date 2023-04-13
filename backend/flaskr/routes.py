@@ -299,7 +299,7 @@ def make_groups(user_id, class_id):
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
-      """, (students[int(student)]["id"], group_id)) #student should be in order of ID
+      """, (int(student), group_id)) #student should be in order of ID
   db.commit()
   
   return groups
