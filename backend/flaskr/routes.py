@@ -281,8 +281,10 @@ def make_groups(user_id, class_id):
     students, 
     group_amount=request.json["group_amount"], 
     group_size=request.json["group_size"],
-    #weights=request.json["weights"]
+    weights=request.json["weights"]
   )
+
+  print(groups)
 
   for i, group in enumerate(groups):
     group_name = "Group " + str(i + 1)
@@ -296,6 +298,8 @@ def make_groups(user_id, class_id):
         VALUES (?,?)
     """, (meta_group_id, group_id))
     for student in group:
+      print(int(student))
+      print(students[int(student)]["id"])
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
