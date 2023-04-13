@@ -89,7 +89,7 @@ export default function ListBox(classesNew) {
   
   const [selected, setSelected] = useState({name:"Classes here"})
 
-  return (
+  return ({element:
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
         <>
@@ -153,5 +153,5 @@ export default function ListBox(classesNew) {
         </>
       )}
     </Listbox>
-  )
+, value: selected})
 }
