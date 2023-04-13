@@ -103,7 +103,7 @@ def groups_of_custom_size(students,max_group_size):
             group_num += 1
         groups[group_num].append(students[i])
         #groups[group_num].append(students[i]["id"])
-    return groups
+    return groups_of_ids(students,groups)
 
 
 def groups_of_fixed_amount(students,k):
@@ -167,14 +167,13 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     Returns:
         False if failed or the grouped students
     """
-
     w = False
     if weights != False:
         w = {}
         for s1 in weights:
             w[str(s1)] = {}
             for s2 in weights[s1]:
-                w[str(s1)][str(s2)] = str(weights[s1][s2])
+                w[str(s1)][str(s2)] = weights[s1][s2]
     weights = w
 
     
@@ -210,7 +209,7 @@ def generate_test_data(length,values):
     """
     students = []
     for i in range(length):
-        students.append({"id": i})
+        students.append({"id": i+5})
         for j in range(len(values)):
             students[i][values[j]] = random.randint(0,100)
     return students
@@ -227,7 +226,7 @@ def generate_test_weights(length,scale=5):
     """
     randIds = []
     for i in range(length):
-        randIds.append(str(i))
+        randIds.append(str(i + 5))
     weights = {}
     for i in range(length):
         weights[randIds[i]] = {}
@@ -236,7 +235,7 @@ def generate_test_weights(length,scale=5):
     for i in range(length * scale):
         a = randIds[random.randint(0,length-1)]
         b = randIds[random.randint(0,length-1)]
-        w = str(random.randint(-1,1))
+        w = random.randint(-1,1)
         if a != b:
             weights[a][b] = w
             weights[b][a] = w
@@ -266,7 +265,7 @@ def most_connections(weights,val):
     indecies.sort(key=lambda w : count[w],reverse=True)
     return indecies, count
 
-def place_student(student,groups,weights,student_group_map,max_group_size):
+def place_student(students,student,groups,weights,student_group_map,max_group_size):
     """Places a student in a group with priorities for weight properties
 
     Args:
@@ -281,7 +280,6 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         groups (int matrix): updates groups
         student_group_map (dictionary): updated map from student indecies to the group they are in
     """
-
     avalible_groups = []
     positive_weighted_groups = []
     for i in range(len(groups)):
@@ -289,10 +287,10 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         positive_weighted_groups.append(False)
     for i in student_group_map:
         #set avalability for groups with neg weights to false
-        if str(weights[str(student)][str(i)]) == str(-1):
+        if weights[str(student)][str(i)] == -1:
             avalible_groups[student_group_map[i]] = False
         #set groups with positive weights to True
-        elif str(weights[str(student)][str(i)]) == str(1):
+        elif weights[str(student)][str(i)] == 1:
             positive_weighted_groups[student_group_map[i]] = True
     priority_group_pool = []
     group_pool = []
@@ -319,19 +317,19 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         g = priority_group_pool[rand_p_g_p[i]]
         if len(groups[g]) < max_group_size[g]:
             groups[g].append(student)
-            student_group_map[student]= g
+            student_group_map[student] = g
             return True, groups,student_group_map
     for i in range(len(rand_g_p)):
         g = group_pool[rand_g_p[i]]
         if len(groups[g]) < max_group_size[g]:
             groups[g].append(student)
-            student_group_map[student]= g
+            student_group_map[student] = g
             return True, groups,student_group_map
     for i in range(len(rand_a_g_p)):
         g = all_group_pool[rand_a_g_p[i]]
         if len(groups[g]) < max_group_size[g]:
             groups[g].append(student)
-            student_group_map[student]= g
+            student_group_map[student] = g
             return True, groups,student_group_map
     return False, groups,student_group_map 
 
@@ -377,27 +375,27 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
         placed_students[students[i]['id']] = False
     student_group_map = {}
 
-    most_neg, neg_amount = most_connections(weights,str(-1))
+    most_neg, neg_amount = most_connections(weights,-1)
     
     #Place most negative people first in random groups
 
-    
+    """
     for i in range(len(most_neg)):
         student = most_neg[i]
-        print(i, student, neg_amount[student])
         if neg_amount[student] > 0 and placed_students[int(student)] == False:
             success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
             placed_students[int(student)] = success
+    """
     
-    most_pos, pos_amount = most_connections(weights,str(1))
-    
+    most_pos, pos_amount = most_connections(weights,1)
+
 
     #Place most positive people in random groups
 
     for i in range(len(most_pos)):
         student = most_pos[i]
         if pos_amount[str(student)] > 0 and placed_students[int(student)] == False:
-            success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
+            success, groups,student_group_map = place_student(students,student,groups,weights,student_group_map,max_group_size)
             placed_students[int(student)] = success
 
 
@@ -405,12 +403,22 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
 
     rand_student = random_student_order(students)
 
-    for i in rand_student:
-        student = rand_student[i]
-        if(int(student) in placed_students):
-            if placed_students[int(student)] == False:
-                success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
-                placed_students[int(student)] = success
+    for i in range(len(rand_student)):
+        student = students[int(rand_student[i])]["id"]
+        if placed_students[int(student)] == False:
+            success, groups,student_group_map = place_student(students,student,groups,weights,student_group_map,max_group_size)
+            placed_students[int(student)] = success
 
 
+    return groups_of_ids(students,groups)
+
+def groups_of_ids(students, groups):
+    for i in range(len(groups)):
+        for j in range(len(groups[i])):
+            groups[i][j] = int(groups[i][j])
     return groups
+
+def find_student(students,id):
+    for i in range(len(students)):
+        if students[i]["id"] == id:
+            return students[i]

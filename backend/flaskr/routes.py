@@ -284,6 +284,7 @@ def make_groups(user_id, class_id):
     weights=request.json["weights"]
   )
 
+  print("result:")
   print(groups)
 
   for i, group in enumerate(groups):
@@ -298,12 +299,10 @@ def make_groups(user_id, class_id):
         VALUES (?,?)
     """, (meta_group_id, group_id))
     for student in group:
-      print(int(student))
-      print(students[int(student)]["id"])
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
-      """, (students[int(student)]["id"], group_id)) #student should be in order of ID
+      """, (student_algorithms.find_student(students,int(student))["id"], group_id)) #student should be in order of ID
   db.commit()
   
   return groups
