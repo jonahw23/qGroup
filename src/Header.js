@@ -26,7 +26,18 @@ export default class Header extends React.Component {
     this.setState({ navigation: navigation });
   }
 
+  addListBox = (propped) => {
+    if(propped){
+      const newList = new ListBox(propped)
+      this.setState({navigation: this.state.navigation, classList: newList})
+    }
+  }
+
   render = () => {
+    console.log("thepropls", this.props.stateClass)
+    if(this.props.stateClass){
+      this.state = {navigation: this.state.navigation, classList: new ListBox(this.props.stateClass)}
+    }
     return (
       <>
         <Disclosure as="nav" className="bg-neutral-400">
