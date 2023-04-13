@@ -213,28 +213,61 @@ def map_furn_group(table_group_id):
   db.commit()
   return "", 201
 
-@routes.route("/api/users/<user_id>/class/<class_id>/<seating_id>", methods = ["POST"])
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/students", methods = ["DELETE"])
+@cross_origin()
+def clear_stud_furn(user_id, class_id, seating_id):
+  db = database.get_db()
+  db.execute("""
+    DELETE FROM StudentFurnMap AS m
+    WHERE m.furn_id IN (
+      SELECT f.furn_id FROM Furniture f
+      WHERE f.seating_id = (?)
+    )
+  """, (seating_id))
+  db.commit()
+  return ""
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/students", methods = ["POST"])
 @cross_origin()
 def map_stud_furn(user_id, class_id, seating_id):
   db = database.get_db()
+
+  clear_stud_furn(user_id, class_id, seating_id)
 
   students = get_class_students(user_id, class_id).json
 
   res = db.execute("""
     SELECT furn_id FROM Furniture
       WHERE seating_id = (?) AND type = (?)
-  """, (seating_id, "desk"))
-  seats = res.fetchall()
+  """, (seating_id, "seat"))
+  seats = [dict(x) for x in res.fetchall()]
 
-  for i,student in enumerate(students): 
-    #Assumes the number of students is greater than or equal to the number of seats
+  for i, student in enumerate(students): 
+    if i >= len(seats):
+      break
+    
     db.execute("""
       INSERT INTO StudentFurnMap 
         VALUES (?, ?)
-    """, (students[student]["id"], seats[i])) 
+    """, (student["id"], seats[i]["furn_id"])) 
 
   db.commit()
   return "", 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/students", methods = ["GET"])
+@cross_origin()
+def list_students_furniture(user_id, class_id, seating_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT s.first_name, s.last_name, ff.furn_id FROM Students s
+    JOIN StudentFurnMap m ON m.student_id = s.id
+    JOIN (
+      SELECT f.* FROM Furniture f
+      WHERE f.seating_id = (?)
+    ) ff
+    ON ff.furn_id = m.furn_id
+  """, (seating_id))
+  return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/students/set_weight", methods = ["POST"])
 @cross_origin()
@@ -284,6 +317,7 @@ def make_groups(user_id, class_id):
     weights=request.json["weights"]
   )
 
+  print("result:")
   print(groups)
 
   for i, group in enumerate(groups):
@@ -298,12 +332,10 @@ def make_groups(user_id, class_id):
         VALUES (?,?)
     """, (meta_group_id, group_id))
     for student in group:
-      print(int(student))
-      print(students[int(student)]["id"])
       db.execute("""
         INSERT INTO StudentGroupMap (student_id, group_id)
           VALUES (?,?)
-      """, (int(student), group_id)) #student should be in order of ID
+      """, (student_algorithms.find_student(students,int(student))["id"], group_id)) #student should be in order of ID
   db.commit()
   
   return groups

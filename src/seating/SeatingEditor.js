@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 export default class SeatingEditor extends React.Component {
   state = {
     furniture: [],
+    students: [],
     mode: "movement",
     furn_id: 0,
     draggable: undefined,
@@ -13,6 +14,16 @@ export default class SeatingEditor extends React.Component {
 
   componentDidMount = () => {
 
+    this.getData();
+
+    window.addEventListener("resize", () => {
+      this.setState({ width: this.getWidth() });
+    });
+
+  }
+
+  getData = () => {
+
     fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/furniture/get_furniture_loc', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
@@ -20,9 +31,13 @@ export default class SeatingEditor extends React.Component {
       .then(res => { return res.json() })
       .then(json => { this.setState({ furniture: json }) });
 
-    window.addEventListener("resize", () => {
-      this.setState({ width: this.getWidth() });
-    });
+    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(res => { return res.json() })
+      .then(json => { this.setState({ students: json }) });
+
 
   }
 
@@ -118,11 +133,28 @@ export default class SeatingEditor extends React.Component {
 
   }
 
+  mapStudents = () => {
+    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    this.getData();
+  }
+  clearStudents = () => {
+    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    this.getData();
+  }
+
   render = () => {
 
     const furnitureElements = this.state.furniture.map(f => {
       const width = this.getWidth();
       const selected = this.state.furn_id === f.furn_id;
+      const student = this.state.students.find(x => x.furn_id === f.furn_id);
+      const name = student ? `${student.first_name} ${student.last_name}` : "";
 
       return (
         <Draggable
@@ -155,10 +187,9 @@ export default class SeatingEditor extends React.Component {
                   <div className="w-full h-full bg-cyan-500 rounded-full"></div>
                   <div className="w-0.5 h-full bg-cyan-500 absolute top-full left-1/2 -translate-x-1/2"></div>
                 </div>
-                : null
-              }
+                : null}
 
-              id: {f.furn_id} x: {f.x.toFixed(2)} y: {f.y.toFixed(2)}
+              {name}
             </div>
           </div>
         </Draggable>
@@ -168,8 +199,23 @@ export default class SeatingEditor extends React.Component {
     return (
       <div className="h-full flex flex-col">
 
-        <div className="p-5 bg-gray-200">
-          {"Mode: " + this.state.mode}
+        <div className="p-5 bg-gray-200 flex gap-2 items-center text-sm">
+          <div>
+            {"Mode: " + this.state.mode}
+          </div>
+          <div className="flex-1" />
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => { this.clearStudents() }}
+          >
+            Clear students
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => { this.mapStudents() }}
+          >
+            Assign students
+          </button>
         </div>
 
         <div
