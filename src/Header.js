@@ -35,9 +35,6 @@ export default class Header extends React.Component {
 
   render = () => {
     console.log("thepropls", this.props.stateClass)
-    if(this.props.stateClass){
-      this.state = {navigation: this.state.navigation, classList: new ListBox(this.props.stateClass)}
-    }
     return (
       <>
         <Disclosure as="nav" className="bg-neutral-400">
