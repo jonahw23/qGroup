@@ -167,13 +167,14 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     Returns:
         False if failed or the grouped students
     """
+
     w = False
     if weights != False:
         w = {}
         for s1 in weights:
             w[str(s1)] = {}
             for s2 in weights[s1]:
-                w[str(s1)][str(s2)] = weights[s1][s2]
+                w[str(s1)][str(s2)] = str(weights[s1][s2])
     weights = w
 
     
@@ -235,7 +236,7 @@ def generate_test_weights(length,scale=5):
     for i in range(length * scale):
         a = randIds[random.randint(0,length-1)]
         b = randIds[random.randint(0,length-1)]
-        w = random.randint(-1,1)
+        w = str(random.randint(-1,1))
         if a != b:
             weights[a][b] = w
             weights[b][a] = w
@@ -280,6 +281,7 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         groups (int matrix): updates groups
         student_group_map (dictionary): updated map from student indecies to the group they are in
     """
+
     avalible_groups = []
     positive_weighted_groups = []
     for i in range(len(groups)):
@@ -287,10 +289,10 @@ def place_student(student,groups,weights,student_group_map,max_group_size):
         positive_weighted_groups.append(False)
     for i in student_group_map:
         #set avalability for groups with neg weights to false
-        if weights[str(student)][str(i)] == -1:
+        if str(weights[str(student)][str(i)]) == str(-1):
             avalible_groups[student_group_map[i]] = False
         #set groups with positive weights to True
-        elif weights[str(student)][str(i)] == 1:
+        elif str(weights[str(student)][str(i)]) == str(1):
             positive_weighted_groups[student_group_map[i]] = True
     priority_group_pool = []
     group_pool = []
@@ -375,19 +377,20 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
         placed_students[students[i]['id']] = False
     student_group_map = {}
 
-    most_neg, neg_amount = most_connections(weights,-1)
-
-
+    most_neg, neg_amount = most_connections(weights,str(-1))
+    
     #Place most negative people first in random groups
 
+    
     for i in range(len(most_neg)):
         student = most_neg[i]
+        print(i, student, neg_amount[student])
         if neg_amount[student] > 0 and placed_students[int(student)] == False:
             success, groups,student_group_map = place_student(student,groups,weights,student_group_map,max_group_size)
             placed_students[int(student)] = success
-
-    most_pos, pos_amount = most_connections(weights,1)
-
+    
+    most_pos, pos_amount = most_connections(weights,str(1))
+    
 
     #Place most positive people in random groups
 
@@ -402,7 +405,7 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
 
     rand_student = random_student_order(students)
 
-    for i in range(len(rand_student)):
+    for i in rand_student:
         student = rand_student[i]
         if(int(student) in placed_students):
             if placed_students[int(student)] == False:
