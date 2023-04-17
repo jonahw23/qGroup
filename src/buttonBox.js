@@ -41,19 +41,26 @@ function buildPeople(arr, oneName){
 }
 
 function buildGroups(arr){
+  console.log("Buildgroupsarr", arr)
+  console.log("Peoplethen", people)
+  const fastPeople = {}
+  for(let i = 0; i < people.length; i++){
+    fastPeople[people[i].id] = people[i]
+    fastPeople[people[i].id].index = i
+  }
   groups = []
   for(let i = 0; i < arr.length; i++){
     groups.push(arr[i])
     for(let j = 0; j < groups[i].length; j++){
-      if(people[groups[i][j]]){
-        people[groups[i][j]].group = i
+      if(fastPeople[groups[i][j]]){
+        people[fastPeople[groups[i][j]].index].group = i
       }
       else{
         console.log(groups[i][j])
       }
     }
   }
-  //console.log("people", people)
+  //console.log("peoplenow", people)
 }
 
 function buildWeights(dict){
@@ -93,6 +100,7 @@ if(peopleNew){
 }
 if(groupsNew){
   buildGroups(groupsNew)
+  console.log("GROUPS:", groupsNew)
 }
 if(weightsNew){
   buildWeights(weightsNew)
