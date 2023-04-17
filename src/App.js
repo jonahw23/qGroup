@@ -418,7 +418,7 @@ export default function Example() {
     <Router>
       <div className="min-h-full">
 
-        <Header stateClass={state.classes}/>
+        {Header(state.classes)}
 
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
