@@ -144,6 +144,8 @@ export default function Example() {
 
   const [state, addToState] = useState([])
   const [rangeval, setRangeval] = useState(8)
+  const [group_name, setGroup_name] = useState("Group")
+
   const [uploadedFile, setUploadedFile] = useState()
   const [lastClicked, setLastClicked] = useState(-1)
 
@@ -208,7 +210,7 @@ export default function Example() {
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
         method: 'POST',
         body: JSON.stringify({
-          meta_group_name: "Test metagroup name",
+          meta_group_name: group_name,
           group_size: Number(rangeval),
           group_amount: 0,
           weights: state.weights
@@ -233,7 +235,7 @@ export default function Example() {
       const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + pageUserId + '/class/' + pageClassId + '/meta_group/make_groups', {
         method: 'POST',
         body: JSON.stringify({
-          meta_group_name: "Test metagroup name",
+          meta_group_name: group_name,
           group_size: 0,
           group_amount: Number(rangeval),
           weights: state.weights
@@ -460,6 +462,8 @@ export default function Example() {
                               Make that many groups
                             </button>
                           </div>
+                          <label for="Group Name">Group Name: </label>
+                          <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
                         </div>
                       </div>
                     } />
