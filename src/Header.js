@@ -22,18 +22,12 @@ export default function Header(stateClass) {
     let navigation = [state.navigation];
     navigation.map(x => x.current = false);
     navigation[index].current = true;
-    addToState({ navigation: navigation });
+    addToState({ navigation: navigation, classList: state.classList });
   }
 
-  const addListBox = (propped) => {
-    if(propped){
-      const newList = new ListBox(propped)
-      this.setState({navigation: state.navigation, classList: newList})
-    }
-  }
+  const classList = ListBox(stateClass)
 
-
-  return (
+  return ({element: 
     <>
       <Disclosure as="nav" className="bg-neutral-400">
         {({ open }) => (
@@ -52,7 +46,7 @@ export default function Header(stateClass) {
 
                   <div className="hidden md:block">
                     <div className="ml-7 flex items-baseline space-x-2 space-y-0">
-                      {new ListBox(stateClass).element}
+                      {classList.element}
                     </div>
                   </div>
 
@@ -192,6 +186,6 @@ export default function Header(stateClass) {
           </>
         )}
       </Disclosure>
-    </>
-  )
+    </>,
+        value: classList.value          })
 }

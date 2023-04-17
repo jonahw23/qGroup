@@ -153,6 +153,9 @@ export default function Example() {
   //ListCont instance (dict where element:element, value:selected)
   const theList = ListCont('HardCoded', state.students, state.groups, false, lastClicked)
 
+  //Header instance (dict as above)
+  const theHeader = Header(state.classes)
+
   //console.log("state", state)
 
   useEffect(() => {
@@ -416,7 +419,7 @@ export default function Example() {
     <Router>
       <div className="min-h-full">
 
-        {Header(state.classes)}
+        {theHeader.element}
 
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">

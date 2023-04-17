@@ -43,7 +43,7 @@ function buildGroups(arr){
         people[groups[i][j]].group = i
       }
       else{
-        console.log(groups[i][j])
+        //console.log(groups[i][j])
       }
     }
   }
