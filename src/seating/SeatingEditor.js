@@ -1,5 +1,7 @@
 import React from 'react';
+import { HandRaisedIcon, PlusIcon } from '@heroicons/react/24/outline'
 import "./SeatingEditor.css";
+import * as api from "../api.js";
 import Draggable from 'react-draggable';
 
 export default class SeatingEditor extends React.Component {
@@ -24,20 +26,10 @@ export default class SeatingEditor extends React.Component {
 
   getData = () => {
 
-    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/furniture/get_furniture_loc', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(res => { return res.json() })
+    api.call("GET", "/users/3/class/1/seating/1/furniture/get_furniture_loc")
       .then(json => { this.setState({ furniture: json }) });
-
-    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(res => { return res.json() })
+    api.call("GET", "/users/3/class/1/seating/1/students")
       .then(json => { this.setState({ students: json }) });
-
 
   }
 
@@ -64,17 +56,12 @@ export default class SeatingEditor extends React.Component {
       furniture[index].y = draggable.y / this.getWidth();
     }
 
-    const body = {
-      new_x: furniture[index].x,
-      new_y: furniture[index].y,
-      new_theta: furniture[index].theta,
-    };
-
-    fetch(`http://127.0.0.1:5000/api/users/3/class/1/seating/1/furniture/${furn_id}/move_furn`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    api.call("PUT", `/users/3/class/1/seating/1/furniture/${furn_id}/move_furn`,
+      {
+        new_x: furniture[index].x,
+        new_y: furniture[index].y,
+        new_theta: furniture[index].theta,
+      })
 
     this.setState({ furniture: furniture });
   }
@@ -111,21 +98,15 @@ export default class SeatingEditor extends React.Component {
     const y = (e.clientY - bounds.top) / bounds.width;
     const theta = 0;
 
-    const body = {
-      furn_type: "seat",
-      x: x, y: y, theta: theta
-    };
-
-    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/new_furniture', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-      .then(res => { return res.json() })
-      .then(res => {
+    api.call("POST", "/users/3/class/1/seating/1/new_furniture",
+      {
+        furn_type: "seat",
+        x: x, y: y, theta: theta
+      })
+      .then(json => {
         let furniture = [...this.state.furniture];
         furniture.push({
-          furn_id: res.furn_id,
+          furn_id: json.furn_id,
           x: x, y: y, theta: theta
         })
         this.setState({ furniture: furniture })
@@ -134,18 +115,12 @@ export default class SeatingEditor extends React.Component {
   }
 
   mapStudents = () => {
-    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    this.getData();
+    api.call("POST", "/users/3/class/1/seating/1/students")
+      .then(() => { this.getData(); });
   }
   clearStudents = () => {
-    fetch('http://127.0.0.1:5000/api/users/3/class/1/seating/1/students', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    this.getData();
+    api.call("DELETE", "/users/3/class/1/seating/1/students")
+      .then(() => { this.getData(); });
   }
 
   render = () => {
@@ -197,25 +172,30 @@ export default class SeatingEditor extends React.Component {
     });
 
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col"
+        onKeyDown={this.onKeyPressed}>
 
         <div className="p-5 bg-gray-200 flex gap-2 items-center text-sm">
-          <div>
-            {"Mode: " + this.state.mode}
-          </div>
+
+          <HandRaisedIcon
+            className={`block h-8 w-8 p-1 cursor-pointer rounded
+                        ${this.state.mode === "movement" ? "bg-slate-400" : "hover:bg-slate-300"}`}
+            onClick={() => this.setState({ mode: "movement" })} />
+          <PlusIcon
+            className={`block h-8 w-8 p-1 cursor-pointer rounded
+                        ${this.state.mode === "place" ? "bg-slate-400" : "hover:bg-slate-300"}`}
+            onClick={() => this.setState({ mode: "place" })} />
+
           <div className="flex-1" />
+
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => { this.clearStudents() }}
-          >
-            Clear students
-          </button>
+          >Clear students</button>
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => { this.mapStudents() }}
-          >
-            Assign students
-          </button>
+          >Assign students</button>
         </div>
 
         <div
@@ -223,7 +203,6 @@ export default class SeatingEditor extends React.Component {
           ref={e => { this.divElement = e }}
           tabIndex={0}
           onClick={e => { if (this.state.mode === "place") { this.addSeat(e) } }}
-          onKeyDown={this.onKeyPressed}
         >
           {furnitureElements}
         </div>
