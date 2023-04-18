@@ -417,6 +417,23 @@ export default function Example() {
   //console.log("state weights", state.weights)
   console.log("state students", state.groups)
 
+  const weightButtons = () => {
+    if(lastClicked > 0){
+    return (<div>
+      <label className="ml-3 w-24 mt-0 h-12 rounded-md bg-white-500 text-black text-sm font-medium">Select Another Student</label>
+      <p></p>
+      <button onClick={minusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-red-500 text-white text-sm font-medium">
+                      Add Negative Weight
+                    </button>
+                    <button onClick={plusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-green-500 text-white text-sm font-medium">
+                      Add Positive Weight
+                    </button></div>)
+  }else{
+   return( <button onClick={plusWeightButton} className="ml-3 w-48 mt-0 h-12 rounded-md bg-blue-500 text-white text-sm font-medium">
+                      Add Weight
+                    </button>)
+  }
+}
   return (
     <Router>
       <div className="min-h-full">
@@ -431,12 +448,9 @@ export default function Example() {
                 <div className="w-18">
                   <div>{theList.element}</div>
                   <div class="mt-[47vh]">
-                    <button onClick={minusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-red-500 text-white text-sm font-medium">
-                      Add Negative Weight
-                    </button>
-                    <button onClick={plusWeightButton} className="ml-3 w-24 mt-0 h-12 rounded-md bg-green-500 text-white text-sm font-medium">
-                      Add Positive Weight
-                    </button>
+                    {
+                     weightButtons()
+                    }
                     <button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
                       Delete Selected Student
                     </button>
