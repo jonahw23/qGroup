@@ -149,6 +149,8 @@ export default function Example() {
   const [uploadedFile, setUploadedFile] = useState()
   const [lastClicked, setLastClicked] = useState(-1)
 
+  const [useWeights, setUseWeights] = useState(true)
+
   //Random factor for render debugging
   var randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
@@ -192,7 +194,7 @@ export default function Example() {
           meta_group_name: "Test metagroup name",
           group_size: 4,
           group_amount: 0,
-          weights:weights
+          weights:(useWeights?weights:null)
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -429,9 +431,9 @@ export default function Example() {
                       Add Positive Weight
                     </button></div>)
   }else{
-   return( <button onClick={plusWeightButton} className="ml-3 w-48 mt-0 h-12 rounded-md bg-blue-500 text-white text-sm font-medium">
+   return(<div> <button onClick={plusWeightButton} className="ml-3 w-48 mt-6 h-12 rounded-md bg-blue-500 text-white text-sm font-medium">
                       Add Weight
-                    </button>)
+                    </button></div>)
   }
 }
   return (
@@ -477,6 +479,9 @@ export default function Example() {
                             </button>
                             <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make that many groups
+                            </button>
+                            <button onClick={console.log("WHY")} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                              {(useWeights?"dis":"en") + "able weights"}
                             </button>
                           </div>
                           <label for="Group Name">Group Name: </label>
