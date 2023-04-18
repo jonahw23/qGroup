@@ -128,8 +128,10 @@ export default class SeatingEditor extends React.Component {
     const furnitureElements = this.state.furniture.map(f => {
       const width = this.getWidth();
       const selected = this.state.furn_id === f.furn_id;
-      const student = this.state.students.find(x => x.furn_id === f.furn_id);
-      const name = student ? `${student.first_name} ${student.last_name}` : "";
+      const student = this.state.students
+        .filter(x => x.furn_id === f.furn_id)
+        .map(student => student ? `${student.first_name} ${student.last_name}` : "")
+        .join(", ");
 
       return (
         <Draggable
@@ -164,7 +166,7 @@ export default class SeatingEditor extends React.Component {
                 </div>
                 : null}
 
-              {name}
+              {student}
             </div>
           </div>
         </Draggable>
