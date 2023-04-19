@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 
@@ -83,11 +83,14 @@ export default function ListBox(classesNew) {
 
   console.log("classes:", classesNew)
 
+  const [selected, setSelected] = useState(classesNew ? classesNew[0] : {name:"Incomplete(Rendering)Class"})
+
   if(classesNew){
     buildClasses(classesNew)
+    if(selected.name === "Incomplete(Rendering)Class"){
+      setSelected(classes[0])
+    }
   }
-  
-  const [selected, setSelected] = useState({name:"Classes here"})
 
   return ({element:
     <Listbox value={selected} onChange={setSelected}>
