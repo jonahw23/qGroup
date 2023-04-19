@@ -3,6 +3,7 @@ from flask import request
 from flask_cors import cross_origin
 from . import database
 from . import student_algorithms
+from . import furniture_algorithms
 
 routes = Blueprint("routes", __name__)
 
@@ -185,6 +186,20 @@ def furniture_locations(user_id, class_id, seating_id):
       WHERE seating_id = (?)
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture_groups", methods = ["GET"])
+@cross_origin()
+def furniture_groups(user_id, class_id, seating_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT * FROM FurnitureTableGroupMap m
+    JOIN (
+      SELECT f.furn_id FROM Furniture f
+      WHERE f.seating_id = (?)
+    ) ff
+    WHERE m.furniture_id = ff.furn_id
+  """, (seating_id,))
+  return [dict(row) for row in res.fetchall()]
   
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
 @cross_origin()
@@ -250,6 +265,26 @@ def map_stud_furn(user_id, class_id, seating_id):
       INSERT INTO StudentFurnMap 
         VALUES (?, ?)
     """, (student["id"], seats[i]["furn_id"])) 
+
+  db.commit()
+  return "", 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/group_furn", methods = ["POST"])
+@cross_origin()
+def group_furniture(user_id, class_id, seating_id):
+  db = database.get_db()
+
+  furn = furniture_locations(user_id, class_id, seating_id).json
+  furn = [[x["furn_id"], x["x"], x["y"]] for x in furn]
+  furn.sort(key = lambda x: x[0])
+  points = [x[1:] for x in furn]
+  clusters = furniture_algorithms.cluster(points, 4).labels_
+
+  for i, f in enumerate(furn):
+    db.execute("""
+      INSERT INTO FurnitureTableGroupMap
+        VALUES (?, ?)
+    """, (f[0], int(clusters[i])))
 
   db.commit()
   return "", 201
