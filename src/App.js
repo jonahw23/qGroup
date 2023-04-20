@@ -14,12 +14,13 @@ import ListBox from './Listbox'
 
 //Body of main page and API calls
 
-
 //Constants for user and class 
 //Current user 1 class 1 (Alice's Geometry Class)
 //CSV goes to user 6 class 8 (Joe's optics class)
 const pageUserId = 6
 const pageClassId = 8
+
+const pageCurrentNum = [0]
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -156,13 +157,19 @@ export default function Example() {
 
   //ListCont instance (dict where element:element, value:selected)
   const theList = ListCont('HardCoded', state.students, state.groups, false, lastClicked)
+  
+  const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: pageClassId})
 
   //Header instance (dict as above, value:listbox value)
-  const theHeader = Header(state.classes)
+  const theHeader = Header(state.classes, pageCurrentNum[0])
 
-  //console.log("HeaderValue:", theHeader.value.class_id)
+  console.log(theHeader.value)
 
-  const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId:pageClassId})
+  if(theHeader.value.class_id){
+    if(theHeader.value.class_id !== pageClassId){
+      setStateUser({stateUserId:pageUserId, stateClassId: theHeader.value.class_id})
+    } 
+  }
 
   //console.log("state", state)
 
