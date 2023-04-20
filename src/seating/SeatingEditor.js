@@ -2,12 +2,14 @@ import React from 'react';
 import { HandRaisedIcon, PlusIcon } from '@heroicons/react/24/outline'
 import "./SeatingEditor.css";
 import * as api from "../api.js";
+import * as constants from '../sharedData'
 import Draggable from 'react-draggable';
 
 export default class SeatingEditor extends React.Component {
   state = {
     furniture: [],
     students: [],
+    groups: [],
     mode: "movement",
     furn_id: 0,
     draggable: undefined,
@@ -28,6 +30,8 @@ export default class SeatingEditor extends React.Component {
 
     api.call("GET", "/users/3/class/1/seating/1/furniture/get_furniture_loc")
       .then(json => { this.setState({ furniture: json }) });
+    api.call("GET", "/users/3/class/1/seating/1/furniture_groups")
+      .then(json => { this.setState({ groups: json }) });
     api.call("GET", "/users/3/class/1/seating/1/students")
       .then(json => { this.setState({ students: json }) });
 
@@ -122,6 +126,10 @@ export default class SeatingEditor extends React.Component {
     api.call("DELETE", "/users/3/class/1/seating/1/students")
       .then(() => { this.getData(); });
   }
+  mapFurniture = () => {
+    api.call("POST", "/users/3/class/1/seating/1/group_furn")
+      .then(() => { this.getData(); });
+  }
 
   render = () => {
 
@@ -132,6 +140,7 @@ export default class SeatingEditor extends React.Component {
         .filter(x => x.furn_id === f.furn_id)
         .map(student => student ? `${student.first_name} ${student.last_name}` : "")
         .join(", ");
+      const group = Object.values(this.state.groups).find(x => x.furn_id === f.furn_id)?.table_group_id ?? 0;
 
       return (
         <Draggable
@@ -147,7 +156,9 @@ export default class SeatingEditor extends React.Component {
         >
           <div className="clear-seat-element">
             <div
-              className={`seat-element ${selected ? "border-2 border-cyan-500" : ""}`}
+              className={`seat-element
+                          bg-${constants.tailwindColorOptions[group]}-400
+                          ${selected ? "border-2 border-cyan-500" : ""}`}
               style={{ rotate: (f.theta ? f.theta : 0) + "deg" }}
               tabIndex={0}
             >
@@ -190,6 +201,10 @@ export default class SeatingEditor extends React.Component {
 
           <div className="flex-1" />
 
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => { this.mapFurniture() }}
+          >Group furniture</button>
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => { this.clearStudents() }}

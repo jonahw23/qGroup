@@ -447,6 +447,10 @@ export default function Example() {
                     </button></div>)
   }
 }
+
+const changeUseWeights = () => {
+  setUseWeights(!useWeights)
+}
   return (
     <Router>
       <div className="min-h-full">
@@ -491,8 +495,8 @@ export default function Example() {
                             <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make that many groups
                             </button>
-                            <button onClick={console.log("WHY")} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
-                              {(useWeights?"dis":"en") + "able weights"}
+                            <button onClick={changeUseWeights} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                              {(useWeights?"Dis":"En") + "able weights"}
                             </button>
                           </div>
                           <label for="Group Name">Group Name: </label>
