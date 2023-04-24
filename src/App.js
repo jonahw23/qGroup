@@ -492,7 +492,7 @@ const changeUseWeights = () => {
                               {(useWeights?"Dis":"En") + "able weights"}
                             </button>
                           </div>
-                          <label for="Group Name">Group Name: </label>
+                          <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>
                           <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
                         </div>
                       </div>
