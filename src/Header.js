@@ -6,7 +6,7 @@ import ListBox from './Listbox'
 import * as constants from './sharedData'
 import { Link } from 'react-router-dom';
 
-export default function Header(stateClass) {
+export default function Header(stateClass, currentClassPageNum) {
 
   const [state, addToState] = useState({
     navigation: [
@@ -25,7 +25,10 @@ export default function Header(stateClass) {
     addToState({ navigation: navigation, classList: state.classList });
   }
 
-  const classList = ListBox(stateClass)
+  const classList = ListBox(stateClass, currentClassPageNum)
+
+  //Random factor for render debugging
+  var randomColor = Math.floor(Math.random()*16777215).toString(16)
 
   return ({element: 
     <>
@@ -43,7 +46,7 @@ export default function Header(stateClass) {
                       alt="qGroup Logo"
                     />
                   </div>
-
+                  {randomColor}
                   <div className="hidden md:block">
                     <div className="ml-7 flex items-baseline space-x-2 space-y-0">
                       {classList.element}
@@ -187,5 +190,5 @@ export default function Header(stateClass) {
         )}
       </Disclosure>
     </>,
-        value: classList.value          })
+        value: classList.value      })
 }

@@ -76,10 +76,11 @@ function buildClasses(arr){
   classes = []
   for(let i = 0; i < arr.length; i++){
     classes.push(arr[i])
+    classes[classes.length - 1].index = classes.length - 1
   }
 }
 
-export default function ListBox(classesNew) {
+export default function ListBox(classesNew, currentClassPageNum) {
 
   console.log("classes:", classesNew)
 
@@ -88,7 +89,7 @@ export default function ListBox(classesNew) {
   if(classesNew){
     buildClasses(classesNew)
     if(selected.name === "Incomplete(Rendering)Class"){
-      setSelected(classes[0])
+      setSelected(classes[currentClassPageNum])
     }
   }
 
