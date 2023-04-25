@@ -257,14 +257,46 @@ def map_stud_furn(user_id, class_id, seating_id):
   """, (seating_id, "seat"))
   seats = [dict(x) for x in res.fetchall()]
 
+  res = db.execute("""
+    SELECT * FROM ClassroomMetaGroupMap
+    WHERE classroom_id = (?)
+    ORDER BY meta_group_id DESC
+    """, (class_id, ))
+  metagroup_id = dict(list(res)[0])["meta_group_id"]
+
+  res = db.execute("""
+    SELECT * FROM MetaGroupGroupMap
+    WHERE meta_group_id = (?)
+    ORDER BY group_id
+  """, (metagroup_id, ))
+  start_group = dict(list(res)[0])["group_id"]
+
   for i, student in enumerate(students): 
     if i >= len(seats):
       break
+
+    group = db.execute("""
+      SELECT * FROM StudentGroupMap
+      WHERE student_id = (?)
+    """, (student["id"], ))
+    group = [dict(x) for x in group]
+    group = sorted(group, key=lambda x: x["group_id"])[-1]["group_id"]
+    group = group - start_group
+
+    furn_group = db.execute("""
+      SELECT * FROM FurnitureTableGroupMap
+      WHERE table_group_id = (?)
+      AND furniture_id NOT IN (SELECT furn_id FROM StudentFurnMap)
+    """, (group, ))
+    furn_group = list(furn_group)
+    if len(furn_group) == 0:
+      continue
+    furn_id = dict(furn_group[0])["furniture_id"]
     
     db.execute("""
       INSERT INTO StudentFurnMap 
         VALUES (?, ?)
-    """, (student["id"], seats[i]["furn_id"])) 
+    """, (student["id"], furn_id))
 
   db.commit()
   return "", 201
@@ -278,9 +310,13 @@ def group_furniture(user_id, class_id, seating_id):
   furn = [[x["furn_id"], x["x"], x["y"]] for x in furn]
   furn.sort(key = lambda x: x[0])
   points = [x[1:] for x in furn]
-  clusters = furniture_algorithms.cluster(points, 4).labels_
+  clusters = furniture_algorithms.cluster(points, request.json["num_groups"]).labels_
 
   for i, f in enumerate(furn):
+    db.execute("""
+      DELETE FROM FurnitureTableGroupMap
+      WHERE furniture_id = (?)
+    """, (f[0], ))
     db.execute("""
       INSERT INTO FurnitureTableGroupMap
         VALUES (?, ?)
