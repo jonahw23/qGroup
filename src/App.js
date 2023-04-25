@@ -150,7 +150,7 @@ export default function Example() {
   const [uploadedFile, setUploadedFile] = useState()
   const [lastClicked, setLastClicked] = useState(-1)
 
-  const [useWeights, setUseWeights] = useState(true)
+  const [useWeights, setUseWeights] = useState(false)
 
   //Random factor for render debugging
   var randomColor = Math.floor(Math.random() * 16777215).toString(16)
@@ -207,7 +207,8 @@ export default function Example() {
           meta_group_name: "Test metagroup name",
           group_size: 4,
           group_amount: 0,
-          weights:(useWeights?weights:null)
+          weights:weights,
+          disable_weights:useWeights,
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -231,8 +232,10 @@ export default function Example() {
           meta_group_name: group_name,
           group_size: Number(rangeval),
           group_amount: 0,
-          weights: state.weights
-        }),
+          weights:state.weights,
+          disable_weights:useWeights,
+
+                }),
         headers: {
           'Content-Type': 'application/json'
         }
@@ -256,7 +259,9 @@ export default function Example() {
           meta_group_name: group_name,
           group_size: 0,
           group_amount: Number(rangeval),
-          weights: state.weights
+          weights:state.weights,
+          disable_weights:useWeights,
+
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -497,8 +502,8 @@ const changeUseWeights = () => {
                             <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make that many groups
                             </button>
-                            <button onClick={console.log("WHY")} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
-                              {(useWeights?"dis":"en") + "able weights"}
+                            <button onClick={changeUseWeights} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                              {(useWeights?"en":"dis") + "able weights"}
                             </button>
                           </div>
                           <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>

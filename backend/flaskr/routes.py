@@ -345,12 +345,20 @@ def make_groups(user_id, class_id):
           text = text + " ("+str(s2)+", "+str(w[s1][s2])+")"
     print(text)
 
-  groups = student_algorithms.group_students(
-    students, 
-    group_amount=request.json["group_amount"], 
-    group_size=request.json["group_size"],
-    weights=request.json["weights"]
-  )
+  groups = []
+  if not request.json["disable_weights"]:
+    groups = student_algorithms.group_students(
+      students, 
+      group_amount=request.json["group_amount"], 
+      group_size=request.json["group_size"],
+      weights=request.json["weights"]
+    )
+  else:
+    groups = student_algorithms.group_students(
+      students, 
+      group_amount=request.json["group_amount"], 
+      group_size=request.json["group_size"],
+    )
 
   print("result:")
   print(groups)
