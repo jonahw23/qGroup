@@ -87,7 +87,7 @@ def groups_of_fixed_size(students,n):
             pass
         else:
             group_num += 1
-        groups[group_num].append(students[i])
+        groups[group_num].append(students[i]["id"])
         #groups[group_num].append(students[i]["id"])
     return groups
 
@@ -103,7 +103,7 @@ def groups_of_custom_size(students,max_group_size):
             group_num += 1
         groups[group_num].append(students[i])
         #groups[group_num].append(students[i]["id"])
-    return groups_of_ids(students,groups)
+    return groups_to_int(students,groups)
 
 
 def groups_of_fixed_amount(students,k):
@@ -185,12 +185,12 @@ def group_students(students,group_amount=0,group_size=0,sort_by="random",reverse
     else:
         s = student_sort(students,key=sort_by,reverse=reverse)
     if group_sizes != False:
-        return groups_of_custom_size(s,group_sizes)
+        return groups_of_ids(students,groups_of_custom_size(s,group_sizes))
     elif group_size > 0:
-        return groups_of_custom_size(s,get_sizes_for_groups_of_fixed_size(s,group_size))
+        return groups_of_ids(students,groups_of_custom_size(s,get_sizes_for_groups_of_fixed_size(s,group_size)))
         #return groups_of_fixed_size(s,group_size)
     elif group_amount > 0:
-        return groups_of_custom_size(s,get_sizes_for_groups_of_fixed_amount(s,group_amount))
+        return groups_of_ids(students,groups_of_custom_size(s,get_sizes_for_groups_of_fixed_amount(s,group_amount)))
         #return groups_of_fixed_amount(s,group_amount)
 
     if group_size <= 0 and group_amount <= 0:
@@ -410,12 +410,18 @@ def weighted_student_groups(students,weights,group_amount=0,group_size=0,group_s
             placed_students[int(student)] = success
 
 
-    return groups_of_ids(students,groups)
+    return groups_to_int(students,groups)
 
-def groups_of_ids(students, groups):
+def groups_to_int(students, groups):
     for i in range(len(groups)):
         for j in range(len(groups[i])):
             groups[i][j] = int(groups[i][j])
+    return groups
+
+def groups_of_ids(students,groups):
+    for i in range(len(groups)):
+        for j in range(len(groups[i])):
+            groups[i][j] = int(students[groups[i][j]]["id"])
     return groups
 
 def find_student(students,id):
