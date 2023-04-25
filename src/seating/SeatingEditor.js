@@ -28,11 +28,11 @@ export default class SeatingEditor extends React.Component {
 
   getData = () => {
 
-    api.call("GET", "/users/3/class/1/seating/1/furniture/get_furniture_loc")
+    api.call("GET", "/users/6/class/8/seating/1/furniture/get_furniture_loc")
       .then(json => { this.setState({ furniture: json }) });
-    api.call("GET", "/users/3/class/1/seating/1/furniture_groups")
+    api.call("GET", "/users/6/class/8/seating/1/furniture_groups")
       .then(json => { this.setState({ groups: json }) });
-    api.call("GET", "/users/3/class/1/seating/1/students")
+    api.call("GET", "/users/6/class/8/seating/1/students")
       .then(json => { this.setState({ students: json }) });
 
   }
@@ -60,7 +60,7 @@ export default class SeatingEditor extends React.Component {
       furniture[index].y = draggable.y / this.getWidth();
     }
 
-    api.call("PUT", `/users/3/class/1/seating/1/furniture/${furn_id}/move_furn`,
+    api.call("PUT", `/users/6/class/8/seating/1/furniture/${furn_id}/move_furn`,
       {
         new_x: furniture[index].x,
         new_y: furniture[index].y,
@@ -102,7 +102,7 @@ export default class SeatingEditor extends React.Component {
     const y = (e.clientY - bounds.top) / bounds.width;
     const theta = 0;
 
-    api.call("POST", "/users/3/class/1/seating/1/new_furniture",
+    api.call("POST", "/users/6/class/8/seating/1/new_furniture",
       {
         furn_type: "seat",
         x: x, y: y, theta: theta
@@ -119,15 +119,19 @@ export default class SeatingEditor extends React.Component {
   }
 
   mapStudents = () => {
-    api.call("POST", "/users/3/class/1/seating/1/students")
+    api.call("POST", "/users/6/class/8/seating/1/students")
       .then(() => { this.getData(); });
   }
   clearStudents = () => {
-    api.call("DELETE", "/users/3/class/1/seating/1/students")
+    api.call("DELETE", "/users/6/class/8/seating/1/students")
       .then(() => { this.getData(); });
   }
   mapFurniture = () => {
-    api.call("POST", "/users/3/class/1/seating/1/group_furn")
+    const num_groups = this.props.groups.length;
+    api.call("POST", "/users/6/class/8/seating/1/group_furn",
+      {
+        num_groups: num_groups
+      })
       .then(() => { this.getData(); });
   }
 
