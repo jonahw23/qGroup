@@ -157,75 +157,76 @@ export default function Example() {
 
   //ListCont instance (dict where element:element, value:selected)
   const theList = ListCont('HardCoded', state.students, state.groups, false, lastClicked)
-  
-  const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: pageClassId[0]})
 
   //Header instance (dict as above, value:listbox value)
-  const theHeader = Header(state.classes, pageCurrentNum[0])
+  const theHeader = Header(state.classes, 0)
+  
+  const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: 8})
 
   console.log(theHeader.value)
 
+  async function fetchData() {
+    const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, [])).json()
+    const students = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/students', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    const classes = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/get_classes', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/get_weights', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/meta_group/make_groups', {
+      method: 'POST',
+      body: JSON.stringify({
+        meta_group_name: "Test metagroup name",
+        group_size: 4,
+        group_amount: 0,
+        weights:(useWeights?weights:null)
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, [])).json()
+    if (students && users && weights && groups) {
+      addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights })
+    }
+    else {
+      console.log("Didn't add students or users or groups")
+    }
+  }
+
   if(theHeader.value.class_id){
-    if(theHeader.value.class_id !== stateUser.stateClassId){
-      setStateUser({stateUserId:pageUserId, stateClassId: theHeader.value.class_id})
-      pageCurrentNum[0] = theHeader.value.index
+    if(theHeader.value.class_id !== pageClassId[0]){
       pageClassId[0] = theHeader.value.class_id
+      setStateUser({stateUserId:pageUserId, stateClassId: theHeader.value.class_id})
+      fetchData()
     } 
   }
 
   //console.log("state", state)
 
   useEffect(() => {
-    async function fetchData() {
-      const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }, [])).json()
-      const students = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/students', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })).json()
-      const classes = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/get_classes', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })).json()
-      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/get_weights', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })).json()
-      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/meta_group/make_groups', {
-        method: 'POST',
-        body: JSON.stringify({
-          meta_group_name: "Test metagroup name",
-          group_size: 4,
-          group_amount: 0,
-          weights:(useWeights?weights:null)
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }, [])).json()
-      if (students && users && weights && groups) {
-        addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights })
-      }
-      else {
-        console.log("Didn't add students or users or groups")
-      }
-    }
     fetchData()
   }, [])
 
   function useButtonSize() {
     async function fetchData() {
-      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/meta_group/make_groups', {
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/meta_group/make_groups', {
         method: 'POST',
         body: JSON.stringify({
           meta_group_name: group_name,
@@ -250,7 +251,7 @@ export default function Example() {
 
   function useButtonNum() {
     async function fetchData() {
-      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/meta_group/make_groups', {
+      const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/meta_group/make_groups', {
         method: 'POST',
         body: JSON.stringify({
           meta_group_name: group_name,
@@ -322,7 +323,7 @@ export default function Example() {
         const parsedFile = parseResults(unparsedFile)
         console.log("File", parsedFile)
         //This is file destination, should be changed to not be hardcoded
-        uploadStudents(6, 8, parsedFile)
+        uploadStudents(pageUserId, pageClassId[0], parsedFile)
       }
     })
   }
@@ -330,7 +331,7 @@ export default function Example() {
   function deleteStudentButton() {
     //Should be refactored for auto-state-update, see below
     async function fetchData() {
-      const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + stateUser.stateClassId + "/students/remove_student", {
+      const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/remove_student", {
           method: 'DELETE',
           body: JSON.stringify({
             student_id: theList.value.id
@@ -339,7 +340,7 @@ export default function Example() {
             'Content-Type': 'application/json'
           }
         }))
-      const students = await ((await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/students', {
+      const students = await ((await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/students', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -370,7 +371,7 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })
-      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/get_weights', {
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/get_weights', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -385,7 +386,7 @@ export default function Example() {
       }
     }
     if(lastClicked > 0){
-      fetchData(stateUser.stateUserId, stateUser.stateClassId, theList.value.id, lastClicked, -1)
+      fetchData(stateUser.stateUserId, pageClassId[0], theList.value.id, lastClicked, -1)
       setLastClicked(-1)
     }
     else{
@@ -406,7 +407,7 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       })
-      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + stateUser.stateClassId + '/get_weights', {
+      const weights = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/get_weights', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -421,7 +422,7 @@ export default function Example() {
       }
     }
     if(lastClicked > 0){
-      fetchData(stateUser.stateUserId, stateUser.stateClassId, theList.value.id, lastClicked, 1)
+      fetchData(stateUser.stateUserId, pageClassId[0], theList.value.id, lastClicked, 1)
       setLastClicked(-1)
     }
     else{
@@ -497,7 +498,7 @@ const changeUseWeights = () => {
                             <button onClick={useButtonNum} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               Make that many groups
                             </button>
-                            <button onClick={console.log("WHY")} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
+                            <button onClick={changeUseWeights} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                               {(useWeights?"dis":"en") + "able weights"}
                             </button>
                           </div>

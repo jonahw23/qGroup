@@ -46,7 +46,7 @@ export default function Header(stateClass, currentClassPageNum) {
                       alt="qGroup Logo"
                     />
                   </div>
-                  {randomColor}
+                  {/*randomColor*/}
                   <div className="hidden md:block">
                     <div className="ml-7 flex items-baseline space-x-2 space-y-0">
                       {classList.element}
