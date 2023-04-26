@@ -6,7 +6,7 @@ export const user = {
   name: 'Tom Cook',
   email: 'tom@example.com',
   imageUrl:
-    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+    'blankAvatar.png',
 }
 export const userNavigation = [
   { name: 'Your Profile', href: '#' },

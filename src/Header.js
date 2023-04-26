@@ -5,6 +5,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import ListBox from './Listbox'
 import * as constants from './sharedData'
 import { Link } from 'react-router-dom';
+import defaultImg from './blankAvatar.png'
 
 export default function Header(stateClass, currentClassPageNum) {
 
@@ -90,7 +91,7 @@ export default function Header(stateClass, currentClassPageNum) {
                       <div>
                         <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                           <span className="sr-only">Open user menu</span>
-                          <img className="h-8 w-8 rounded-full" src={constants.user.imageUrl} alt="" />
+                          <img className="h-8 w-8 rounded-full" src={defaultImg} alt="" />
                         </Menu.Button>
                       </div>
                       <Transition
@@ -157,7 +158,7 @@ export default function Header(stateClass, currentClassPageNum) {
               <div className="border-t border-gray-700 pt-4 pb-3">
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
-                    <img className="h-10 w-10 rounded-full" src={constants.user.imageUrl} alt="" />
+                    <img className="h-10 w-10 rounded-full" src={defaultImg} alt="" />
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium leading-none text-white">{constants.user.name}</div>
