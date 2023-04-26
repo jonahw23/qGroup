@@ -196,7 +196,8 @@ export default function Example() {
         meta_group_name: "Test metagroup name",
         group_size: 4,
         group_amount: 0,
-        weights:(useWeights?weights:null)
+        weights:weights,
+        disable_weights:useWeights
       }),
       headers: {
         'Content-Type': 'application/json'

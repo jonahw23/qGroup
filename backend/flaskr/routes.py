@@ -374,12 +374,12 @@ def make_groups(user_id, class_id):
 
   w = request.json["weights"]
 
-  for s1 in w:
+  '''for s1 in w:
     text = str(s1)+":"
     for s2 in w[s1]:
         if w[s1][s2] != 0:
           text = text + " ("+str(s2)+", "+str(w[s1][s2])+")"
-    print(text)
+    print(text)'''
 
   groups = []
   if not request.json["disable_weights"]:
