@@ -78,6 +78,8 @@ function buildClasses(arr){
     classes.push(arr[i])
     classes[classes.length - 1].index = classes.length - 1
   }
+  classes.push({name:"Add/Remove Classes"})
+  classes[classes.length - 1].index = classes.length - 1
 }
 
 export default function ListBox(classesNew, currentClassPageNum) {
@@ -115,7 +117,7 @@ export default function ListBox(classesNew, currentClassPageNum) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-100 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {classes.map((classes) => (
                   <Listbox.Option
                     key={classes.id}
