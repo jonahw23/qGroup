@@ -1,6 +1,8 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 const people = [
   {
@@ -78,7 +80,7 @@ function buildClasses(arr){
     classes.push(arr[i])
     classes[classes.length - 1].index = classes.length - 1
   }
-  classes.push({name:"Add/Remove Classes"})
+  classes.push({name:"Add Class (+)"})
   classes[classes.length - 1].index = classes.length - 1
 }
 
@@ -93,6 +95,17 @@ export default function ListBox(classesNew, currentClassPageNum) {
     if(selected.name === "Incomplete(Rendering)Class"){
       setSelected(classes[currentClassPageNum])
     }
+  }
+
+  const [class_name, setClass_name] = useState("Class")
+
+  if(selected.name === "Add Class (+)"){
+    return({element: <>
+      <input type="text" id="Class Name" onChange={(event) => setClass_name(event.target.value)} name="Class Name" placeholder="Class Name" className=" pl-3 h-8 w-[80%] mb-0 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+          <button onClick={()=>alert("Hi")} className="ml-2 w-100 h-10 rounded-md bg-green-500 text-white text-sm font-medium">
+              Create Class
+            </button>
+    </>, value:selected})
   }
 
   return ({element:
