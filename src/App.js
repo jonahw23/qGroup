@@ -163,7 +163,7 @@ export default function Example() {
   
   const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: 8})
 
-  console.log(theHeader.value)
+  console.log("CURRENT:", theHeader.value.name)
 
   async function fetchData() {
     const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
