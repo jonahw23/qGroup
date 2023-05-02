@@ -508,7 +508,11 @@ const changeUseWeights = () => {
                             </button>
                           </div>
                           <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>
-                          <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder=" Group" className=" w-[20%] mb-0 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+
+                          <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+                          <button onClick={()=>exportGroup(state.students,state.groups,state.group_name,theHeader.value.name)} className="ml-2 w-32 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+                              Export Group
+                            </button>
                         </div>
                       </div>
                     } />
@@ -526,39 +530,83 @@ const changeUseWeights = () => {
   )
 }
 
-export function display_student(student, styleClass = "") {
-  //no css made for this yet...
-  let style = styleClass
-  return (
+const exportGroup = (students,groups,group_name,class_name) => {
+  let cols = ["Last name","First name","Group"]
+  
+  let data = []
 
-    <div className='student'>
-      <div className={style}>
-        {student["last_name"] + " " + student["first_name"]}
-      </div>
-    </div>
-  )
-}
-
-export function display_group(groups, n, styleClass = "", student_styleClass = "") {
-  return (
-    <div className="group">
-      <div className={styleClass}>
-        {n}
-        {
-          display_students(groups[n], student_styleClass)
-        }
-      </div>
-    </div>
-  )
-}
-
-function display_students(group, i, styleClass = "") {
-  if (i < group.length) {
-    return (
-      <div>
-        display_student(group[i],styleClass)
-        display_students(group,i+1,styleClass)
-      </div>
-    )
+  if (!students || !groups){
+    return
   }
+  for (let i = 0; i < students.length;i++){
+    let g = getGroupId(students[i],groups)
+    if (g > -1){
+      data.push([students[i]["last_name"],students[i]["first_name"],getGroupId(students[i],groups)+1])
+    }
+  }
+
+  download_group(csvmaker(cols,data),group_name,class_name)
+}
+
+const getGroupId = (student,groups) => {
+  for (let i = 0; i < groups.length;i++){
+    for(let j = 0; j < groups[i].length;j++){
+      if (student.id == groups[i][j]){
+        return i
+      }
+    }
+  }
+  return -1
+}
+
+
+//addapted from geeksforgeeks
+const download_group = function (data,group_name,class_name) {
+
+	// Creating a Blob for having a csv file format
+	// and passing the data with type
+	const blob = new Blob([data], { type: 'text/csv' });
+
+	// Creating an object for downloading url
+	const url = window.URL.createObjectURL(blob)
+
+	// Creating an anchor(a) tag of HTML
+	const a = document.createElement('a')
+
+	// Passing the blob downloading url
+	a.setAttribute('href', url)
+
+	// Setting the anchor tag attribute for downloading
+	// and passing the download file name
+	a.setAttribute('download', class_name+" "+group_name+'.csv');
+
+	// Performing a download with click
+	a.click()
+}
+
+const csvmaker = function (cols,data) {
+
+	// Empty array for storing the values
+	let csvRows = [];
+
+	// Headers is basically a keys of an
+	// object which is id, name, and
+	// profession
+	const headers = cols;
+
+	// As for making csv format, headers
+	// must be separated by comma and
+	// pushing it into array
+	csvRows.push(headers.join(','));
+
+	// Pushing Object values into array
+	// with comma separation
+  for (let i = 0; i < data.length;i++){
+    const values = data[i].join(',');
+    csvRows.push(values)
+  }
+
+
+	// Returning the array joining with new line
+	return csvRows.join('\n')
 }
