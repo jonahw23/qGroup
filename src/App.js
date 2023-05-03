@@ -510,7 +510,7 @@ const changeUseWeights = () => {
                           <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>
 
                           <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 pl-2 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
-                          <button onClick={()=>exportGroup(state.students,state.groups,state.group_name,theHeader.value.name)} className="ml-2 w-32 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+                          <button onClick={()=>exportGroup(state.students,state.groups,group_name,theHeader.value.name)} className="ml-2 w-32 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
                               Export Group
                             </button>
                         </div>
@@ -578,7 +578,7 @@ const download_group = function (data,group_name,class_name) {
 
 	// Setting the anchor tag attribute for downloading
 	// and passing the download file name
-	a.setAttribute('download', class_name+" "+group_name+'.csv');
+	a.setAttribute('download', class_name+(group_name?" "+group_name:" Group")+'.csv');
 
 	// Performing a download with click
 	a.click()
