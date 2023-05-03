@@ -20,9 +20,10 @@ export default function Header(stateClass, currentClassPageNum) {
   })
 
   const onClickNavigation = (index) => {
-    let navigation = [state.navigation];
+    let navigation = [...state.navigation];
     navigation.map(x => x.current = false);
     navigation[index].current = true;
+    console.log("NEW: ",navigation)
     addToState({ navigation: navigation, classList: state.classList });
   }
 
