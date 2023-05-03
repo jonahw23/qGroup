@@ -163,7 +163,7 @@ export default function Example() {
   
   const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: 8})
 
-  console.log("CURRENT:", theHeader.value.name)
+  console.log("CURRENT:", theHeader.value)
 
   async function fetchData() {
     const users = await (await fetch('http://127.0.0.1:5000/api/users/list', {
@@ -217,6 +217,12 @@ export default function Example() {
       setStateUser({stateUserId:pageUserId, stateClassId: theHeader.value.class_id})
       fetchData()
     } 
+  }
+  if(theHeader.value.makeNew){
+    //alert("NEW CLASS IS:" + theHeader.value.newName)
+    pageClassId[0] = state.classes.length - 1
+    addClass(pageUserId, theHeader.value.newName)
+    fetchData()
   }
 
   //console.log("state", state)

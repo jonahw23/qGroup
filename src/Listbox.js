@@ -98,14 +98,26 @@ export default function ListBox(classesNew, currentClassPageNum) {
   }
 
   const [class_name, setClass_name] = useState("Class")
+  const [newClass, setUploadClass] = useState({makeNew:false})
+
+  function newClassButton() {
+    if(!(newClass.makeNew)){
+      console.log("NEWCLASS:", newClass)
+      setUploadClass({makeNew:true, newName:class_name})
+    }
+  }
 
   if(selected.name === "Add Class (+)"){
+    if(newClass.makeNew){
+      setUploadClass({makeNew:false})
+      setSelected({name:"Incomplete(Rendering)Class"})
+    }
     return({element: <>
-      <input type="text" id="Class Name" onChange={(event) => setClass_name(event.target.value)} name="Class Name" placeholder="Class Name" className=" pl-3 h-8 w-[80%] mb-0 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
-          <button onClick={()=>alert("Hi")} className="ml-2 w-100 h-10 rounded-md bg-green-500 text-white text-sm font-medium">
+      <input type="text" id="Class Name" onChange={(event) => setClass_name(event.target.value)} name="Class Name" placeholder="Class Name" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+          <button onClick={newClassButton} className="h-9 rounded-md bg-green-500 text-white text-sm font-medium">
               Create Class
-            </button>
-    </>, value:selected})
+          </button>
+    </>, value:newClass})
   }
 
   return ({element:
