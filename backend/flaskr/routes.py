@@ -1,9 +1,12 @@
 from flask import Blueprint
 from flask import request
+from flask import jsonify
 from flask_cors import cross_origin
 from . import database
 from . import student_algorithms
 from . import furniture_algorithms
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from werkzeug import check_password_hash, generate_password_hash
 
 routes = Blueprint("routes", __name__)
 
@@ -506,5 +509,21 @@ def get_weights(class_id, user_id):
       
     print("weights:", weights)
     return weights
+
+@routes.route("/api/users/login", methods=["POST"])
+@cross_origin()
+def login():
+  db = database.get_db()
+  username = request.json["username"]
+  passCand = request.json["password"]
+  user = dict(db.execute("SELECT FROM Users WHERE username = (?)", (username)).fetchone())
+  
+  if not user or not check_password_hash(user["password"], passCand):
+    return jsonify({"msg": "Invalid username or password"}), 401
+  
+  access_token = create_access_token(identity=user)
+  return jsonify(access_token=access_token), 201
+  
+                                              
 
 

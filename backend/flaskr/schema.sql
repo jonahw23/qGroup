@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS Users
   (user_id INTEGER PRIMARY KEY,
-   name STRING,
+   name STRING UNIQUE,
    password STRING);
 
 CREATE TABLE IF NOT EXISTS Classrooms
