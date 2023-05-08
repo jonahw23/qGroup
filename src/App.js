@@ -224,6 +224,12 @@ export default function Example() {
     addClass(pageUserId, theHeader.value.newName)
     fetchData()
   }
+  if(theHeader.value.deleteTime){
+    //alert("DELETING:" + theHeader.value.classes)
+    pageClassId[0] = state.classes.length - 1
+    addClass(pageUserId, theHeader.value.newName)
+    fetchData()
+  }
 
   //console.log("state", state)
 
