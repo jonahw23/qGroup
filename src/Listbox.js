@@ -101,6 +101,8 @@ export default function ListBox(classesNew, currentClassPageNum) {
 
   const [class_name, setClass_name] = useState("Class")
   const [newClass, setUploadClass] = useState({makeNew:false})
+  const[toDelete, setDelete] = useState([])
+  const[deleteTime, setDeleteTime] = useState(false)
 
   function newClassButton() {
     if(!(newClass.makeNew)){
@@ -121,9 +123,6 @@ export default function ListBox(classesNew, currentClassPageNum) {
           </button>
     </>, value:newClass})
   }
-
-  const[toDelete, setDelete] = useState([])
-  const[deleteTime, setDeleteTime] = useState(false)
 
   function deleteClassButton() {
     if(!deleteTime){

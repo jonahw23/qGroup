@@ -119,15 +119,16 @@ def delete_class(user_id, class_id):
   
   res = db.execute("""
     SELECT meta_group_id FROM ClassroomMetaGroupMap
-      WHERE class_id = (?)
+      WHERE classroom_id = (?)
   """, (class_id,))
   meta_group_ids = res.fetchall()
   for id in meta_group_ids:
-    delete_meta_group(class_id, id)
+    print("THEID:", id)
+    delete_meta_group(user_id, class_id, id)
 
   res = db.execute("""
     SELECT student_id FROM ClassroomStudentMap
-      WHERE class_id = (?)
+      WHERE classroom_id = (?)
   """, (class_id,))
   student_ids = res.fetchall()
   for id in student_ids:
@@ -458,6 +459,7 @@ def make_groups(user_id, class_id):
 @cross_origin()
 def delete_meta_group(user_id, class_id, meta_group_id):
   db = database.get_db()
+  print("USER ID:", user_id, "CLASS ID:", class_id, "META ID:", meta_group_id)
   res = db.execute("""
     SELECT group_id FROM MetaGroupGroupMap
       WHERE meta_group_id = (?)
