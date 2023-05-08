@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS Users
   (user_id INTEGER PRIMARY KEY,
-   name STRING,
+   name STRING UNIQUE,
    password STRING);
 
 CREATE TABLE IF NOT EXISTS Classrooms
@@ -79,7 +79,8 @@ CREATE TABLE IF NOT EXISTS tableGroup
 
 CREATE TABLE IF NOT EXISTS FurnitureTableGroupMap
   (furniture_id INTEGER,
-   table_group_id INTEGER);
+   table_group_id INTEGER,
+   FOREIGN KEY(furniture_id) REFERENCES Furniture(furn_id) ON DELETE CASCADE);
 
 CREATE TABLE IF NOT EXISTS tableGroupSeatingMap
   (table_group_id INTEGER,

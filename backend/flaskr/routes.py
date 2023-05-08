@@ -1,9 +1,12 @@
 from flask import Blueprint
 from flask import request
+from flask import jsonify
 from flask_cors import cross_origin
 from . import database
 from . import student_algorithms
 from . import furniture_algorithms
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from werkzeug.security import check_password_hash, generate_password_hash
 
 routes = Blueprint("routes", __name__)
 
@@ -104,10 +107,43 @@ def remove_student(user_id, class_id):
   db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentGroupMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (stud_id, stud_id))
+  db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
   
   db.commit()
-  return "", 201
+  return "", 200
+
+@routes.route("/api/users/<user_id>/class/<class_id>/delete_class", methods = ["DELETE"])
+@cross_origin()
+def delete_class(user_id, class_id):
+  db = database.get_db()
   
+  res = db.execute("""
+    SELECT meta_group_id FROM ClassroomMetaGroupMap
+      WHERE class_id = (?)
+  """, (class_id,))
+  meta_group_ids = res.fetchall()
+  for id in meta_group_ids:
+    delete_meta_group(class_id, id)
+
+  res = db.execute("""
+    SELECT student_id FROM ClassroomStudentMap
+      WHERE class_id = (?)
+  """, (class_id,))
+  student_ids = res.fetchall()
+  for id in student_ids:
+    db.execute("DELETE FROM Students WHERE id = (?)", (id,))
+    db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (id,))
+    db.execute("DELETE FROM StudentGroupMap WHERE student_id = (?)", (id,))
+    db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (id, id))
+    db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
+
+  db.execute("""
+    DELETE FROM Classrooms
+    WHERE class_id = (?)
+  """, (class_id,))
+  db.commit()
+  return "", 200
+
 @routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
 def add_user():
@@ -160,7 +196,6 @@ def new_furniture(user_id, class_id, seating_id):
     INSERT INTO Furniture (type, x, y, theta, seating_id)
       VALUES (?, ?, ?, ?, ?) 
   """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], seating_id))
-  #Should position be hard coded in or set by the user?
   furn_id = db.execute("SELECT furn_id FROM Furniture ORDER BY furn_id DESC").fetchone()[0]
   db.commit()
   return { "furn_id": furn_id }, 201
@@ -421,7 +456,7 @@ def make_groups(user_id, class_id):
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
 @cross_origin()
-def delete_meta_group(class_id, meta_group_id):
+def delete_meta_group(user_id, class_id, meta_group_id):
   db = database.get_db()
   res = db.execute("""
     SELECT group_id FROM MetaGroupGroupMap
@@ -429,26 +464,13 @@ def delete_meta_group(class_id, meta_group_id):
   """, (meta_group_id,))
   student_group_id_set = res.fetchall()
   for id in student_group_id_set:
-    db.execute("""
-      DELETE StudentGroupMap, StudentGroup
-        FROM StudentGroup
-        LEFT JOIN StudentGroupMap ON StudentGroupMap.group_id = StudentGroup.id
-        WHERE StudentGroup.id = (?)
-    """, (id,))
-  
-  db.execute("""
-    DELETE FROM MetaGroupGroupMap
-      WHERE meta_group_id = (?)
-  """, (meta_group_id,))
-  db.execute("""
-    DELETE FROM ClassroomMetaGroupMap
-      WHERE meta_group_id = (?)
-  """, (meta_group_id,))
-  db.execute("""
-    DELETE FROM MetaGroup
-      WHERE id = (?)
-  """, (meta_group_id,))
+    db.execute("DELETE FROM StudentGroup WHERE group_id = (?)", (id,))
+    db.execute("DELETE FROM StudentGroupMap WHERE group_id = (?)", (id,))
+  db.execute("DELETE FROM MetaGroupGroupMap WHERE meta_group_id = (?)", (meta_group_id,))
+  db.execute("DELETE FROM ClassroomMetaGroupMap WHERE meta_group_id = (?)", (meta_group_id,))
+  db.execute("DELETE FROM MetaGroup WHERE id = (?)", (meta_group_id,))
   db.commit()
+  return "", 200
 
 
 @routes.route("/api/users/<user_id>/class/<class_id>/upload_students", methods = ["POST"])
@@ -506,5 +528,21 @@ def get_weights(class_id, user_id):
       
     print("weights:", weights)
     return weights
+
+@routes.route("/api/users/login", methods=["POST"])
+@cross_origin()
+def login():
+  db = database.get_db()
+  username = request.json["username"]
+  passCand = request.json["password"]
+  user = dict(db.execute("SELECT * FROM Users WHERE username = (?)", (username,)).fetchone())
+  
+  if not user or not check_password_hash(user["password"], passCand):
+    return jsonify({"msg": "Invalid username or password"}), 401
+  
+  access_token = create_access_token(identity=user)
+  return jsonify(access_token=access_token), 200
+  
+                                              
 
 
