@@ -8,9 +8,11 @@ import {
   Routes,
   Route,
 } from "react-router-dom"
+import { Auth0Provider } from "@auth0/auth0-react"
 import ButtonBox from './buttonBox'
 import Papa from 'papaparse'
 import ListBox from './Listbox'
+import Login from "./account/Login"
 
 //Body of main page and API calls
 
@@ -466,6 +468,13 @@ const changeUseWeights = () => {
   setUseWeights(!useWeights)
 }
   return (
+    <Auth0Provider
+      domain="dev-o67p7tq48xlb0jt1.us.auth0.com"
+      clientId="lh7xJTrQCQrPr9NEzlbuFMBX7dC8FMoj"
+      authorizationParams={{
+        redirect_uri: window.location.origin
+      }}
+    >
     <Router>
       <div className="min-h-full">
 
@@ -523,6 +532,7 @@ const changeUseWeights = () => {
                       </div>
                     } />
                     <Route path="/seating" element={<SeatingEditor groups={state.groups} />} />
+                    <Route path="/login" element={<Login />} />
                   </Routes>
                 </div>
 
@@ -533,6 +543,7 @@ const changeUseWeights = () => {
 
       </div>
     </Router>
+    </Auth0Provider>
   )
 }
 
