@@ -54,6 +54,21 @@ const addClass = async (user_id, className) => {
   console.log("Added")
 }
 
+const deleteClass = async (user_id, class_id) => {
+  const response = await fetch('http://127.0.0.1:5000/api/users/' + user_id + '/class/' + class_id + '/delete_class', {
+    method: 'DELETE',
+    body: JSON.stringify({
+      user_id: user_id,
+      class_id: class_id,
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response
+  console.log("Deleted")
+}
+
 const getUsers = async () => {
   const response = await fetch('http://127.0.0.1:5000/api/users/list', {
     method: 'GET',
@@ -225,6 +240,14 @@ export default function Example() {
     pageClassId[0] = state.classes.length - 1
     addClass(pageUserId, theHeader.value.newName)
     fetchData()
+  }
+  if(theHeader.value.deleteTime){
+    //alert("DELETING:" + theHeader.value.classes)
+    pageClassId[0] = state.classes.length - 1
+    for(let i = 0; i < theHeader.value.classes.length; i++){
+      deleteClass(pageUserId, theHeader.value.classes[i].class_id)
+      fetchData()
+    }
   }
 
   //console.log("state", state)

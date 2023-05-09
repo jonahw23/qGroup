@@ -82,6 +82,8 @@ function buildClasses(arr){
   }
   classes.push({name:"Add Class (+)"})
   classes[classes.length - 1].index = classes.length - 1
+  classes.push({name:"Delete Class (-)"})
+  classes[classes.length - 1].index = classes.length - 1
 }
 
 export default function ListBox(classesNew, currentClassPageNum) {
@@ -99,6 +101,8 @@ export default function ListBox(classesNew, currentClassPageNum) {
 
   const [class_name, setClass_name] = useState("Class")
   const [newClass, setUploadClass] = useState({makeNew:false})
+  const[toDelete, setDelete] = useState([])
+  const[deleteTime, setDeleteTime] = useState(false)
 
   function newClassButton() {
     if(!(newClass.makeNew)){
@@ -118,6 +122,93 @@ export default function ListBox(classesNew, currentClassPageNum) {
               Create Class
           </button>
     </>, value:newClass})
+  }
+
+  function deleteClassButton() {
+    if(!deleteTime){
+      setDeleteTime(true)
+    }
+    else{
+      alert("PUT SMTH HERE")
+    }
+  }
+
+  console.log("TODELTE:", toDelete)
+  console.log("SELCTED:", selected)
+
+  if(selected.name === "Delete Class (-)"){
+    return({element: <>
+    <Listbox value={toDelete} onChange={setDelete} multiple>
+      {({ open }) => (
+        <>
+          <Listbox.Label className="block text-sm font-medium text-gray-700"></Listbox.Label>
+          <div className="relative mt-1">
+            <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+              <span className="flex items-center">
+                <span className="ml-3 block truncate">{selected.name}</span>
+              </span>
+              <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </span>
+            </Listbox.Button>
+
+            <Transition
+              show={open}
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-100 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {classes.map((classes) => (
+                  <Listbox.Option
+                    key={classes.id}
+                    className={({ selected, active }) =>
+                      classNames(
+                        active ? 'text-white bg-red-600' : selected ? 'text-white bg-red-400' : 'text-gray-900',
+                        'relative cursor-default select-none py-2 pl-3 pr-9'
+                      )
+                    }
+                    value={classes}
+                  >
+                    {({ selected, active }) => (
+                      <>
+                        <div className="flex items-center">
+                          <span
+                            className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
+                          >
+                            {classes.name}
+                          </span>
+                        </div>
+
+                        {/*selected ? (
+                          <span
+                            className={classNames(
+                              active ? 'text-white' : 'text-indigo-600',
+                              'absolute inset-y-0 right-0 flex items-center pr-4'
+                            )}
+                          >
+
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                            ) : null*/}
+
+                        { }
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        </>
+      )}
+    </Listbox>
+        <button onClick={deleteClassButton} className="h-9 rounded-md bg-red-500 text-white text-sm font-medium">
+            Delete Classes
+        </button>
+    </>
+    , value: deleteTime ? {deleteTime:true, classes:toDelete} : classes[classes.length-1]})
   }
 
   return ({element:

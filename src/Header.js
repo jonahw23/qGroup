@@ -13,9 +13,6 @@ export default function Header(stateClass, currentClassPageNum) {
     navigation: [
       { name: 'Weighted Groups', href: '/', current: true },
       { name: 'Seating Chart', href: '/seating', current: false },
-      { name: 'Other1', href: '#', current: false },
-      { name: 'Other2', href: '#', current: false },
-      { name: 'Other3', href: '#', current: false },
     ],
   })
 

@@ -104,10 +104,48 @@ def remove_student(user_id, class_id):
   db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentGroupMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (stud_id, stud_id))
+  db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
   
   db.commit()
-  return "", 201
+  return "", 200
+
+@routes.route("/api/users/<user_id>/class/<class_id>/delete_class", methods = ["DELETE"])
+@cross_origin()
+def delete_class(user_id, class_id):
+  db = database.get_db()
   
+  res = db.execute("""
+    SELECT meta_group_id FROM ClassroomMetaGroupMap
+      WHERE classroom_id = (?)
+  """, (class_id,))
+  meta_group_ids = [row[0] for row in res.fetchall()]
+  print("meta group ids:")
+  print(meta_group_ids)
+  for id in meta_group_ids:
+    delete_meta_group(user_id, class_id, id)
+  
+  res = db.execute("""
+    SELECT student_id FROM ClassroomStudentMap
+      WHERE classroom_id = (?)
+  """, (class_id,))
+  student_ids = [row[0] for row in res.fetchall()]
+  print("student ids: ")
+  print(student_ids)
+  for id in student_ids:
+    db.execute("DELETE FROM Students WHERE id = (?)", (id,))
+    db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (id,))
+    db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (id, id))
+    db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
+
+  db.execute("""
+    DELETE FROM Classrooms
+    WHERE class_id = (?)
+  """, (class_id,))
+
+  db.commit()
+  print("delete class")
+  return "", 200
+
 @routes.route("/api/users/new", methods = ["POST"])
 @cross_origin()
 def add_user():
@@ -160,7 +198,6 @@ def new_furniture(user_id, class_id, seating_id):
     INSERT INTO Furniture (type, x, y, theta, seating_id)
       VALUES (?, ?, ?, ?, ?) 
   """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], seating_id))
-  #Should position be hard coded in or set by the user?
   furn_id = db.execute("SELECT furn_id FROM Furniture ORDER BY furn_id DESC").fetchone()[0]
   db.commit()
   return { "furn_id": furn_id }, 201
@@ -421,34 +458,29 @@ def make_groups(user_id, class_id):
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
 @cross_origin()
-def delete_meta_group(class_id, meta_group_id):
+def delete_meta_group(user_id, class_id, meta_group_id):
   db = database.get_db()
+  print("USER ID:", user_id, "CLASS ID:", class_id, "META ID:", meta_group_id)
   res = db.execute("""
     SELECT group_id FROM MetaGroupGroupMap
       WHERE meta_group_id = (?)
   """, (meta_group_id,))
-  student_group_id_set = res.fetchall()
-  for id in student_group_id_set:
-    db.execute("""
-      DELETE StudentGroupMap, StudentGroup
-        FROM StudentGroup
-        LEFT JOIN StudentGroupMap ON StudentGroupMap.group_id = StudentGroup.id
-        WHERE StudentGroup.id = (?)
-    """, (id,))
-  
-  db.execute("""
-    DELETE FROM MetaGroupGroupMap
-      WHERE meta_group_id = (?)
-  """, (meta_group_id,))
-  db.execute("""
-    DELETE FROM ClassroomMetaGroupMap
-      WHERE meta_group_id = (?)
-  """, (meta_group_id,))
-  db.execute("""
-    DELETE FROM MetaGroup
+  group_ids = [(row[0],) for row in res.fetchall()]
+  db.executemany("""
+    DELETE FROM StudentGroup
       WHERE id = (?)
-  """, (meta_group_id,))
+  """, group_ids)
+  db.executemany("""
+    DELETE FROM StudentGroupMap
+      WHERE group_id = (?)
+  """, group_ids)
+  
+  db.execute("DELETE FROM MetaGroupGroupMap WHERE meta_group_id = (?)", (meta_group_id,))
+  db.execute("DELETE FROM ClassroomMetaGroupMap WHERE meta_group_id = (?)", (meta_group_id,))
+  db.execute("DELETE FROM MetaGroup WHERE meta_group_id = (?)", (meta_group_id,))
+
   db.commit()
+  return "", 200
 
 
 @routes.route("/api/users/<user_id>/class/<class_id>/upload_students", methods = ["POST"])
