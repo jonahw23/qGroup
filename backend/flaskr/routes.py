@@ -123,7 +123,6 @@ def delete_class(user_id, class_id):
   """, (class_id,))
   meta_group_ids = res.fetchall()
   for id in meta_group_ids:
-    print("THEID:", id)
     delete_meta_group(user_id, class_id, id)
 
   res = db.execute("""
