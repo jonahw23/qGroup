@@ -368,6 +368,7 @@ export default function Example() {
   }
 
   function deleteStudentButton() {
+    console.log("trytoDelete:", theList.value.id)
     //Should be refactored for auto-state-update, see below
     async function fetchData() {
       const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/remove_student", {
