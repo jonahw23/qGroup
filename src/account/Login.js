@@ -1,8 +1,21 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import * as api from "../api.js";
 
 export default function Login() {
 
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
+
+  // TODO: this should probably go in a redirect page somewhere.
+  // But, our Routing is currently Messy. So, here it is instead for the time being
+  if (isAuthenticated) {
+    const id = api.user_id(user);
+    api.call("POST", "/users/new",
+      {
+        id: id + "",
+        name: id + "",
+        password: "",
+      })
+  }
 
   return (
     <div>
