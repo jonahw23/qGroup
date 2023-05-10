@@ -137,6 +137,10 @@ export default function ListBox(classesNew, currentClassPageNum) {
   console.log("SELCTED:", selected)
 
   if(selected.name === "Delete Class (-)"){
+    if(deleteTime){
+      setDeleteTime(false)
+      setSelected({name:"Incomplete(Rendering)Class"})
+    }
     return({element: <>
     <Listbox value={toDelete} onChange={setDelete} multiple>
       {({ open }) => (
