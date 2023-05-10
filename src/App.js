@@ -353,6 +353,7 @@ export default function Example() {
   function submitForm() {
     console.log(uploadedFile)
     const inputFile = uploadedFile
+    if(uploadedFile){
     Papa.parse(inputFile[0], {
       complete: function(results) {
         const unparsedFile = results.data
@@ -363,8 +364,11 @@ export default function Example() {
       }
     })
   }
+    fetchData()
+  }
 
   function deleteStudentButton() {
+    console.log("trytoDelete:", theList.value.id)
     //Should be refactored for auto-state-update, see below
     async function fetchData() {
       const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/remove_student", {
@@ -517,7 +521,7 @@ const changeUseWeights = () => {
                     <button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
                       Delete Selected Student
                     </button>
-                    <label class="block ml-5 mt-3 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+                    <label class="block ml-5 mt-3 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload classlist csv</label>
                     <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
                     <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
                       Submit CSV

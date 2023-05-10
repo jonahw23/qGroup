@@ -104,7 +104,7 @@ def remove_student(user_id, class_id):
   db.execute("DELETE FROM ClassroomStudentMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentGroupMap WHERE student_id = (?)", (stud_id,))
   db.execute("DELETE FROM StudentStudentMap WHERE student_id1 = (?) OR student_id2 = (?)", (stud_id, stud_id))
-  db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
+  db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (stud_id,))
   
   db.commit()
   return "", 200
@@ -153,12 +153,9 @@ def add_user():
   print("got")
   print(request.json, request.get_json())
   db.execute(f"""
-    INSERT INTO Users (name, password)
-      VALUES (
-        "{request.json["name"]}",
-        "{request.json["password"]}"
-        );
-  """)
+    INSERT INTO Users (user_id, name, password)
+      VALUES (?, ?, ?)
+  """, (request.json["id"], request.json["name"], request.json["password"]))
   
   db.commit()
 
