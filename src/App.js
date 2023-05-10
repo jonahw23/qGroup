@@ -351,14 +351,14 @@ export default function Example() {
   }
 
   function submitForm() {
-    console.log(uploadedFile)
+    //console.log(uploadedFile)
     const inputFile = uploadedFile
     if(uploadedFile){
     Papa.parse(inputFile[0], {
       complete: function(results) {
         const unparsedFile = results.data
         const parsedFile = parseResults(unparsedFile)
-        console.log("File", parsedFile)
+        //console.log("File", parsedFile)
         //This is file destination, should be changed to not be hardcoded
         uploadStudents(pageUserId, pageClassId[0], parsedFile)
       }
@@ -368,8 +368,6 @@ export default function Example() {
   }
 
   function deleteStudentButton() {
-    console.log("trytoDelete:", theList.value.id)
-    //Should be refactored for auto-state-update, see below
     async function fetchData() {
       const deleteStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/remove_student", {
           method: 'DELETE',
@@ -387,7 +385,7 @@ export default function Example() {
         }
       })).json())
       if (deleteStudents && students) {
-        console.log(students)
+        //console.log(students)
         addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
       }
       else {
@@ -395,7 +393,7 @@ export default function Example() {
       }
     }
     fetchData()
-    console.log("NewSetudenst:", state.students)
+    //console.log("NewSetudenst:", state.students)
   }
 
   function minusWeightButton() {
@@ -471,7 +469,7 @@ export default function Example() {
   }
 
   //console.log("state weights", state.weights)
-  console.log("state students", state.groups)
+  //console.log("state students", state.groups)
 
   const weightButtons = () => {
     if(lastClicked > 0){
