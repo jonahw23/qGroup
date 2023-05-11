@@ -133,8 +133,8 @@ export default function ListBox(classesNew, currentClassPageNum) {
     }
   }
 
-  console.log("TODELTE:", toDelete)
-  console.log("SELCTED:", selected)
+  //console.log("TODELTE:", toDelete)
+  //console.log("SELCTED:", selected)
 
   if(selected.name === "Delete Class (-)"){
     if(deleteTime){
