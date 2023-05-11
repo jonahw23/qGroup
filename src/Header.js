@@ -30,20 +30,21 @@ export default function Header(stateClass, currentClassPageNum) {
 
   return ({element: 
     <>
-      <Disclosure as="nav" className="bg-neutral-400">
+      <Disclosure as="nav" className="bg-blue-300">
         {({ open }) => (
           <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">  
               <div className="flex h-16 items-center justify-between">
                 <div className="flex items-center">
 
                   <div className="flex-shrink-0">
-                    <img
+                  </div>
+                  <img
                       className="h-8 w-18"
                       src="https://i.imgur.com/mGBBnE0.png"
                       alt="qGroup Logo"
+                      
                     />
-                  </div>
                   {/*randomColor*/}
                   <div className="hidden md:block">
                     <div className="ml-7 flex items-baseline space-x-2 space-y-0">
