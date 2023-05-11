@@ -453,6 +453,31 @@ def make_groups(user_id, class_id):
   
   return groups
 
+@routes.route("/api/meta_groups/get_groups_from_metaID", methods = ["GET"])
+@cross_origin()
+def get_groups():
+  db = database.get_db()
+  res = db.execute("""
+    SELECT group_id FROM MetaGroupGroupMap
+    WHERE meta_group_id = (?)
+  """, (request.json["meta_group_id"],))
+  group_ids = [row[0] for row in res.fetchall()]
+  print(group_ids)
+
+  groups = []
+  for id in group_ids:
+    res = db.execute("""
+      SELECT s.first_name, s.last_name FROM StudentGroupMap m 
+      JOIN Students s ON s.id = m.student_id
+      WHERE m.group_id = (?)
+    """, (id,))
+    group = [dict(row) for row in res.fetchall()]
+    print(group)
+    groups.append(group)
+  
+  print(groups)
+  return groups, 200
+
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])
 @cross_origin()
 def delete_meta_group(user_id, class_id, meta_group_id):
