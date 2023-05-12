@@ -465,6 +465,17 @@ def make_groups(user_id, class_id):
   
   return groups
 
+@routes.route("/api/class/<class_id>/meta_groups/get_ids_names", methods = ["GET"])
+@cross_origin()
+def get_meta_groups_info(class_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT mg.meta_group_id, mg.name FROM ClassroomMetaGroupMap cmm
+    JOIN MetaGroup mg ON mg.meta_group_id = cmm.meta_group_id
+    WHERE cmm.class_id = (?)
+  """, (class_id))
+  return [dict(row) for row in res.fetchall()], 200
+
 @routes.route("/api/meta_groups/<meta_group_id>/get_groups_from_metaID", methods = ["GET"])
 @cross_origin()
 def get_groups(meta_group_id):
