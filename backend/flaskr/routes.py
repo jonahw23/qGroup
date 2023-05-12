@@ -302,12 +302,6 @@ def map_stud_furn(user_id, class_id, seating_id):
   students = get_class_students(user_id, class_id).json
 
   res = db.execute("""
-    SELECT furn_id FROM Furniture
-      WHERE seating_id = (?) AND type = (?)
-  """, (seating_id, "seat"))
-  seats = [dict(x) for x in res.fetchall()]
-
-  res = db.execute("""
     SELECT * FROM ClassroomMetaGroupMap
     WHERE classroom_id = (?)
     ORDER BY meta_group_id DESC
@@ -322,8 +316,6 @@ def map_stud_furn(user_id, class_id, seating_id):
   start_group = dict(list(res)[0])["group_id"]
 
   for i, student in enumerate(students): 
-    if i >= len(seats):
-      break
 
     group = db.execute("""
       SELECT * FROM StudentGroupMap
