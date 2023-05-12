@@ -9,7 +9,7 @@ export function call(method, route, body = undefined) {
 
   return fetch(`${BASE}${route}`, headers)
     .then(res => res.json())
-    .catch(err => console.error(err))
+    .catch(err => { })
 }
 
 // In case more than Google auth is planned in the future,

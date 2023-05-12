@@ -199,6 +199,22 @@ def new_furniture(user_id, class_id, seating_id):
   db.commit()
   return { "furn_id": furn_id }, 201
 
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/<furniture_id>", methods = ["DELETE"])
+@cross_origin()
+def delete_furn(user_id, class_id, seating_id, furniture_id):
+  db = database.get_db()
+  db.execute("""
+    DELETE FROM Furniture WHERE furn_id = (?)
+  """, (furniture_id,))
+  db.execute("""
+    DELETE FROM StudentFurnMap WHERE furn_id = (?)
+  """, (furniture_id,))
+  db.execute("""
+    DELETE FROM FurnitureTableGroupMap WHERE furniture_id = (?)
+  """, (furniture_id,))
+  db.commit()
+  return "", 201
+
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/<furniture_id>/move_furn", methods = ["PUT"])
 @cross_origin()
 def move_furn(user_id, class_id, seating_id, furniture_id):

@@ -54,6 +54,13 @@ export default function SeatingEditor({ groups }) {
       { num_groups: num_groups })
       .then(() => { getData(); });
   }
+  const deleteFurniture = () => {
+    selected.forEach(id => {
+      api.call("DELETE", `/users/6/class/8/seating/1/furniture/${id}`);
+    })
+    setFurniture([...furniture].filter(f => !selected.includes(f.furn_id)))
+    setSelected([])
+  }
 
   const addSeat = (e) => {
     const bounds = divElement.current.getBoundingClientRect();
@@ -211,6 +218,12 @@ export default function SeatingEditor({ groups }) {
         <div className="flex-1" />
 
         <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => { deleteFurniture() }}>
+          Delete selected furniture
+        </button>
+
+        <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => { mapFurniture() }}>
           Group furniture
@@ -229,11 +242,11 @@ export default function SeatingEditor({ groups }) {
         {
           fsHandle.active ?
             <ArrowsPointingInIcon
-              className={`block h-8 w-8 p-1 cursor-pointer rounded`}
+              className={`block h-8 w-8 p-1 cursor-pointer rounded hover:bg-slate-300`}
               onClick={fsHandle.exit} />
             :
             <ArrowsPointingOutIcon
-              className={`block h-8 w-8 p-1 cursor-pointer rounded`}
+              className={`block h-8 w-8 p-1 cursor-pointer rounded hover:bg-slate-300`}
               onClick={fsHandle.enter} />
         }
       </div>
