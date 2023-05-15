@@ -125,6 +125,20 @@ const addStudent = async (user_id, class_id, first_name, last_name) => {
   console.log("Student added")
 }
 
+const getGroupMeta = async (meta_id) => {
+  const response = await fetch("http://127.0.0.1:5000/api/meta_groups/get_groups_from_metaID", {
+    method: 'GET',
+    body: JSON.stringify({
+      meta_group_id: meta_id,
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const peopleAPI = await response
+  return("meta?group", peopleAPI)
+}
+
 //addMetaGroup(1, 2, "NewMETAGROUP", 5)
 
 //Testing the API, runs on refresh
@@ -227,13 +241,21 @@ export default function Example() {
         'Content-Type': 'application/json'
       }
     }, [])).json()
-    if (students && users && weights && groups) {
-      addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights })
+    const metaGroup = await (await fetch("http://127.0.0.1:5000/api/meta_groups/700/get_groups_from_metaID", {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    if (students && users && weights && groups && metaGroup) {
+      addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights, "metaGroup": metaGroup})
     }
     else {
       console.log("Didn't add students or users or groups")
     }
   }
+
+  console.log("metaGroup:", state.metaGroup)
 
   if(theHeader.value.class_id){
     if(theHeader.value.class_id !== pageClassId[0]){
@@ -281,7 +303,7 @@ export default function Example() {
       }, [])).json()
       if (groups) {
         console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights })
+        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights, "metaGroup": state.metaGroup })
       }
       else {
         console.log("Didn't change groups")
@@ -308,7 +330,7 @@ export default function Example() {
       }, [])).json()
       if (groups) {
         console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights})
+        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights, "metaGroup": state.metaGroup})
       }
       else {
         console.log("Didn't change groups")
@@ -393,7 +415,7 @@ export default function Example() {
       })).json())
       if (deleteStudents && students) {
         //console.log(students)
-        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
+        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights, "metaGroup": state.metaGroup})
       }
       else {
         console.log("Didn't delete students or refind")
@@ -491,7 +513,7 @@ return({element: <>
       })).json()
       if (groupsUpdate && weights) {
         console.log("weights:", weights)
-        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights, "metaGroup": state.metaGroup})
       }
       else {
         console.log("Didn't change weights")
@@ -527,7 +549,7 @@ return({element: <>
       })).json()
       if (groupsUpdate && weights) {
         console.log("weights:", weights)
-        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights})
+        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights, "metaGroup": state.metaGroup})
       }
       else {
         console.log("Didn't change weights")

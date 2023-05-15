@@ -138,6 +138,10 @@ def delete_class(user_id, class_id):
     db.execute("DELETE FROM StudentFurnMap WHERE student_id = (?)", (id,))
 
   db.execute("""
+    DELETE FROM ClassroomSeatingMap
+    WHERE class_id = (?)
+  """, (class_id,))
+  db.execute("""
     DELETE FROM Classrooms
     WHERE class_id = (?)
   """, (class_id,))
@@ -198,6 +202,22 @@ def new_furniture(user_id, class_id, seating_id):
   furn_id = db.execute("SELECT furn_id FROM Furniture ORDER BY furn_id DESC").fetchone()[0]
   db.commit()
   return { "furn_id": furn_id }, 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/<furniture_id>", methods = ["DELETE"])
+@cross_origin()
+def delete_furn(user_id, class_id, seating_id, furniture_id):
+  db = database.get_db()
+  db.execute("""
+    DELETE FROM Furniture WHERE furn_id = (?)
+  """, (furniture_id,))
+  db.execute("""
+    DELETE FROM StudentFurnMap WHERE furn_id = (?)
+  """, (furniture_id,))
+  db.execute("""
+    DELETE FROM FurnitureTableGroupMap WHERE furniture_id = (?)
+  """, (furniture_id,))
+  db.commit()
+  return "", 201
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture/<furniture_id>/move_furn", methods = ["PUT"])
 @cross_origin()
@@ -286,12 +306,6 @@ def map_stud_furn(user_id, class_id, seating_id):
   students = get_class_students(user_id, class_id).json
 
   res = db.execute("""
-    SELECT furn_id FROM Furniture
-      WHERE seating_id = (?) AND type = (?)
-  """, (seating_id, "seat"))
-  seats = [dict(x) for x in res.fetchall()]
-
-  res = db.execute("""
     SELECT * FROM ClassroomMetaGroupMap
     WHERE classroom_id = (?)
     ORDER BY meta_group_id DESC
@@ -306,8 +320,6 @@ def map_stud_furn(user_id, class_id, seating_id):
   start_group = dict(list(res)[0])["group_id"]
 
   for i, student in enumerate(students): 
-    if i >= len(seats):
-      break
 
     group = db.execute("""
       SELECT * FROM StudentGroupMap
@@ -453,14 +465,25 @@ def make_groups(user_id, class_id):
   
   return groups
 
-@routes.route("/api/meta_groups/get_groups_from_metaID", methods = ["GET"])
+@routes.route("/api/class/<class_id>/meta_groups/get_ids_names", methods = ["GET"])
 @cross_origin()
-def get_groups():
+def get_meta_groups_info(class_id):
+  db = database.get_db()
+  res = db.execute("""
+    SELECT mg.meta_group_id, mg.name FROM ClassroomMetaGroupMap cmm
+    JOIN MetaGroup mg ON mg.meta_group_id = cmm.meta_group_id
+    WHERE cmm.class_id = (?)
+  """, (class_id))
+  return [dict(row) for row in res.fetchall()], 200
+
+@routes.route("/api/meta_groups/<meta_group_id>/get_groups_from_metaID", methods = ["GET"])
+@cross_origin()
+def get_groups(meta_group_id):
   db = database.get_db()
   res = db.execute("""
     SELECT group_id FROM MetaGroupGroupMap
     WHERE meta_group_id = (?)
-  """, (request.json["meta_group_id"],))
+  """, (meta_group_id,))
   group_ids = [row[0] for row in res.fetchall()]
   print(group_ids)
 
@@ -561,4 +584,27 @@ def get_weights(class_id, user_id):
     print("weights:", weights)
     return weights
 
+@routes.route("/api/students/<stud_id>/update_student", methods = ["PATCH"])
+@cross_origin()
+def change_student_name(stud_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE Students
+    SET first_name = (?)
+        last_name = (?)
+    WHERE id = (?)
+  """, (request.json["new_first_name"], request.json["new_last_name"], stud_id))
+  db.commit()
+  return "", 200
 
+@routes.route("/api/class/<class_id>/update_class", methods = ["PATCH"])
+@cross_origin()
+def change_class_name(class_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE Classrooms
+    SET name = (?)
+    WHERE class_id = (?)
+  """, (request.json["new_class_name"], class_id))
+  db.commit()
+  return "", 200

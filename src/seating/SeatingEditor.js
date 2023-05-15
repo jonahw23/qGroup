@@ -8,10 +8,11 @@ export default function SeatingEditor({ groups }) {
 
   let [furniture, setFurniture] = useState([]);
   let [students, setStudents] = useState([]);
-  let [furn_groups, setFurn_groups] = useState([]);
+  let [furn_groups, setFurnGroups] = useState([]);
   let [width, setWidth] = useState(0);
   let [selected, setSelected] = useState([]);
-  let [select_corner, setSelect_corner] = useState(undefined);
+  let [select_corner, setSelectCorner] = useState(undefined);
+  let [mouse_pos, setMousePos] = useState({});
   let [mode, setMode] = useState("select");
 
   let divElement = useRef(null);
@@ -35,7 +36,7 @@ export default function SeatingEditor({ groups }) {
     api.call("GET", "/users/6/class/8/seating/1/furniture/get_furniture_loc")
       .then(json => { setFurniture(json) });
     api.call("GET", "/users/6/class/8/seating/1/furniture_groups")
-      .then(json => { setFurn_groups(json) });
+      .then(json => { setFurnGroups(json) });
     api.call("GET", "/users/6/class/8/seating/1/students")
       .then(json => { setStudents(json) });
   }
@@ -53,6 +54,13 @@ export default function SeatingEditor({ groups }) {
     api.call("POST", "/users/6/class/8/seating/1/group_furn",
       { num_groups: num_groups })
       .then(() => { getData(); });
+  }
+  const deleteFurniture = () => {
+    selected.forEach(id => {
+      api.call("DELETE", `/users/6/class/8/seating/1/furniture/${id}`);
+    })
+    setFurniture([...furniture].filter(f => !selected.includes(f.furn_id)))
+    setSelected([])
   }
 
   const addSeat = (e) => {
@@ -88,8 +96,9 @@ export default function SeatingEditor({ groups }) {
 
         const x = event.clientX ?? event.touches[0].clientX;
         const y = event.clientY ?? event.touches[0].clientY;
+        setMousePos({ x: x - rect.left, y: y - rect.top });
 
-        setSelect_corner({
+        setSelectCorner({
           x: (x - rect.left) / width,
           y: (y - rect.top) / width
         });
@@ -103,8 +112,11 @@ export default function SeatingEditor({ groups }) {
       const c = select_corner;
       let x = event.clientX ?? event.touches[0].clientX;
       let y = event.clientY ?? event.touches[0].clientY;
-      x = (x - rect.left) / width;
-      y = (y - rect.top) / width;
+      x = x - rect.left;
+      y = y - rect.top;
+      setMousePos({ x: x, y: y });
+      x = x / width;
+      y = y / width;
 
       const x1 = Math.min(c.x, x); const x2 = Math.max(c.x, x);
       const y1 = Math.min(c.y, y); const y2 = Math.max(c.y, y);
@@ -119,7 +131,7 @@ export default function SeatingEditor({ groups }) {
     }
   }
   const onMouseUp = (event) => {
-    setSelect_corner(undefined);
+    setSelectCorner(undefined);
   }
 
   const onStartDrag = (f) => {
@@ -155,13 +167,13 @@ export default function SeatingEditor({ groups }) {
   }
 
   const onRotate = (f, event) => {
-    // NOTE: this is real janky
-    const rect = event.target.parentElement.parentElement.getBoundingClientRect();
+    const rect = divElement.current.getBoundingClientRect();
+    const seatRect = document.querySelector(".seat-element").getBoundingClientRect();
 
     let x = event.clientX ?? event.touches[0].clientX;
     let y = event.clientY ?? event.touches[0].clientY;
-    x -= rect.left + rect.width / 2;
-    y -= rect.top + rect.height / 2;
+    x -= rect.left + f.x * width + seatRect.width / 2;
+    y -= rect.top + f.y * width + seatRect.height / 2;
     const angle = Math.atan2(y, x);
 
     let furn = [...furniture];
@@ -195,6 +207,14 @@ export default function SeatingEditor({ groups }) {
     );
   });
 
+  const selectbox =
+    select_corner ? {
+      x1: select_corner.x * width,
+      y1: select_corner.y * width,
+      x2: mouse_pos.x,
+      y2: mouse_pos.y,
+    } : { x1: 0, y1: 0, x2: 0, y2: 0, };
+
   return (
     <div className="h-full flex flex-col">
 
@@ -209,6 +229,12 @@ export default function SeatingEditor({ groups }) {
           onClick={() => setMode("place")} />
 
         <div className="flex-1" />
+
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => { deleteFurniture() }}>
+          Delete selected furniture
+        </button>
 
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -229,11 +255,11 @@ export default function SeatingEditor({ groups }) {
         {
           fsHandle.active ?
             <ArrowsPointingInIcon
-              className={`block h-8 w-8 p-1 cursor-pointer rounded`}
+              className={`block h-8 w-8 p-1 cursor-pointer rounded hover:bg-slate-300`}
               onClick={fsHandle.exit} />
             :
             <ArrowsPointingOutIcon
-              className={`block h-8 w-8 p-1 cursor-pointer rounded`}
+              className={`block h-8 w-8 p-1 cursor-pointer rounded hover:bg-slate-300`}
               onClick={fsHandle.enter} />
         }
       </div>
@@ -250,6 +276,16 @@ export default function SeatingEditor({ groups }) {
           tabIndex={0}>
 
           {seats}
+
+          <div
+            className="bg-sky-500/30"
+            style={{
+              position: "absolute",
+              top: selectbox.y1,
+              left: selectbox.x1,
+              width: selectbox.x2 - selectbox.x1,
+              height: selectbox.y2 - selectbox.y1,
+            }}></div>
 
         </div>
       </FullScreen>
