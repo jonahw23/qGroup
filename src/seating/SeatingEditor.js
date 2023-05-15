@@ -167,13 +167,13 @@ export default function SeatingEditor({ groups }) {
   }
 
   const onRotate = (f, event) => {
-    // NOTE: this is real janky
-    const rect = event.target.parentElement.parentElement.getBoundingClientRect();
+    const rect = divElement.current.getBoundingClientRect();
+    const seatRect = document.querySelector(".seat-element").getBoundingClientRect();
 
     let x = event.clientX ?? event.touches[0].clientX;
     let y = event.clientY ?? event.touches[0].clientY;
-    x -= rect.left + rect.width / 2;
-    y -= rect.top + rect.height / 2;
+    x -= rect.left + f.x * width + seatRect.width / 2;
+    y -= rect.top + f.y * width + seatRect.height / 2;
     const angle = Math.atan2(y, x);
 
     let furn = [...furniture];
