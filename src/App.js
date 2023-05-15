@@ -169,6 +169,13 @@ export default function Example() {
 
   const [useWeights, setUseWeights] = useState(false)
 
+
+  const [addStudentToClass, setAddStudent] = useState(false)
+  const [first_name, setFirstName] = useState("")
+  const [last_name, setLastName] = useState("")
+
+
+
   //Random factor for render debugging
   var randomColor = Math.floor(Math.random() * 16777215).toString(16)
 
@@ -396,6 +403,73 @@ export default function Example() {
     //console.log("NewSetudenst:", state.students)
   }
 
+  function swapAddStudent(){
+    setAddStudent(!addStudentToClass)
+  }
+
+  function addStudentButton() {
+    console.log("HI")
+    setAddStudent(false)
+    async function fetchData() {
+      const addStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/add_student", {
+          method: 'POST',
+          body: JSON.stringify({
+            first_name: first_name,
+            last_name: last_name,
+            class_id: pageClassId[0],
+
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }))
+      const students = await ((await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/students', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })).json())
+      if (addStudents && students) {
+        //console.log(students)
+        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
+      }
+      else {
+        console.log("Didn't delete students or refind")
+      }
+    }
+    addStudent(stateUser.stateUserId,pageClassId[0],first_name,last_name)
+    //fetchData()
+    //console.log("NewSetudenst:", state.students)
+  }
+
+  /*
+return({element: <>
+      <input type="text" id="First Name" onChange={(event) => setFirstName(event.target.value)} name="First Name" placeholder="First" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+
+      <button onClick={addStudentButton} className="h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+              Add Student
+          </button>
+    </>, value:newStudent})
+  }
+  */
+ function makeAddStdentButton(){
+  if (addStudentToClass){
+    return(<>
+      <input type="text" id="First Name" onChange={(event) => setFirstName(event.target.value)} name="First Name" placeholder="First" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+
+      <button onClick={addStudentButton} className="h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+              Add Student
+          </button>
+    </>)
+  }else{
+    return(<button onClick={swapAddStudent} className="ml-3 w-8 mt-3 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+                      Add
+                    </button>)
+  }
+  }
+
   function minusWeightButton() {
     async function fetchData(user_id, class_id, stud_id1, stud_id2, weight) {
       const groupsUpdate = await fetch("http://127.0.0.1:5000/api/users/" + user_id + "/class/" + class_id + "/students/set_weight", {
@@ -519,6 +593,8 @@ const changeUseWeights = () => {
                     <button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
                       Delete Selected Student
                     </button>
+                    {makeAddStdentButton()}
+                    
                     <label class="block ml-5 mt-3 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload classlist csv</label>
                     <input onChange={(event) => setUploadedFile(event.target.files)} class="block ml-3 w-62 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file"></input>
                     <button onClick={submitForm} className="ml-3 w-48 mt-2 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
