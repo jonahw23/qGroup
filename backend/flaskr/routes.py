@@ -584,4 +584,27 @@ def get_weights(class_id, user_id):
     print("weights:", weights)
     return weights
 
+@routes.route("/api/students/<stud_id>/update_student", methods = ["PATCH"])
+@cross_origin()
+def change_student_name(stud_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE Students
+    SET first_name = (?)
+        last_name = (?)
+    WHERE id = (?)
+  """, (request.json["new_first_name"], request.json["new_last_name"], stud_id))
+  db.commit()
+  return "", 200
 
+@routes.route("/api/class/<class_id>/update_class", methods = ["PATCH"])
+@cross_origin()
+def change_class_name(class_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE Classrooms
+    SET name = (?)
+    WHERE class_id = (?)
+  """, (request.json["new_class_name"], class_id))
+  db.commit()
+  return "", 200
