@@ -9,7 +9,6 @@ export default function LoginRedirect() {
     const id = api.user_id(user);
     api.call("POST", "/users/new",
       {
-        id: id + "",
         name: id + "",
         password: "",
       })
