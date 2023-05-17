@@ -475,14 +475,14 @@ return({element: <>
   */
  function makeAddStdentButton(){
   if (addStudentToClass){
-    return(<>
+    return(<div>
       <input type="text" id="First Name" onChange={(event) => setFirstName(event.target.value)} name="First Name" placeholder="First" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
-      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className=" h-9 pl-2  bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
 
       <button onClick={addStudentButton} className="h-9 rounded-md bg-green-500 text-white text-sm font-medium">
               Add Student
           </button>
-    </>)
+    </div>)
   }else{
     return(<button onClick={swapAddStudent} className="ml-3 w-8 mt-3 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
                       Add
