@@ -157,9 +157,9 @@ def add_user():
   print("got")
   print(request.json, request.get_json())
   db.execute(f"""
-    INSERT INTO Users (user_id, name, password)
-      VALUES (?, ?, ?)
-  """, (request.json["id"], request.json["name"], request.json["password"]))
+    INSERT INTO Users (name, password)
+      VALUES (?, ?)
+  """, (request.json["name"], request.json["password"]))
   
   db.commit()
 

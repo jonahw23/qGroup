@@ -1,6 +1,6 @@
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS Users
-  (user_id TEXT PRIMARY KEY,
+  (user_id INTEGER PRIMARY KEY,
    name STRING UNIQUE,
    password STRING);
 
