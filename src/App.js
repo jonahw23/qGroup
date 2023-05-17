@@ -428,37 +428,9 @@ export default function Example() {
   }
 
   function addStudentButton() {
-    console.log("HI")
     setAddStudent(false)
-    async function fetchData() {
-      const addStudents = await( fetch("http://127.0.0.1:5000/api/users/" + stateUser.stateUserId + "/class/" + pageClassId[0] + "/students/add_student", {
-          method: 'POST',
-          body: JSON.stringify({
-            first_name: first_name,
-            last_name: last_name,
-            class_id: pageClassId[0],
-
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }))
-      const students = await ((await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/students', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })).json())
-      if (addStudents && students) {
-        //console.log(students)
-        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights})
-      }
-      else {
-        console.log("Didn't delete students or refind")
-      }
-    }
     addStudent(stateUser.stateUserId,pageClassId[0],first_name,last_name)
-    //fetchData()
+    fetchData()
     //console.log("NewSetudenst:", state.students)
   }
 
