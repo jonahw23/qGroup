@@ -254,33 +254,6 @@ def furniture_groups(user_id, class_id, seating_id):
     WHERE m.furniture_id = ff.furn_id
   """, (seating_id,))
   return [dict(row) for row in res.fetchall()]
-  
-@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_tableGroup", methods = ["POST"])
-@cross_origin()
-def new_tableGroup(seating_id):
-  db = database.get_db()
-  db.execute("""
-    INSERT INTO tableGroup (name)
-      VALUES (?)
-  """, (request.json["table_group_name"],))
-  tableGroup_id = db.execute("SELECT id FROM tableGroup ORDER BY id DESC").fetchone()[0]
-  db.execute("""
-    INSERT INTO tableGroupSeatingMap
-      VALUES (?,?)
-  """, (tableGroup_id, seating_id))
-  db.commit()
-  return "", 201
-
-@routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/<table_group_id>/map_furn", methods = ["POST"])
-@cross_origin()
-def map_furn_group(table_group_id):
-  db = database.get_db()
-  db.execute("""
-    INSERT INTO FurnitureTableGroupMap
-      VALUES (?,?)
-  """, (request.json["furn_id"], request.json["table_group_id"]))
-  db.commit()
-  return "", 201
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/students", methods = ["DELETE"])
 @cross_origin()
@@ -446,7 +419,7 @@ def make_groups(user_id, class_id):
   print(groups)
 
   for i, group in enumerate(groups):
-    group_name = "Group " + str(i + 1)
+    group_name = "Group " + str(i + 1) + " " + str(meta_group_id)
     db.execute("""
       INSERT INTO StudentGroup (name)
         VALUES (?)
@@ -464,6 +437,58 @@ def make_groups(user_id, class_id):
   db.commit()
   
   return groups
+
+@routes.route("/api/users/<user_id>/class/<class_id>/meta_group/<meta_group_id>/overwrite_group", methods = ["PUT"])
+@cross_origin()
+def overwrite_group(user_id, class_id, meta_group_id):
+  db = database.get_db()
+  delete_meta_group(user_id, class_id, meta_group_id)
+
+  db.execute("""
+    INSERT INTO MetaGroup (name)
+      VALUES (?)
+  """, (request.json["meta_group_name"],))
+  db.execute("""
+    INSERT INTO ClassroomMetaGroupMap
+      VALUES (?,?)
+  """, (class_id, meta_group_id))
+
+  students = get_class_students(user_id, class_id).json
+  students.sort(key = lambda a: a["id"])
+  
+  groups = []
+  if not request.json["disable_weights"]:
+    groups = student_algorithms.group_students(
+      students, 
+      group_amount=request.json["group_amount"], 
+      group_size=request.json["group_size"],
+      weights=request.json["weights"]
+    )
+  else:
+    groups = student_algorithms.group_students(
+      students, 
+      group_amount=request.json["group_amount"], 
+      group_size=request.json["group_size"],
+    )
+  
+  for i, group in enumerate(groups):
+    group_name = "Group " + str(i + 1) + " " + str(meta_group_id)
+    db.execute("""
+      INSERT INTO StudentGroup (name)
+        VALUES (?)
+    """, (group_name,))
+    group_id = db.execute("SELECT id FROM StudentGroup ORDER BY id DESC").fetchone()[0]
+    db.execute("""
+      INSERT INTO MetaGroupGroupMap
+        VALUES (?,?)
+    """, (meta_group_id, group_id))
+    for student in group:
+      db.execute("""
+        INSERT INTO StudentGroupMap (student_id, group_id)
+          VALUES (?,?)
+      """, (student, group_id))
+  db.commit()
+  return groups, 201
 
 @routes.route("/api/class/<class_id>/meta_groups/get_ids_names", methods = ["GET"])
 @cross_origin()
@@ -495,7 +520,6 @@ def get_groups(meta_group_id):
       WHERE m.group_id = (?)
     """, (id,))
     group = [dict(row) for row in res.fetchall()]
-    print(group)
     groups.append(group)
   
   print(groups)
