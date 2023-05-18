@@ -632,3 +632,15 @@ def change_class_name(class_id):
   """, (request.json["new_class_name"], class_id))
   db.commit()
   return "", 200
+
+@routes.route("/api/meta_group/<meta_group_id>/update_meta_name", methods = ["PATCH"])
+@cross_origin()
+def change_meta_name(meta_group_id):
+  db = database.get_db()
+  db.execute("""
+    UPDATE MetaGroup
+    SET name = (?)
+    WHERE meta_group_id = (?)
+  """, (request.json["new_meta_group_name"], meta_group_id))
+  db.commit()
+  return "", 200
