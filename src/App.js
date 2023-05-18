@@ -229,7 +229,7 @@ export default function Example() {
     const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/meta_group/make_groups', {
       method: 'POST',
       body: JSON.stringify({
-        meta_group_name: "Test metagroup name",
+        meta_group_name: group_name,
         group_size: 4,
         group_amount: 0,
         weights:weights,
@@ -239,7 +239,7 @@ export default function Example() {
         'Content-Type': 'application/json'
       }
     }, [])).json()
-    const metaGroup = await (await fetch("http://127.0.0.1:5000/api/meta_groups/700/get_groups_from_metaID", {
+    const metaGroup = await (await fetch('http://127.0.0.1:5000/api/class/' + pageClassId[0] + '/meta_groups/get_ids_names', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -613,6 +613,7 @@ const changeUseWeights = () => {
                           <button onClick={()=>exportGroup(state.students,state.groups,group_name,theHeader.value.name)} className="ml-2 w-32 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
                               Export Group
                             </button>
+                            {/*groupList.element*/}
                         </div>
                       </div>
                     } />

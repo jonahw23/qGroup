@@ -77,8 +77,10 @@ function classNames(...classes) {
 function buildClasses(arr){
   classes = []
   for(let i = 0; i < arr.length; i++){
-    classes.push(arr[i])
-    classes[classes.length - 1].index = classes.length - 1
+    if(classes.length < 500){
+      classes.push(arr[i])
+      classes[classes.length - 1].index = classes.length - 1
+    }
   }
   classes.push({name:"Add Class (+)"})
   classes[classes.length - 1].index = classes.length - 1

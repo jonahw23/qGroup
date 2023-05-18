@@ -497,7 +497,7 @@ def get_meta_groups_info(class_id):
   res = db.execute("""
     SELECT mg.meta_group_id, mg.name FROM ClassroomMetaGroupMap cmm
     JOIN MetaGroup mg ON mg.meta_group_id = cmm.meta_group_id
-    WHERE cmm.class_id = (?)
+    WHERE cmm.classroom_id = (?)
   """, (class_id))
   return [dict(row) for row in res.fetchall()], 200
 
