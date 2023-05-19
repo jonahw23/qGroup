@@ -498,7 +498,7 @@ def get_meta_groups_info(class_id):
     SELECT mg.meta_group_id, mg.name FROM ClassroomMetaGroupMap cmm
     JOIN MetaGroup mg ON mg.meta_group_id = cmm.meta_group_id
     WHERE cmm.classroom_id = (?)
-  """, (class_id))
+  """, (class_id,))
   return [dict(row) for row in res.fetchall()], 200
 
 @routes.route("/api/meta_groups/<meta_group_id>/get_groups_from_metaID", methods = ["GET"])
@@ -510,19 +510,21 @@ def get_groups(meta_group_id):
     WHERE meta_group_id = (?)
   """, (meta_group_id,))
   group_ids = [row[0] for row in res.fetchall()]
-  print(group_ids)
+  print('GroupIds', group_ids)
 
   groups = []
   for id in group_ids:
     res = db.execute("""
-      SELECT s.first_name, s.last_name FROM StudentGroupMap m 
+      SELECT s.id FROM StudentGroupMap m 
       JOIN Students s ON s.id = m.student_id
       WHERE m.group_id = (?)
     """, (id,))
     group = [dict(row) for row in res.fetchall()]
+    for i in range(len(group)):
+      group[i] = group[i]['id']
     groups.append(group)
   
-  print(groups)
+  print("ReturnGroups:", groups)
   return groups, 200
 
 @routes.route("/api/users/<user_id>/class/<class_id>/meta_groups/<meta_group_id>/delete_meta_group", methods = ["DELETE"])

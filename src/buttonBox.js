@@ -56,7 +56,7 @@ function buildGroups(arr){
         people[fastPeople[groups[i][j]].index].group = i
       }
       else{
-        console.log(groups[i][j])
+        //console.log(groups[i][j])
       }
     }
   }

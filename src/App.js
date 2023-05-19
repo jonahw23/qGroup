@@ -10,6 +10,7 @@ import {
 import ButtonBox from './buttonBox'
 import Papa from 'papaparse'
 import ListBox from './Listbox'
+import ListGroup from './ListGroup'
 import Login from "./account/Login"
 
 //Body of main page and API calls
@@ -21,6 +22,7 @@ const pageUserId = 6
 
 const pageCurrentNum = [0]
 const pageClassId = [8]
+const pageGroupID = [1]
 
 const addUser = async (userName, userPw) => {
   const response = await fetch('http://127.0.0.1:5000/api/users/new', {
@@ -181,7 +183,6 @@ export default function Example() {
 
   const [useWeights, setUseWeights] = useState(false)
 
-
   const [addStudentToClass, setAddStudent] = useState(false)
   const [first_name, setFirstName] = useState("")
   const [last_name, setLastName] = useState("")
@@ -196,6 +197,9 @@ export default function Example() {
 
   //Header instance (dict as above, value:listbox value)
   const theHeader = Header(state.classes, 0)
+
+  //Grouplist instance
+  const groupList = ListGroup(state.metaGroups, 0)
   
   const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: 8})
 
@@ -226,34 +230,27 @@ export default function Example() {
         'Content-Type': 'application/json'
       }
     })).json()
-    const groups = await (await fetch('http://127.0.0.1:5000/api/users/' + stateUser.stateUserId + '/class/' + pageClassId[0] + '/meta_group/make_groups', {
-      method: 'POST',
-      body: JSON.stringify({
-        meta_group_name: group_name,
-        group_size: 4,
-        group_amount: 0,
-        weights:weights,
-        disable_weights:useWeights
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, [])).json()
-    const metaGroup = await (await fetch('http://127.0.0.1:5000/api/class/' + pageClassId[0] + '/meta_groups/get_ids_names', {
+    const metaGroups = await (await fetch('http://127.0.0.1:5000/api/class/' + pageClassId[0] + '/meta_groups/get_ids_names', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     })).json()
-    if (students && users && weights && groups && metaGroup) {
-      addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights, "metaGroup": metaGroup})
+    const groups = await (await fetch('http://127.0.0.1:5000/api/meta_groups/' + pageGroupID[0] + '/get_groups_from_metaID', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })).json()
+    if (students && users && weights && groups && metaGroups) {
+      addToState({ "students": students, "users": users, "classes": classes, "groups": groups, "weights": weights, "metaGroups": metaGroups})
     }
     else {
       console.log("Didn't add students or users or groups")
     }
   }
 
-  console.log("metaGroup:", state.metaGroup)
+  console.log("groupsfromID:", state.groups)
 
   if(theHeader.value.class_id){
     if(theHeader.value.class_id !== pageClassId[0]){
@@ -264,7 +261,7 @@ export default function Example() {
   }
   if(theHeader.value.makeNew){
     //alert("NEW CLASS IS:" + theHeader.value.newName)
-    pageClassId[0] = state.classes.length - 1
+    pageClassId[0] = state.classes.length > 0 ? state.classes.length - 1 : 0
     addClass(pageUserId, theHeader.value.newName)
     fetchData()
   }
@@ -276,6 +273,22 @@ export default function Example() {
       fetchData()
     }
   }
+  if(groupList.value.meta_group_id != pageGroupID[0]){
+    pageGroupID[0] = groupList.value.meta_group_id
+    async function getGroupForID(){
+      const groups = await (await fetch('http://127.0.0.1:5000/api/meta_groups/' + pageGroupID[0] + '/get_groups_from_metaID', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+      })).json()
+      if (groups) {
+        addToState({ "students": state.students, "users": state.users, "classes": state.classes, "groups": groups, "weights": state.weights, "metaGroups": state.metaGroups})
+      }
+    }
+    getGroupForID()
+  } 
+  console.log("GroupListVal", groupList.value)
 
   //console.log("state", state)
 
@@ -299,9 +312,15 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       }, [])).json()
+      const metaGroups = await (await fetch('http://127.0.0.1:5000/api/class/' + pageClassId[0] + '/meta_groups/get_ids_names', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+        }
+      })).json()
       if (groups) {
-        console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights, "metaGroup": state.metaGroup })
+        console.log("useButtonSizegroups:", groups)
+        addToState({ "students": state.students, "users": state.users, "classes": state.classes, "groups": groups, "weights": state.weights, "metaGroups": metaGroups })
       }
       else {
         console.log("Didn't change groups")
@@ -326,9 +345,15 @@ export default function Example() {
           'Content-Type': 'application/json'
         }
       }, [])).json()
+      const metaGroups = await (await fetch('http://127.0.0.1:5000/api/class/' + pageClassId[0] + '/meta_groups/get_ids_names', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+        }
+      })).json()
       if (groups) {
-        console.log("groups:", groups)
-        addToState({ "students": state.students, "users": state.users, "groups": groups, "weights": state.weights, "metaGroup": state.metaGroup})
+        console.log("useButtonNumgroups:", groups)
+        addToState({ "students": state.students, "users": state.users, "classes": state.classes, "groups": groups, "weights": state.weights, "metaGroups": metaGroups})
       }
       else {
         console.log("Didn't change groups")
@@ -413,7 +438,7 @@ export default function Example() {
       })).json())
       if (deleteStudents && students) {
         //console.log(students)
-        addToState({ "students": students, "users": state.users, "groups": state.groups, "weights": state.weights, "metaGroup": state.metaGroup})
+        addToState({ "students": students, "users": state.users, "classes": state.classes, "groups": state.groups, "weights": state.weights, "metaGroups": state.metaGroups})
       }
       else {
         console.log("Didn't delete students or refind")
@@ -428,10 +453,19 @@ export default function Example() {
   }
 
   function addStudentButton() {
+    if(first_name.length > 0 && last_name.length > 0){
     setAddStudent(false)
     addStudent(stateUser.stateUserId,pageClassId[0],first_name,last_name)
     fetchData()
     //console.log("NewSetudenst:", state.students)
+    }
+    else{
+      setAddStudent(false)
+    }
+  }
+
+  function saveGroupButton(){
+
   }
 
   /*
@@ -448,17 +482,21 @@ return({element: <>
  function makeAddStdentButton(){
   if (addStudentToClass){
     return(<div>
-      <input type="text" id="First Name" onChange={(event) => setFirstName(event.target.value)} name="First Name" placeholder="First" className=" h-9 pl-2 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
-      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className=" h-9 pl-2  bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+      <input type="text" id="First Name" onChange={(event) => setFirstName(event.target.value)} name="First Name" placeholder="First" className="pl-2 ml-3 w-48 mt-3 h-9 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
+      <br></br>
+      <input type="text" id="Last Name" onChange={(event) => setLastName(event.target.value)} name="Last Name" placeholder="Last" className="pl-2 ml-3 w-48 mt-3 h-9 bg-gray-100 rounded-md appearance-none cursor-pointer dark:bg-gray-700"></input>
 
-      <button onClick={addStudentButton} className="h-9 rounded-md bg-green-500 text-white text-sm font-medium">
-              Add Student
-          </button>
+      <button onClick={addStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+        Add Student
+      </button>
     </div>)
   }else{
-    return(<button onClick={swapAddStudent} className="ml-3 w-8 mt-3 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
-                      Add
-                    </button>)
+    return(<div><button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
+    Delete Selected Student
+  </button>
+    <button onClick={swapAddStudent} className="ml-3 w-48 mt-3 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+              Add Student
+           </button></div>)
   }
   }
 
@@ -483,7 +521,7 @@ return({element: <>
       })).json()
       if (groupsUpdate && weights) {
         console.log("weights:", weights)
-        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights, "metaGroup": state.metaGroup})
+        addToState({ "students": state.students, "users": state.users, "classes": state.classes, "groups": state.groups, "weights": weights, "metaGroups": state.metaGroups})
       }
       else {
         console.log("Didn't change weights")
@@ -519,7 +557,7 @@ return({element: <>
       })).json()
       if (groupsUpdate && weights) {
         console.log("weights:", weights)
-        addToState({ "students": state.students, "users": state.users, "groups": state.groups, "weights": weights, "metaGroup": state.metaGroup})
+        addToState({ "students": state.students, "users": state.users, "classes": state.classes, "groups": state.groups, "weights": weights, "metaGroups": state.metaGroups})
       }
       else {
         console.log("Didn't change weights")
@@ -566,7 +604,7 @@ const changeUseWeights = () => {
         <main>
           <div className="mx-auto max-w-7xl py-4 sm:px-4 lg:px-4">
             <div className="px-4 py-1 sm:px-0">
-              <div className="flex my-auto h-[85vh] rounded-lg border-4 border-dashed border-gray-200">
+              <div className="flex my-auto h-[85vh] rounded-lg border-gray-200">
 
                 <div className="w-18">
                   <div>{theList.element}</div>
@@ -574,9 +612,6 @@ const changeUseWeights = () => {
                     {
                      weightButtons()
                     }
-                    <button onClick={deleteStudentButton} className="ml-3 w-48 mt-3 h-9 rounded-md bg-red-500 text-white text-sm font-medium">
-                      Delete Selected Student
-                    </button>
                     {makeAddStdentButton()}
                     
                     <label class="block ml-5 mt-3 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload classlist csv</label>
@@ -604,16 +639,23 @@ const changeUseWeights = () => {
                               Make that many groups
                             </button>
                             <button onClick={changeUseWeights} className="ml-2 w-48 h-9 rounded-md bg-gray-500 text-white text-sm font-medium">
-                              {(useWeights?"en":"dis") + "able weights"}
+                              {(useWeights?"En":"Dis") + "able weights"}
                             </button>
                           </div>
-                          <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>
-
-                          <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 pl-2 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
-                          <button onClick={()=>exportGroup(state.students,state.groups,group_name,theHeader.value.name)} className="ml-2 w-32 h-9 rounded-md bg-green-500 text-white text-sm font-medium">
+                          <div>
+                          <button onClick={()=>exportGroup(state.students,state.groups,group_name,theHeader.value.name)} className="ml-1 mr-0 w-[20%] h-9 rounded-md bg-green-500 text-white text-sm font-medium">
                               Export Group
-                            </button>
-                            {/*groupList.element*/}
+                          </button>
+
+                          {groupList.element}
+                          <label for="Group Name" className=" mb-2 font-medium text-gray-900 dark:text-white">Group Name: </label>
+                          <input type="text" id="Group Name" onChange={(event) => setGroup_name(event.target.value)} name="Group Name" placeholder="Group" className=" w-[20%] mb-0 bg-gray-200 pl-2 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"></input>
+
+                          {/*<button onClick={()=>saveGroupButton()} className="ml-2 mr-2 w-[10%] h-9 rounded-md bg-green-400 text-white text-sm font-medium">
+                              Save Group
+                          </button>*/}
+                          
+                          </div>
                         </div>
                       </div>
                     } />
