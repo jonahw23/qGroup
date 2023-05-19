@@ -5,7 +5,7 @@ import Seat from "./Seat.js";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export default function SeatingEditor({ groups }) {
+export default function SeatingEditor({ classId: class_id, groups }) {
 
   const { user } = useAuth0();
 
@@ -23,7 +23,7 @@ export default function SeatingEditor({ groups }) {
 
   const api_base = path => {
     const id = api.user_id(user);
-    return `/users/${id}/class/${8}/seating/${id}` + path;
+    return `/users/${id}/class/${class_id}/seating/${id}` + path;
   }
 
 

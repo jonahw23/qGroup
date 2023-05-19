@@ -617,7 +617,10 @@ const changeUseWeights = () => {
                         </div>
                       </div>
                     } />
-                    <Route path="/seating" element={<SeatingEditor groups={state.groups} />} />
+                    <Route path="/seating" element={
+                      <SeatingEditor
+                        classId={theHeader.value.class_id} 
+                        groups={state.groups} />} />
                   </Routes>
                 </div>
 
