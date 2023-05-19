@@ -3,8 +3,11 @@ import { ArrowsPointingInIcon, ArrowsPointingOutIcon, HandRaisedIcon, PlusIcon }
 import * as api from "../api.js";
 import Seat from "./Seat.js";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import { useAuth0 } from "@auth0/auth0-react";
 
-export default function SeatingEditor({ groups }) {
+export default function SeatingEditor({ classId: class_id, groups }) {
+
+  const { user } = useAuth0();
 
   let [furniture, setFurniture] = useState([]);
   let [students, setStudents] = useState([]);
@@ -17,6 +20,11 @@ export default function SeatingEditor({ groups }) {
 
   let divElement = useRef(null);
   const fsHandle = useFullScreenHandle();
+
+  const api_base = path => {
+    const id = api.user_id(user);
+    return `/users/${id}/class/${class_id}/seating/${id}` + path;
+  }
 
 
 
@@ -33,31 +41,31 @@ export default function SeatingEditor({ groups }) {
   }, [])
 
   const getData = () => {
-    api.call("GET", "/users/6/class/8/seating/1/furniture/get_furniture_loc")
+    api.call("GET", api_base("/furniture/get_furniture_loc"))
       .then(json => { setFurniture(json) });
-    api.call("GET", "/users/6/class/8/seating/1/furniture_groups")
+    api.call("GET", api_base("/furniture_groups"))
       .then(json => { setFurnGroups(json) });
-    api.call("GET", "/users/6/class/8/seating/1/students")
+    api.call("GET", api_base("/students"))
       .then(json => { setStudents(json) });
   }
 
   const mapStudents = () => {
-    api.call("POST", "/users/6/class/8/seating/1/students")
+    api.call("POST", api_base("/students"))
       .then(() => { getData(); });
   }
   const clearStudents = () => {
-    api.call("DELETE", "/users/6/class/8/seating/1/students")
+    api.call("DELETE", api_base("/students"))
       .then(() => { getData(); });
   }
   const mapFurniture = () => {
     const num_groups = groups.length;
-    api.call("POST", "/users/6/class/8/seating/1/group_furn",
+    api.call("POST", api_base("/group_furn"),
       { num_groups: num_groups })
       .then(() => { getData(); });
   }
   const deleteFurniture = () => {
     selected.forEach(id => {
-      api.call("DELETE", `/users/6/class/8/seating/1/furniture/${id}`);
+      api.call("DELETE", api_base(`/furniture/${id}`));
     })
     setFurniture([...furniture].filter(f => !selected.includes(f.furn_id)))
     setSelected([])
@@ -71,7 +79,7 @@ export default function SeatingEditor({ groups }) {
     const y = (e.clientY - bounds.top) / bounds.width;
     const theta = 0;
 
-    api.call("POST", "/users/6/class/8/seating/1/new_furniture",
+    api.call("POST", api_base("/new_furniture"),
       {
         furn_type: "seat",
         x: x, y: y, theta: theta
@@ -281,10 +289,10 @@ export default function SeatingEditor({ groups }) {
             className="bg-sky-500/30"
             style={{
               position: "absolute",
-              top: selectbox.y1,
-              left: selectbox.x1,
-              width: selectbox.x2 - selectbox.x1,
-              height: selectbox.y2 - selectbox.y1,
+              top: Math.min(selectbox.y1, selectbox.y2),
+              left: Math.min(selectbox.x1, selectbox.x2),
+              width: Math.abs(selectbox.x2 - selectbox.x1),
+              height: Math.abs(selectbox.y2 - selectbox.y1),
             }}></div>
 
         </div>

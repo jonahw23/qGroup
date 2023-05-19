@@ -5,6 +5,14 @@ from . import database
 from . import student_algorithms
 from . import furniture_algorithms
 
+
+def google_to_id(db, id):
+  res = db.execute("""
+    SELECT * FROM Users WHERE name = (?)
+  """, (id,))
+  return dict(res.fetchone())["user_id"]
+
+
 routes = Blueprint("routes", __name__)
 
 
@@ -182,14 +190,21 @@ def new_seating(user_id, class_id):
     INSERT INTO Seating (name, class_id)
       VALUES (?, ?)
   """, (request.json["name"], class_id))
-  seating_id = db.execute("SELECT id FROM Seating ORDER BY id DESC").fetchone()[0]
+  seating_id = db.execute("SELECT seating_id FROM Seating ORDER BY seating_id DESC").fetchone()[0]
   db.execute("""
     INSERT INTO UserSeatingMap
       VALUES (?,?)
-    """, (user_id, seating_id))
+    """, (google_to_id(db, user_id), seating_id))
   db.commit()
 
   return "", 201
+
+@routes.route("/api/users/<user_id>/class/<class_id>/seating", methods = ["GET"])
+@cross_origin()
+def list_seating(user_id, class_id):
+  db = database.get_db()
+  res = db.execute("SELECT * FROM UserSeatingMap WHERE user_id = (?)", (google_to_id(db, user_id),))
+  return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/new_furniture", methods = ["POST"])
 @cross_origin()
@@ -198,7 +213,7 @@ def new_furniture(user_id, class_id, seating_id):
   db.execute("""
     INSERT INTO Furniture (type, x, y, theta, seating_id)
       VALUES (?, ?, ?, ?, ?) 
-  """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], seating_id))
+  """, (request.json["furn_type"], request.json["x"], request.json["y"], request.json["theta"], google_to_id(db, seating_id)))
   furn_id = db.execute("SELECT furn_id FROM Furniture ORDER BY furn_id DESC").fetchone()[0]
   db.commit()
   return { "furn_id": furn_id }, 201
@@ -238,7 +253,7 @@ def furniture_locations(user_id, class_id, seating_id):
   res = db.execute("""
     SELECT * FROM Furniture
       WHERE seating_id = (?)
-  """, (seating_id,))
+  """, (google_to_id(db, seating_id),))
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/furniture_groups", methods = ["GET"])
@@ -252,7 +267,7 @@ def furniture_groups(user_id, class_id, seating_id):
       WHERE f.seating_id = (?)
     ) ff
     WHERE m.furniture_id = ff.furn_id
-  """, (seating_id,))
+  """, (google_to_id(db, seating_id),))
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/seating/<seating_id>/students", methods = ["DELETE"])
@@ -265,7 +280,7 @@ def clear_stud_furn(user_id, class_id, seating_id):
       SELECT f.furn_id FROM Furniture f
       WHERE f.seating_id = (?)
     )
-  """, (seating_id))
+  """, (google_to_id(db, seating_id),))
   db.commit()
   return ""
 
@@ -356,7 +371,7 @@ def list_students_furniture(user_id, class_id, seating_id):
       WHERE f.seating_id = (?)
     ) ff
     ON ff.furn_id = m.furn_id
-  """, (seating_id))
+  """, (google_to_id(db, seating_id),))
   return [dict(row) for row in res.fetchall()]
 
 @routes.route("/api/users/<user_id>/class/<class_id>/students/set_weight", methods = ["POST"])
