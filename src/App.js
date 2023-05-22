@@ -12,13 +12,15 @@ import Papa from 'papaparse'
 import ListBox from './Listbox'
 import ListGroup from './ListGroup'
 import Login from "./account/Login"
+import { useAuth0 } from '@auth0/auth0-react'
+import * as api from './api.js'
 
 //Body of main page and API calls
 
 //Constants for user and class 
 //Current user 1 class 1 (Alice's Geometry Class)
 //CSV goes to user 6 class 8 (Joe's optics class)
-const pageUserId = 6
+const pageUserId = [0]
 
 const pageCurrentNum = [0]
 const pageClassId = [8]
@@ -168,11 +170,14 @@ function fillClasses() {
 function fillStudents() {
   //Refill database students after database reset (fill classes first)
   for (let i = 0; i < constants.testStudents.length; i++) {
-    addStudent(pageUserId, pageClassId[0], constants.testStudents[i].first_name, constants.testStudents[i].last_name)
+    addStudent(pageUserId[0], pageClassId[0], constants.testStudents[i].first_name, constants.testStudents[i].last_name)
   }
 }
 
 export default function Example() {
+
+  pageUserId[0] = api.user_id(useAuth0().user)
+  console.log("authcode:", pageUserId[0])
 
   const [state, addToState] = useState([])
   const [rangeval, setRangeval] = useState(8)
@@ -201,7 +206,7 @@ export default function Example() {
   //Grouplist instance
   const groupList = ListGroup(state.metaGroups, 0)
   
-  const [stateUser, setStateUser] = useState({stateUserId:pageUserId, stateClassId: 8})
+  const [stateUser, setStateUser] = useState({stateUserId:pageUserId[0], stateClassId: 8})
 
   console.log("CURRENT:", theHeader.value)
 
@@ -255,21 +260,21 @@ export default function Example() {
   if(theHeader.value.class_id){
     if(theHeader.value.class_id !== pageClassId[0]){
       pageClassId[0] = theHeader.value.class_id
-      setStateUser({stateUserId:pageUserId, stateClassId: theHeader.value.class_id})
+      setStateUser({stateUserId:pageUserId[0], stateClassId: theHeader.value.class_id})
       fetchData()
     } 
   }
   if(theHeader.value.makeNew){
     //alert("NEW CLASS IS:" + theHeader.value.newName)
     pageClassId[0] = state.classes.length > 0 ? state.classes.length - 1 : 0
-    addClass(pageUserId, theHeader.value.newName)
+    addClass(pageUserId[0], theHeader.value.newName)
     fetchData()
   }
   if(theHeader.value.deleteTime){
     //alert("DELETING:" + theHeader.value.classes)
     pageClassId[0] = state.classes.length - 1
     for(let i = 0; i < theHeader.value.classes.length; i++){
-      deleteClass(pageUserId, theHeader.value.classes[i].class_id)
+      deleteClass(pageUserId[0], theHeader.value.classes[i].class_id)
       fetchData()
     }
   }
@@ -412,7 +417,7 @@ export default function Example() {
         const parsedFile = parseResults(unparsedFile)
         //console.log("File", parsedFile)
         //This is file destination, should be changed to not be hardcoded
-        uploadStudents(pageUserId, pageClassId[0], parsedFile)
+        uploadStudents(pageUserId[0], pageClassId[0], parsedFile)
       }
     })
   }

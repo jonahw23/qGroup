@@ -9,7 +9,7 @@ from . import furniture_algorithms
 def google_to_id(db, id):
   res = db.execute("""
     SELECT * FROM Users WHERE name = (?)
-  """, (id,))
+  """, (str(id),))
   return dict(res.fetchone())["user_id"]
 
 
@@ -32,10 +32,12 @@ def create_class(user_id=0):
 
   class_id = db.execute("""SELECT * FROM Classrooms ORDER BY class_id DESC LIMIT 1""").fetchone()[0]
   user_id = request.json["user_id"]
+  print('USERID:', user_id)
+  print('GOOGLEID:', google_to_id(db, user_id))
   db.execute("""
     INSERT INTO UserClassroomMap (classroom_id, user_id)
       VALUES ({}, {})
-  """.format(class_id, user_id))
+  """.format(class_id, google_to_id(db, user_id),))
   db.commit()
   return res.fetchall()
 
@@ -56,7 +58,7 @@ def list_classes_user(user_id):
     SELECT * FROM Classrooms c 
       JOIN UserClassroomMap m ON m.classroom_id = c.class_id
       WHERE m.user_id = (?)
-  """, (user_id))
+  """, (google_to_id(db, user_id),))
   return [dict(row) for row in res.fetchall()]
   
 @routes.route("/api/users/<user_id>/class/<class_id>/students", methods=["GET"])
