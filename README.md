@@ -10,4 +10,4 @@ followed by
 
 From there, you can create and save classes, populate them with students, and use qGroup's many customization options to create the groupings and seating layouts that you desire. 
 
-This project is still in the beta phase, and isn't currently undergoing development. 
+Please note this project is still in the beta phase, and isn't currently undergoing development. 
